@@ -1,0 +1,50 @@
+<?php
+$rss = $block->getRssFeed();
+?>
+<h2 style="text-align: center">Business News</h2>
+<div style="
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+">
+  <?php foreach ($rss->channel->item as $item): ?>
+    <div style="
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: row;
+                padding-bottom: 50px;
+            ">
+      <div style="
+                    width: 250px;
+                ">
+        <?php if (isset($item->enclosure)): ?>
+          <a href="<?php echo $item->link; ?>" target="_blank"><img src="<?php echo $item->enclosure['url']; ?>" alt="<?php echo $item->title; ?>" /></a>
+        <?php endif; ?>
+      </div>
+      <div style="
+                        padding-left: 10px;
+                        width: 300px;
+                ">
+        <p style="
+                        font-weight: bold;
+                        font-size: 18px;
+                        color: white;
+                    "><a href="<?php echo $item->link; ?>" target="_blank"><?php echo $item->title; ?></a></p>
+        <div>
+          <?php
+          $description = $item->description;
+          $doc = new DOMDocument();
+          @$doc->loadHTML('<?xml encoding="UTF-8">' . $description);
+          $textContent = strip_tags($description);
+          ?>
+          <p style="
+                            font-size: 12px;
+                            color: #9b9b9b;
+                        "><?php echo $textContent; ?></p>
+        </div>
+      </div>
+    </div>
+  <?php endforeach; ?>
+</div>

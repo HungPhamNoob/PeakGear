@@ -1,0 +1,232 @@
+<h2 style="text-align: center">Weather Forecast</h2>
+
+<form method="GET" action="">
+  <div style="
+            display: flex;
+            padding: 20px 0px 50px 0px;
+            justify-content: center;
+            align-items: center;
+        ">
+    <input type="text" id="city" name="city" placeholder="e.g., Ho Chi Minh" value="<?php echo htmlspecialchars($_GET['city'] ?? ''); ?>" style="
+                width:300px;
+            " />
+    <button type="submit">Search</button>
+  </div>
+</form>
+
+<?php
+
+$city = $_GET['city'] ?? "Ha Noi";
+
+if ($city == '') {
+  $city = "Ha Noi";
+}
+
+$weather = $block->getWeatherData($city);
+
+if ($weather):
+  $current = $weather['current'];
+  $iconCode = $weather['icon'];
+  $iconUrl = "http://openweathermap.org/img/wn/{$iconCode}@2x.png";
+  $forecastList = $weather['forecast']['list'];
+
+  $hourly = array_slice($forecastList, 0, 8);
+  $daily = [];
+  foreach ($forecastList as $forecast) {
+    $date = date('Y-m-d', strtotime($forecast['dt_txt']));
+
+    if (!isset($daily[$date]) && strpos($forecast['dt_txt'], '06:00:00') !== false) {
+      $daily[$date] = [
+        'temp_min' => $forecast['main']['temp_min'],
+        'temp_max' => $forecast['main']['temp_max'],
+        'weather' => $forecast['weather'][0]['description'],
+        'icon' => $forecast['weather'][0]['icon']
+      ];
+    } elseif (isset($daily[$date])) {
+      $daily[$date]['temp_min'] = min($daily[$date]['temp_min'], $forecast['main']['temp_min']);
+      $daily[$date]['temp_max'] = max($daily[$date]['temp_max'], $forecast['main']['temp_max']);
+    }
+  }
+  $daily = array_slice($daily, 0, 5);
+?>
+  <div class="weather-widget" style="
+            font-family: Roboto, sans-serif;
+            display: flex;
+            height: 350px;
+        ">
+    <div class="weather-header" style="
+                width:40%;
+                background: linear-gradient(33deg, rgb(71 73 75 / 55%) 0%, rgb(0 0 0) 100%);
+                color: rgb(237, 244, 251);
+                border-radius: 10px;
+                padding: 10px 10px 10px 10px
+            ">
+      <div style="
+                    height:60%;
+                    width:100%;
+                ">
+        <div style="
+                        display:flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    ">
+          <div style="
+                        font-size:23px;
+                        padding-left:10px;
+                        font-weight: 600;
+                    ">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" font-size="16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+              <path d="M256 32C167.67 32 96 96.51 96 176c0 128 160 304 160 304s160-176 160-304c0-79.49-71.67-144-160-144zm0 224a64 64 0 1164-64 64.07 64.07 0 01-64 64z"></path>
+            </svg>
+            <?php echo htmlspecialchars($city); ?>, <?php echo htmlspecialchars($current['sys']['country']); ?>
+          </div>
+          <div style="
+                        font-size:20px;
+                        padding-right:30px;
+                    "><?php echo ucwords($current['weather'][0]['description']); ?></div>
+        </div>
+        <div style="
+                    display: flex;
+                    width: 100%;
+                    height: 130px;
+                    justify-content: space-around;
+                ">
+          <div style="
+                        font-size:60px;
+                        text-align: center;
+                        vertical-align: middle;
+                        line-height: 130px;
+                        font-weight: 300;
+                    "><?php echo round($current['main']['temp']); ?>°C</div>
+          <img src="<?php echo $iconUrl; ?>" alt="Weather icon" style="padding-left:60px">
+        </div>
+        <div style="
+                    font-size:15px;
+                    text-align: center;
+                    vertical-align: middle;
+                    line-height: 15px;
+                    display:flex;
+                    justify-content: space-evenly;
+                ">
+          <div class="stat" style="
+                        background: rgb(21 30 40);
+                        color: rgb(237, 244, 251);
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 10px;
+                        border-radius: 50em;
+                        padding: 3px 10px;
+                        font-size:15px;
+                        ">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="icon" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg">
+              <path fill="none" stroke-miterlimit="10" stroke-width="32" d="M400 320c0 88.37-55.63 144-144 144s-144-55.63-144-144c0-94.83 103.23-222.85 134.89-259.88a12 12 0 0118.23 0C296.77 97.15 400 225.17 400 320z"></path>
+              <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M344 328a72 72 0 01-72 72"></path>
+            </svg>
+            <?php echo $current['main']['humidity']; ?> %
+          </div>
+          <div class="stat" style="
+                        background: rgb(21 30 40);
+                        color: rgb(237, 244, 251);
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 10px;
+                        border-radius: 50em;
+                        padding: 3px 10px;
+                        font-size:15px
+                        ">
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="icon" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
+            </svg>
+            <?php echo round($current['wind']['speed']); ?> km/h
+          </div>
+        </div>
+      </div>
+
+      <div class="weather-hourly" style="
+                    display: flex;
+                    justify-content: space-around;
+                    width:100%;
+                    padding-top:20px;
+                ">
+        <?php foreach ($hourly as $hour): ?>
+          <div class="weather-hour" style="
+                            background: linear-gradient(35deg, rgb(103 173 251 / 85%) 0%, rgb(213 236 248) 100%);
+                            color: rgb(21, 25, 38);
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            height:100px;
+                            border-radius: 10px;
+                            width: 50px;
+                        ">
+            <?php
+            $hourIcon = $hour['weather'][0]['icon'];
+            $hourIconUrl = "http://openweathermap.org/img/wn/{$hourIcon}@2x.png";
+            ?>
+            <span><?php echo date('H:i', strtotime($hour['dt_txt'])); ?></span>
+            <img src="<?php echo $hourIconUrl; ?>" alt="Weather icon">
+            <span><?php echo round($hour['main']['temp']); ?>°C</span>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+
+    <div style="width:65%;padding-left:5px;">
+      <div class="weather-daily" style="
+                    width: 100%;
+                    height: 100%;
+                    margin: 0 auto;
+                    position: relative;
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                ">
+        <?php foreach ($daily as $date => $day): ?>
+          <?php
+          $dayIconUrl = isset($day['icon']) ? "http://openweathermap.org/img/wn/{$day['icon']}@2x.png" : '';
+          $numericDate = date('j F', strtotime($date));
+          ?>
+          <div class="weather-day" style="
+                            display: flex;
+                            background: linear-gradient(224deg, rgb(67 67 67 / 76%) 0%, rgb(3 4 10) 100%);
+                            color: rgb(236, 255, 249);
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            height:200px;
+                            border-radius: 10px;
+                            width: 140px;
+                            height: 100%;
+                            padding: 0px 3px 0px 3px;
+                            justify-content: space-around;
+                        ">
+            <div style="
+                            display:flex;
+                            flex-direction: column;
+                            align-items: center;
+                        ">
+              <span style="
+                                font-size: 24px;
+                            "><?php echo date('l', strtotime($date)); ?></span>
+              <span style="
+                                font-size:12px;
+                            "><?php echo $numericDate; ?></span>
+            </div>
+            <img src="<?php echo $dayIconUrl; ?>" alt="Weather icon for <?php echo date('l', strtotime($date)); ?>">
+            <span style="
+                            font-size:20px;
+                        "><?php echo round($day['temp_max']); ?>° / <?php echo round($day['temp_min']); ?>°C</span>
+            <span><?php echo ucwords($day['weather']); ?></span>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </div>
+<?php else: ?>
+  <div style="text-align: center; padding: 20px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    <h3>Weather data is unavailable for "<?php echo htmlspecialchars($city); ?>".</h3>
+    <p>Please try searching for another location.</p>
+  </div>
+<?php endif; ?>

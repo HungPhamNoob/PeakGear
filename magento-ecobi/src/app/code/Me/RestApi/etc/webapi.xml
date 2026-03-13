@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+  <!-- Customer APIs -->
+  <route url="/V1/me-restapi/customers/:customerId" method="GET">
+    <service class="Me\RestApi\Api\CustomerManagementInterface" method="getCustomerById" />
+    <resources>
+      <resource ref="anonymous" />
+    </resources>
+  </route>
+  <route url="/V1/me-restapi/customers/search" method="GET">
+    <service class="Me\RestApi\Api\CustomerManagementInterface" method="searchCustomers" />
+    <resources>
+      <resource ref="anonymous" />
+    </resources>
+  </route>
+
+  <!-- Product APIs -->
+  <route url="/V1/me-restapi/products/:sku" method="GET">
+    <service class="Me\RestApi\Api\ProductManagementInterface" method="getProductBySku" />
+    <resources>
+      <resource ref="anonymous" />
+    </resources>
+  </route>
+  <route url="/V1/me-restapi/products/search" method="GET">
+    <service class="Me\RestApi\Api\ProductManagementInterface" method="searchProducts" />
+    <resources>
+      <resource ref="anonymous" />
+    </resources>
+  </route>
+</routes>

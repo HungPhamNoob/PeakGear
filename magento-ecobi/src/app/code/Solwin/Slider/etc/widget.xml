@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+  <widget id="solwin_slider" class="Solwin\Slider\Block\Widget\Slider">
+    <label translate="true">Fury Slider</label>
+    <description translate="true">Homepage Slider with Animation</description>
+    <parameters>
+      <parameter name="title" xsi:type="text" visible="true" required="true" sort_order="10">
+        <label translate="true">Title</label>
+      </parameter>
+      <parameter name="slide_speed" xsi:type="text" visible="true" required="false" sort_order="20">
+        <label translate="true">Slide Speed (ms)</label>
+        <value>5000</value>
+      </parameter>
+      <parameter name="auto_play" xsi:type="select" visible="true"
+        source_model="Magento\Config\Model\Config\Source\Yesno" sort_order="30">
+        <label translate="true">Auto Play</label>
+      </parameter>
+    </parameters>
+  </widget>
+</widgets>

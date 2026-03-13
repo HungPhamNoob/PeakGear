@@ -1,0 +1,114 @@
+<?php
+$rates = $block->getRates();
+?>
+
+<h2 style="text-align: center">Currency Exchange Rate</h2>
+<?php if ($rates): ?>
+  <!-- <pre><?php print_r($rates['DateTime']); ?></pre>
+    <div>
+        <p>Tỷ giá ngoại tệ</p>
+        <p><?= (string) ($rates['DateTime'] ?? 'N/A') ?></p>
+        <p>Joint Stock Commercial Bank for Foreign Trade of Vietnam - Vietcombank</p>
+    </div> -->
+  <table cellpadding="5" cellspacing="0" style="
+        border:1px solid white;
+        width: 100%;
+        border-collapse: collapse;
+        border-style: hidden;
+        margin-top: 20px;
+        border-radius: .75rem;
+        overflow: hidden;
+        box-shadow: 0 0 0 .0625rem #4b4848;
+        ">
+    <thead>
+      <tr>
+        <th style="
+                    text-align: center;
+                    padding: 8px;
+                    background: #343434;
+                    color: #dfdfdf;
+                    border-right: .0625rem solid #ffffff21;
+                ">Currency Code</th>
+        <th style="
+                    text-align: center;
+                    padding: 8px;
+                    background: #343434;
+                    color: #dfdfdf;
+                    border-right: .0625rem solid #ffffff21;
+                ">Currency Name</th>
+        <th style="
+                    text-align: center;
+                    padding: 8px;
+                    background: #343434;
+                    color: #dfdfdf;
+                    border-right: .0625rem solid #ffffff21;
+                    width: 220px;
+                ">Buy</th>
+        <th style="
+                    text-align: center;
+                    padding: 8px;
+                    background: #343434;
+                    color: #dfdfdf;
+                    border-right: .0625rem solid #ffffff21;
+                    width: 220px;
+                ">Transfer</th>
+        <th style="
+                    text-align: center;
+                    padding: 8px;
+                    background: #343434;
+                    color: #dfdfdf;
+                    border-right: .0625rem solid #ffffff21;
+                    width: 220px;
+                ">Sell</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+      $rowIndex = 0;
+      foreach ($rates->Exrate as $rate):
+        $bgColor = ($rowIndex % 2 === 0) ? '#1b1b1b' : '#333333';
+        ?>
+        <tr style="background: <?= $bgColor ?>;">
+          <td style="
+                        text-align: center;
+                        padding: 8px;
+                        /* font-weight: bold; */
+                        border-right: .0625rem solid #4745458a;
+                    "><?= htmlspecialchars($rate['CurrencyCode']) ?></td>
+          <td style="
+                        text-align: center;
+                        padding: 8px;
+                        /* font-weight: bold; */
+                        border-right: .0625rem solid #4745458a;
+                    "><?= htmlspecialchars($rate['CurrencyName']) ?></td>
+          <td style="
+                        text-align: right;
+                        padding: 8px;
+                        /* font-weight: bold; */
+                        border-right: .0625rem solid #4745458a;
+                        color: #27c927;
+                    "><?= htmlspecialchars($rate['Buy']) ?></td>
+          <td style="
+                        text-align: right;
+                        padding: 8px;
+                        /* font-weight: bold; */
+                        border-right: .0625rem solid #4745458a;
+                        color: #0086ff;
+                    "><?= htmlspecialchars($rate['Transfer']) ?></td>
+          <td style="
+                        text-align: right;
+                        padding: 8px;
+                        /* font-weight: bold; */
+                        border-right: .0625rem solid #4745458a;
+                        color: #f2f241;
+                    "><?= htmlspecialchars($rate['Sell']) ?></td>
+        </tr>
+        <?php
+        $rowIndex++;
+      endforeach;
+      ?>
+    </tbody>
+  </table>
+<?php else: ?>
+  <p>Unable to fetch exchange rates at this time.</p>
+<?php endif; ?>
