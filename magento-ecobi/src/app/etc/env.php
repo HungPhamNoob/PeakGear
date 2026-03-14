@@ -8,7 +8,7 @@ return [
     ],
     'cache' => [
         'graphql' => [
-            'id_salt' => 'YrpmLMCu2qEsMNgZuQ0FwBt4lxQqXjdF'
+            'id_salt' => 'jdrngdw0SQS5GwcmyA05DXLzh0PjpTC1'
         ],
         'frontend' => [
             'default' => [
@@ -54,7 +54,7 @@ return [
         'consumers_wait_for_messages' => 1
     ],
     'crypt' => [
-        'key' => 'base64ypY3AFfawc6GXvHvBVP9pOQ9d6ZSA6XP3lH9l+UIsAI='
+        'key' => 'base64n3zAQuOG8Sl6N75PWnk0u2EBrNH5vjBEzUEsPk3+Iy8='
     ],
     'db' => [
         'table_prefix' => '',
@@ -80,11 +80,11 @@ return [
         ]
     ],
     'x-frame-options' => 'SAMEORIGIN',
-    'MAGE_MODE' => 'developer',
+    'MAGE_MODE' => 'default',
     'session' => [
         'save' => 'redis',
         'redis' => [
-            'host' => 'redis',
+            'host' => '127.0.0.1',
             'port' => '6379',
             'password' => '',
             'timeout' => '2.5',
@@ -92,7 +92,7 @@ return [
             'database' => '2',
             'compression_threshold' => '2048',
             'compression_library' => 'gzip',
-            'log_level' => '4',
+            'log_level' => '1',
             'max_concurrency' => '6',
             'break_after_frontend' => '5',
             'break_after_adminhtml' => '30',
@@ -132,14 +132,9 @@ return [
         'translate' => 1
     ],
     'downloadable_domains' => [
-        '35.221.252.208'
+        'localhost'
     ],
     'install' => [
-        'date' => 'Wed, 13 Nov 2024 15:15:56 +0000'
-    ],
-    'dev' => [
-        'debug' => [
-            'debug_logging' => 1
-        ]
+        'date' => 'Sat, 14 Mar 2026 08:54:16 +0000'
     ]
 ];

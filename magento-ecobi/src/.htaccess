@@ -5,7 +5,3 @@ RewriteCond %{REQUEST_URI} !^/update/
 RewriteCond %{REQUEST_URI} !^/dev/
 RewriteRule .* /pub/$0 [L]
 DirectoryIndex index.php
-<IfModule mod_security2.c>
-  SecRuleEngine Off
-</IfModule>
-Header set Content-Security-Policy "script-src 'self' 'unsafe-inline'"

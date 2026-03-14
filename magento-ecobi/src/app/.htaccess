@@ -1,11 +1,8 @@
 <IfVersion < 2.4>
-  order allow,deny
-  deny from all
+    order allow,deny
+    deny from all
 </IfVersion>
-<IfVersion>= 2.4>
-  Require all denied
+<IfVersion >= 2.4>
+    Require all denied
 </IfVersion>
-<IfModule mod_security2.c>
-  SecRuleEngine Off
-</IfModule>
-Header set Content-Security-Policy "script-src 'self' 'unsafe-inline'"
+

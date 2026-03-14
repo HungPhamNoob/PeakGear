@@ -20,10 +20,11 @@ services:
       - ~/.composer:/var/www/.composer:cached
       - ~/.ssh/id_rsa:/var/www/.ssh/id_rsa:cached
       - ~/.ssh/known_hosts:/var/www/.ssh/known_hosts:cached
-      - appdata:/var/www/html
+      - ./src:/var/www/html
       - sockdata:/sock
       - ~/certs:/etc/nginx/certs:ro
-    #extra_hosts: &appextrahosts
+    environment:
+      - MAGENTO_DOMAIN=${MAGENTO_DOMAIN:-localhost}
       ## Selenium support, replace "magento.test" with URL of your site
       #- "magento.test:172.17.0.1"
       ## Linux, uncomment for Xdebug capabilities:
@@ -33,9 +34,8 @@ services:
     image: markoshust/magento-php:8.3-fpm-2
     volumes: *appvolumes
     env_file: env/phpfpm.env
-    #extra_hosts: *appextrahosts
     environment:
-      # Use TCP instead of socket
+      - MAGENTO_DOMAIN=${MAGENTO_DOMAIN:-localhost}
       - PHP_FPM_LISTEN=9000
       # Unique PHP-FPM configuration
       - PHP_FPM_PM=dynamic
@@ -50,7 +50,7 @@ services:
       --max_allowed_packet=64M
       --log-bin-trust-function-creators=1
     ports:
-      - "3306:3306"
+      - "3308:3306"
     env_file: env/db.env
     volumes:
       - dbdata2:/var/lib/mysql
@@ -74,13 +74,13 @@ services:
   redis:
     image: redis:7.2-alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"
 
   opensearch:
     image: markoshust/magento-opensearch:2.12-0
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "9201:9200"
+      - "9301:9300"
     env_file: env/opensearch.env
     environment:
       - "discovery.type=single-node"

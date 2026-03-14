@@ -43,11 +43,6 @@ location /.user.ini {
     deny all;
 }
 
-location ~* \.css$ {
-    add_header Content-Type "text/css";
-    add_header X-Content-Type-Options "nosniff";
-}
-
 # PHP entry point for setup application
 location ~* ^/setup($|/) {
     root $MAGE_ROOT;
