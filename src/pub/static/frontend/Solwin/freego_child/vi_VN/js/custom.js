@@ -1,0 +1,1 @@
+/var/www/html/app/design/frontend/Solwin/freego_child/web/js/custom.js

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+  <preference for="Me\RestApi\Api\CustomerManagementInterface"
+    type="Me\RestApi\Model\CustomerManagement" />
+  <preference for="Me\RestApi\Api\ProductManagementInterface"
+    type="Me\RestApi\Model\ProductManagement" />
+</config>

@@ -1,0 +1,6 @@
+src/generated
+src/var
+src/vendor
+src/dev/tests
+.vscode
+auth.json

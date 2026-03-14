@@ -1,0 +1,85 @@
+<?php
+$slides = $block->getSlides();
+$autoPlay = $block->getAutoPlay();
+$slideSpeed = $block->getSlideSpeed();
+?>
+
+<div class="slider">
+  <div class="slides-container">
+    <?php foreach ($slides as $index => $slide): ?>
+      <div class="slide <?= $index === 0 ? 'active' : '' ?>">
+        <img src="<?= $block->escapeUrl($slide['image']) ?>" alt="<?= $block->escapeHtml($slide['title']) ?>" class="slide-bg" />
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <div class="brand"><?= $block->escapeHtml($slide['subtitle']) ?></div>
+          <h2 class="title"><?= $block->escapeHtml($slide['title']) ?></h2>
+          <a href="<?= $block->escapeUrl($slide['button_url']) ?>" class="cta-button">
+            <?= $block->escapeHtml($slide['button_text']) ?>
+          </a>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+
+  <button class="nav-button prev">‹</button>
+  <button class="nav-button next">›</button>
+
+  <div class="slide-indicators">
+    <?php foreach ($slides as $index => $slide): ?>
+      <div class="indicator <?= $index === 0 ? 'active' : '' ?>"></div>
+    <?php endforeach; ?>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const slidesContainer = document.querySelector('.slides-container');
+    const slides = document.querySelectorAll('.slide');
+    const indicators = document.querySelectorAll('.indicator');
+    let currentSlide = 0;
+
+    function updateSlider() {
+      slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === currentSlide);
+      });
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentSlide);
+      });
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateSlider();
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      updateSlider();
+    }
+
+    // Navigation buttons
+    document.querySelector('.next').addEventListener('click', nextSlide);
+    document.querySelector('.prev').addEventListener('click', prevSlide);
+
+    // Indicator clicks
+    indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        currentSlide = index;
+        updateSlider();
+      });
+    });
+
+    // Auto advance
+    const autoAdvance = setInterval(nextSlide, 5000);
+
+    // Pause auto-advance on hover
+    document.querySelector('.slider').addEventListener('mouseenter', () => {
+      clearInterval(autoAdvance);
+    });
+
+    // Initial state
+    updateSlider();
+  });
+</script>
