@@ -1,0 +1,235 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Product Tabs Container
+ * Renders tabs for Specs, Description, and Reviews with JS switching
+ * Matches React PDP tabs exactly
+ *
+ * @var \Magento\Catalog\Block\Product\View $block
+ */
+$product = $block->getProduct();
+
+// Get description
+$description = $product->getDescription();
+
+// Get additional attributes
+$attributesBlock = $block->getChildBlock('peakgear.tab.attributes');
+$additionalData = [];
+if ($attributesBlock) {
+    $additionalData = $attributesBlock->getAdditionalData();
+}
+
+// Rating data for reviews tab
+$reviewCount = 0;
+$ratingSummary = 0;
+try {
+    $reviewSummary = $product->getRatingSummary();
+    if ($reviewSummary) {
+        $ratingSummary = $reviewSummary->getRatingSummary() ?: 0;
+        $reviewCount = $reviewSummary->getReviewsCount() ?: 0;
+    }
+} catch (\Exception $e) {}
+$ratingStars = $ratingSummary ? round($ratingSummary / 20, 1) : 0;
+$ratingFull = (int)floor($ratingStars);
+?>
+
+<div class="pdp-tabs-section">
+    <!-- Tab Buttons -->
+    <div class="pdp-tabs-nav">
+        <button class="pdp-tab-btn active" data-tab="specs" type="button">
+            Thông số kỹ thuật
+        </button>
+        <button class="pdp-tab-btn" data-tab="description" type="button">
+            Mô tả chi tiết
+        </button>
+        <button class="pdp-tab-btn" data-tab="reviews" type="button">
+            Đánh giá <?php if ($reviewCount > 0): ?>(<?= (int)$reviewCount ?>)<?php endif; ?>
+        </button>
+    </div>
+
+    <!-- Tab Panels -->
+    <div class="pdp-tabs-content">
+        <!-- Specs Tab -->
+        <div class="pdp-tab-panel active" id="tab-specs">
+            <?php if ($additionalData): ?>
+                <div class="pdp-specs-list">
+                    <?php foreach ($additionalData as $data): ?>
+                        <div class="pdp-spec-row">
+                            <span class="pdp-spec-label"><?= $block->escapeHtml($data['label']) ?></span>
+                            <span class="pdp-spec-value"><?= /* @noEscape */ $data['value'] ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="pdp-tab-empty">Thông số kỹ thuật sẽ được cập nhật sớm.</p>
+            <?php endif; ?>
+        </div>
+
+        <!-- Description Tab -->
+        <div class="pdp-tab-panel" id="tab-description">
+            <div class="pdp-description-content">
+                <?php if ($description): ?>
+                    <?= /* @noEscape */ $description ?>
+                <?php else: ?>
+                    <p><?= $block->escapeHtml($product->getName()) ?></p>
+                <?php endif; ?>
+                <p>
+                    Sản phẩm được thiết kế đặc biệt cho những người đam mê leo núi và hoạt động ngoài trời.
+                    Với chất liệu cao cấp và công nghệ tiên tiến, sản phẩm đảm bảo độ bền, thoải mái và an toàn
+                    trong mọi điều kiện thời tiết và địa hình.
+                </p>
+            </div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div class="pdp-tab-panel" id="tab-reviews">
+            <?php if ($reviewCount > 0): ?>
+            <div class="pdp-reviews-summary">
+                <div class="pdp-reviews-score">
+                    <div class="pdp-reviews-number"><?= $block->escapeHtml($ratingStars) ?></div>
+                    <div class="pdp-reviews-stars">
+                        <?php for ($i = 0; $i < 5; $i++): ?>
+                            <?php if ($i < $ratingFull): ?>
+                                <svg class="pdp-star pdp-star-filled pdp-star-sm" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <?php else: ?>
+                                <svg class="pdp-star pdp-star-empty pdp-star-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </div>
+                    <div class="pdp-reviews-count"><?= (int)$reviewCount ?> đánh giá</div>
+                </div>
+            </div>
+            <?php else: ?>
+            <div class="pdp-reviews-empty">
+                <svg class="pdp-reviews-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <p class="pdp-reviews-empty-title">Chưa có đánh giá</p>
+                <p class="pdp-reviews-empty-desc">Hãy là người đầu tiên đánh giá sản phẩm này</p>
+            </div>
+            <?php endif; ?>
+
+            <!-- Write Review Button -->
+            <div class="pdp-review-write-toggle">
+                <button type="button" class="pdp-review-write-btn" id="toggleReviewForm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                        <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
+                    </svg>
+                    Viết đánh giá
+                </button>
+            </div>
+
+            <!-- Review Form (hidden by default) -->
+            <div class="pdp-review-form-wrapper" id="reviewFormWrapper" style="display: none;">
+                <form class="pdp-review-form" id="reviewForm"
+                      action="<?= $block->escapeUrl($block->getUrl('review/product/post', ['id' => $product->getId()])) ?>"
+                      method="post">
+                    <?= $block->getBlockHtml('formkey') ?>
+                    <input type="hidden" name="product_id" value="<?= (int)$product->getId() ?>"/>
+
+                    <div class="pdp-review-field">
+                        <label for="review-nickname">Tên hiển thị</label>
+                        <input type="text" id="review-nickname" name="nickname" required class="pdp-review-input" placeholder="Nhập tên của bạn"/>
+                    </div>
+
+                    <div class="pdp-review-field">
+                        <label for="review-title">Tiêu đề</label>
+                        <input type="text" id="review-title" name="title" required class="pdp-review-input" placeholder="Tóm tắt đánh giá"/>
+                    </div>
+
+                    <div class="pdp-review-field">
+                        <label>Đánh giá sao</label>
+                        <div class="pdp-review-rating-select" id="reviewRatingSelect">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <button type="button" class="pdp-review-star-btn" data-rating="<?= $i ?>">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                </button>
+                            <?php endfor; ?>
+                            <input type="hidden" name="ratings[1]" id="review-rating-value" value=""/>
+                        </div>
+                    </div>
+
+                    <div class="pdp-review-field">
+                        <label for="review-detail">Nội dung đánh giá</label>
+                        <textarea id="review-detail" name="detail" required class="pdp-review-textarea" rows="4" placeholder="Chia sẻ trải nghiệm của bạn..."></textarea>
+                    </div>
+
+                    <div class="pdp-review-actions">
+                        <button type="button" class="pdp-review-cancel-btn" id="cancelReviewForm">Hủy</button>
+                        <button type="submit" class="pdp-review-submit-btn">Gửi đánh giá</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+require(['jquery'], function($) {
+    'use strict';
+
+    // Tab switching
+    $('.pdp-tab-btn').on('click', function() {
+        var tabId = $(this).data('tab');
+        $('.pdp-tab-btn').removeClass('active');
+        $(this).addClass('active');
+        $('.pdp-tab-panel').removeClass('active');
+        $('#tab-' + tabId).addClass('active');
+    });
+
+    // Review form toggle
+    $('#toggleReviewForm').on('click', function() {
+        $('#reviewFormWrapper').slideDown(300);
+        $(this).closest('.pdp-review-write-toggle').slideUp(200);
+    });
+
+    $('#cancelReviewForm').on('click', function() {
+        $('#reviewFormWrapper').slideUp(300);
+        $('.pdp-review-write-toggle').slideDown(200);
+    });
+
+    // Star rating selection
+    var selectedRating = 0;
+    $('.pdp-review-star-btn').on('click', function() {
+        selectedRating = parseInt($(this).data('rating'));
+        $('#review-rating-value').val(selectedRating);
+        
+        $('.pdp-review-star-btn').each(function() {
+            var starVal = parseInt($(this).data('rating'));
+            var svg = $(this).find('svg');
+            if (starVal <= selectedRating) {
+                svg.attr('fill', 'currentColor');
+                $(this).addClass('active');
+            } else {
+                svg.attr('fill', 'none');
+                $(this).removeClass('active');
+            }
+        });
+    });
+
+    // Star hover effect
+    $('.pdp-review-star-btn').on('mouseenter', function() {
+        var hoverVal = parseInt($(this).data('rating'));
+        $('.pdp-review-star-btn').each(function() {
+            var starVal = parseInt($(this).data('rating'));
+            var svg = $(this).find('svg');
+            if (starVal <= hoverVal) {
+                svg.attr('fill', 'currentColor');
+            } else {
+                svg.attr('fill', 'none');
+            }
+        });
+    });
+
+    $('.pdp-review-rating-select').on('mouseleave', function() {
+        $('.pdp-review-star-btn').each(function() {
+            var starVal = parseInt($(this).data('rating'));
+            var svg = $(this).find('svg');
+            if (starVal <= selectedRating) {
+                svg.attr('fill', 'currentColor');
+            } else {
+                svg.attr('fill', 'none');
+            }
+        });
+    });
+});
+</script>

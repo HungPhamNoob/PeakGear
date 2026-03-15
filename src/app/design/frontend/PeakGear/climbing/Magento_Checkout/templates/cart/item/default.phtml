@@ -1,0 +1,110 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Cart Item
+ *
+ * @var \Magento\Checkout\Block\Cart\Item\Renderer $block
+ */
+$item = $block->getItem();
+$product = $item->getProduct();
+$isVisibleProduct = $product->isVisibleInSiteVisibility();
+$canApplyMsrp = false;
+?>
+
+<div class="cart-item" id="cart-item-<?= (int)$item->getId() ?>">
+    <!-- Product Image -->
+    <div class="cart-item-image">
+        <?php if ($isVisibleProduct): ?>
+            <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>">
+                <img src="<?= $block->escapeUrl($block->getProductThumbnailUrl()) ?>"
+                     alt="<?= $block->escapeHtmlAttr($block->getProductName()) ?>"
+                     loading="lazy"/>
+            </a>
+        <?php else: ?>
+            <img src="<?= $block->escapeUrl($block->getProductThumbnailUrl()) ?>"
+                 alt="<?= $block->escapeHtmlAttr($block->getProductName()) ?>"
+                 loading="lazy"/>
+        <?php endif; ?>
+    </div>
+
+    <!-- Product Details -->
+    <div class="cart-item-details">
+        <h3 class="cart-item-name">
+            <?php if ($isVisibleProduct): ?>
+                <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>">
+                    <?= $block->escapeHtml($block->getProductName()) ?>
+                </a>
+            <?php else: ?>
+                <?= $block->escapeHtml($block->getProductName()) ?>
+            <?php endif; ?>
+        </h3>
+        <p class="cart-item-sku">SKU: <?= $block->escapeHtml($item->getSku()) ?></p>
+        <?php if ($options = $block->getOptionList()): ?>
+            <div class="cart-item-options">
+                <?php foreach ($options as $option): ?>
+                    <span class="cart-item-option">
+                        <?= $block->escapeHtml($option['label']) ?>: <?= $block->escapeHtml($option['value']) ?>
+                    </span>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Price -->
+    <div class="cart-item-price">
+        <?= $block->getUnitPriceHtml($item) ?>
+    </div>
+
+    <!-- Quantity -->
+    <div class="cart-item-qty">
+        <div class="qty-controls">
+            <button type="button" class="qty-btn qty-decrease" data-item-id="<?= (int)$item->getId() ?>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <input type="number"
+                   name="cart[<?= (int)$item->getId() ?>][qty]"
+                   id="cart-<?= (int)$item->getId() ?>-qty"
+                   value="<?= $block->escapeHtmlAttr($block->getQty()) ?>"
+                   class="qty-input"
+                   min="0"
+                   data-validate="{required:true,'validate-item-quantity':{'minAllowed':0}}"/>
+            <button type="button" class="qty-btn qty-increase" data-item-id="<?= (int)$item->getId() ?>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Subtotal -->
+    <div class="cart-item-subtotal">
+        <?= $block->getRowTotalHtml($item) ?>
+    </div>
+
+    <!-- Remove -->
+    <div class="cart-item-remove">
+        <a href="<?= $block->escapeUrl($block->getDeleteUrl()) ?>"
+           class="action-btn cart-item-delete"
+           title="<?= $block->escapeHtmlAttr(__('Xóa')) ?>">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+        </a>
+    </div>
+</div>
+
+<script>
+require(['jquery'], function($) {
+    'use strict';
+    var itemId = <?= (int)$item->getId() ?>;
+    var qtyInput = $('#cart-' + itemId + '-qty');
+
+    $('[data-item-id="' + itemId + '"].qty-decrease').on('click', function() {
+        var val = parseInt(qtyInput.val()) || 1;
+        if (val > 1) qtyInput.val(val - 1);
+    });
+
+    $('[data-item-id="' + itemId + '"].qty-increase').on('click', function() {
+        var val = parseInt(qtyInput.val()) || 1;
+        qtyInput.val(val + 1);
+    });
+});
+</script>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <vendor_currency_rate>
+            <general>
+                <enabled>1</enabled>
+                <xml_url>https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx?b=68</xml_url>
+                <cache_ttl>600</cache_ttl>
+                <currencies>USD,EUR,JPY,CNY,GBP,AUD,KRW,SGD</currencies>
+            </general>
+        </vendor_currency_rate>
+    </default>
+</config>

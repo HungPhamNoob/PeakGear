@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="vendor" translate="label" sortOrder="200">
+            <label>PeakGear Custom</label>
+        </tab>
+        <section id="vendor_weather" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Weather Module</label>
+            <tab>vendor</tab>
+            <resource>Magento_Config::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Settings</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_key" translate="label" type="obscure" sortOrder="20" showInDefault="1">
+                    <label>OpenWeatherMap API Key</label>
+                    <comment>Lấy tại: openweathermap.org/api</comment>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="cities" translate="label" type="text" sortOrder="30" showInDefault="1">
+                    <label>Cities (comma-separated)</label>
+                    <comment>VD: Sapa,Da Lat,Ha Noi,Ho Chi Minh City</comment>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="units" translate="label" type="text" sortOrder="40" showInDefault="1">
+                    <label>Units</label>
+                    <comment>Supported values: metric, imperial, standard</comment>
+                </field>
+                <field id="cache_ttl" translate="label" type="text" sortOrder="50" showInDefault="1">
+                    <label>Cache TTL (seconds)</label>
+                    <comment>Default: 600 (10 minutes)</comment>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+            </group>
+        </section>
+        <section id="vendor_currency_rate" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Currency Rate Module</label>
+            <tab>vendor</tab>
+            <resource>Magento_Config::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Settings</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="xml_url" translate="label" type="text" sortOrder="20" showInDefault="1">
+                    <label>Exchange Feed URL</label>
+                    <comment>Default: Vietcombank XML endpoint</comment>
+                    <validate>required-entry validate-url</validate>
+                </field>
+                <field id="cache_ttl" translate="label" type="text" sortOrder="30" showInDefault="1">
+                    <label>Cache TTL (seconds)</label>
+                    <comment>Default: 600 (10 minutes)</comment>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+                <field id="currencies" translate="label" type="text" sortOrder="40" showInDefault="1">
+                    <label>Tracked Currency Codes</label>
+                    <comment>VD: USD,EUR,JPY,CNY,GBP,AUD,KRW,SGD</comment>
+                    <validate>required-entry</validate>
+                </field>
+            </group>
+        </section>
+        <section id="vendor_news_rss" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>News RSS Module</label>
+            <tab>vendor</tab>
+            <resource>Magento_Config::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Settings</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="rss_url" translate="label" type="text" sortOrder="20" showInDefault="1">
+                    <label>RSS URL</label>
+                    <comment>Default: VNExpress Du lịch - Điểm đến (hỗ trợ cả RSS/XML hoặc HTML listing)</comment>
+                    <validate>required-entry validate-url</validate>
+                </field>
+                <field id="max_items" translate="label" type="text" sortOrder="30" showInDefault="1">
+                    <label>Max Items</label>
+                    <comment>Default: 20</comment>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+                <field id="cache_ttl" translate="label" type="text" sortOrder="40" showInDefault="1">
+                    <label>Cache TTL (seconds)</label>
+                    <comment>Default: 600 (10 minutes)</comment>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

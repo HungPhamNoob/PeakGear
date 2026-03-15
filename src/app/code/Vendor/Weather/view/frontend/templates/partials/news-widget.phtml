@@ -1,0 +1,206 @@
+<?php
+/** @var \Vendor\Weather\Block\Weather $block */
+$cities = $block->getNewsCitiesWeather(12);
+?>
+
+<section class="news-weather-section">
+    <div class="news-widget-head">
+        <h2>Thời tiết khu vực trekking</h2>
+        <p>Dữ liệu từ OpenWeatherMap</p>
+    </div>
+    <div class="news-weather-grid">
+        <?php foreach ($cities as $weather): ?>
+        <article class="news-weather-card js-news-city-card"
+                 data-city="<?= $block->escapeHtmlAttr((string)$weather['city_name']) ?>"
+                 tabindex="0"
+                 role="button"
+                 aria-label="Xem biểu đồ 7 ngày cho <?= $block->escapeHtmlAttr((string)$weather['city_name']) ?>">
+            <div class="news-weather-city"><?= $block->escapeHtml((string)$weather['city_name']) ?></div>
+            <div class="news-weather-main">
+                <img src="<?= $block->escapeUrl($block->getIconUrl((string)$weather['icon_code'])) ?>"
+                     alt="<?= $block->escapeHtmlAttr((string)$weather['description']) ?>"
+                     loading="lazy"/>
+                <strong><?= number_format((float)$weather['temperature'], 1) ?>°C</strong>
+            </div>
+            <p class="news-weather-desc"><?= $block->escapeHtml((string)$weather['description']) ?></p>
+            <div class="news-weather-meta">
+                <span>Độ ẩm: <?= (int)$weather['humidity'] ?>%</span>
+                <span>Gió: <?= number_format((float)$weather['wind_speed'], 1) ?> m/s</span>
+            </div>
+        </article>
+        <?php endforeach; ?>
+    </div>
+
+    <section class="news-weather-chart" id="newsWeatherChart" hidden>
+        <div class="news-weather-chart-head">
+            <h3 id="newsWeatherChartTitle">Biểu đồ 7 ngày</h3>
+            <p id="newsWeatherChartSub">Chọn một thành phố để xem dự báo chi tiết.</p>
+        </div>
+        <div class="news-weather-chart-canvas">
+            <svg id="newsWeatherChartSvg" viewBox="0 0 760 290" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="news-weather-chart-meta" id="newsWeatherChartMeta"></div>
+    </section>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var cards = document.querySelectorAll('.js-news-city-card');
+    var chartWrap = document.getElementById('newsWeatherChart');
+    var chartSvg = document.getElementById('newsWeatherChartSvg');
+    var chartTitle = document.getElementById('newsWeatherChartTitle');
+    var chartSub = document.getElementById('newsWeatherChartSub');
+    var chartMeta = document.getElementById('newsWeatherChartMeta');
+    var endpoint = '<?= $block->escapeJs($block->getUrl('weather/index/weekly')) ?>';
+
+    if (!cards.length || !chartWrap || !chartSvg || !chartTitle || !chartMeta || !chartSub) {
+        return;
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatShortDate(dateText) {
+        var date = new Date(dateText);
+        if (Number.isNaN(date.getTime())) {
+            return dateText;
+        }
+        var day = String(date.getDate()).padStart(2, '0');
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        return day + '/' + month;
+    }
+
+    function drawChart(days) {
+        var width = 760;
+        var height = 290;
+        var left = 54;
+        var right = 24;
+        var top = 24;
+        var bottom = 58;
+        var innerW = width - left - right;
+        var innerH = height - top - bottom;
+        var step = days.length > 1 ? innerW / (days.length - 1) : innerW;
+
+        var minTemp = Math.min.apply(null, days.map(function (item) { return Number(item.min); }));
+        var maxTemp = Math.max.apply(null, days.map(function (item) { return Number(item.max); }));
+        minTemp = Math.floor(minTemp - 2);
+        maxTemp = Math.ceil(maxTemp + 2);
+        if (maxTemp === minTemp) {
+            maxTemp += 1;
+        }
+
+        function yFromTemp(temp) {
+            var ratio = (Number(temp) - minTemp) / (maxTemp - minTemp);
+            return top + innerH - (ratio * innerH);
+        }
+
+        var points = days.map(function (item, index) {
+            var x = left + (step * index);
+            return {
+                x: x,
+                y: yFromTemp(item.avg),
+                date: formatShortDate(item.date),
+                avg: Number(item.avg).toFixed(1),
+                min: Number(item.min).toFixed(1),
+                max: Number(item.max).toFixed(1),
+                precipitation: Number(item.precipitation).toFixed(1)
+            };
+        });
+
+        var line = points.map(function (p) { return p.x + ',' + p.y; }).join(' ');
+
+        var horizontalGrid = '';
+        var gridCount = 4;
+        for (var i = 0; i <= gridCount; i++) {
+            var gy = top + ((innerH / gridCount) * i);
+            var labelTemp = (maxTemp - ((maxTemp - minTemp) / gridCount) * i).toFixed(0);
+            horizontalGrid += '<line x1="' + left + '" y1="' + gy + '" x2="' + (width - right) + '" y2="' + gy + '" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>';
+            horizontalGrid += '<text x="' + (left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" fill="rgba(255,255,255,0.65)" font-size="11">' + labelTemp + '°</text>';
+        }
+
+        var dots = points.map(function (p) {
+            return '<g>' +
+                '<circle cx="' + p.x + '" cy="' + p.y + '" r="4.5" fill="#facc15"/>' +
+                '<text x="' + p.x + '" y="' + (p.y - 10) + '" text-anchor="middle" fill="#fef3c7" font-size="11">' + p.avg + '°</text>' +
+                '<text x="' + p.x + '" y="' + (height - 24) + '" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-size="11">' + p.date + '</text>' +
+                '</g>';
+        }).join('');
+
+        chartSvg.innerHTML =
+            '<rect x="0" y="0" width="' + width + '" height="' + height + '" fill="transparent"></rect>' +
+            horizontalGrid +
+            '<polyline points="' + line + '" fill="none" stroke="#facc15" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>' +
+            dots;
+    }
+
+    function drawMeta(days) {
+        chartMeta.innerHTML = days.map(function (item) {
+            return '<div class="news-weather-day">' +
+                '<strong>' + escapeHtml(formatShortDate(item.date)) + '</strong>' +
+                '<span>' + escapeHtml(Number(item.min).toFixed(1) + '°C - ' + Number(item.max).toFixed(1) + '°C') + '</span>' +
+                '<span>' + escapeHtml((item.label || 'Dự báo') + ' | Mưa: ' + Number(item.precipitation).toFixed(1) + ' mm') + '</span>' +
+            '</div>';
+        }).join('');
+    }
+
+    function setActiveCard(city) {
+        cards.forEach(function (card) {
+            var active = card.getAttribute('data-city') === city;
+            if (active) {
+                card.classList.add('is-active');
+            } else {
+                card.classList.remove('is-active');
+            }
+        });
+    }
+
+    function loadWeekly(city) {
+        chartWrap.hidden = false;
+        chartTitle.textContent = 'Biểu đồ thời tiết 7 ngày - ' + city;
+        chartSub.textContent = 'Đang tải dữ liệu dự báo...';
+        chartSvg.innerHTML = '';
+        chartMeta.innerHTML = '';
+        setActiveCard(city);
+
+        window.fetch(endpoint + '?city=' + encodeURIComponent(city), {
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('Load weekly weather failed');
+            }
+            return response.json();
+        }).then(function (payload) {
+            if (!payload || !payload.success || !Array.isArray(payload.days) || !payload.days.length) {
+                throw new Error('No weekly payload');
+            }
+            drawChart(payload.days);
+            drawMeta(payload.days);
+            chartSub.textContent = 'Nguồn: ' + (payload.source === 'open-meteo' ? 'Open-Meteo' : 'PeakGear fallback');
+        }).catch(function () {
+            chartSub.textContent = 'Không thể tải biểu đồ dự báo cho thành phố này.';
+        });
+    }
+
+    cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+            loadWeekly(card.getAttribute('data-city') || '');
+        });
+
+        card.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                loadWeekly(card.getAttribute('data-city') || '');
+            }
+        });
+    });
+});
+</script>

@@ -1,0 +1,21 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Cart Totals
+ *
+ * @var \Magento\Checkout\Block\Cart\Totals $block
+ */
+$totals = $block->getTotals();
+?>
+
+<div class="cart-totals-wrapper">
+    <h3 class="cart-totals-title">Tổng Đơn Hàng</h3>
+
+    <div class="cart-totals-rows">
+        <?php foreach ($totals as $total): ?>
+            <div class="cart-totals-row <?= $total->getCode() === 'grand_total' ? 'cart-totals-grand' : '' ?>">
+                <span class="cart-totals-label"><?= $block->escapeHtml($total->getTitle()) ?></span>
+                <span class="cart-totals-value"><?= /* @noEscape */ $block->formatPrice($total->getValue()) ?></span>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>

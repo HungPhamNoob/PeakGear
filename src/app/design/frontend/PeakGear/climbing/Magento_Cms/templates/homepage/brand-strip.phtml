@@ -1,0 +1,58 @@
+<?php
+/**
+ * Homepage Brand Strip
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+$brands = [
+    ['name' => 'Adidas', 'file' => 'adidas.svg'],
+    ['name' => 'Puma', 'file' => 'puma.svg'],
+    ['name' => 'Nike', 'file' => 'nike.svg'],
+    ['name' => 'The North Face', 'file' => 'thenorthface.svg'],
+    ['name' => 'Reebok', 'file' => 'reebok.svg'],
+    ['name' => 'Under Armour', 'file' => 'underarmour.svg'],
+    ['name' => 'New Balance', 'file' => 'newbalance.svg'],
+    ['name' => 'FILA', 'file' => 'fila.svg'],
+    ['name' => 'Apple', 'file' => 'apple.svg'],
+    ['name' => 'Google', 'file' => 'google.svg'],
+    ['name' => 'Samsung', 'file' => 'samsung.svg'],
+    ['name' => 'Sony', 'file' => 'sony.svg'],
+    ['name' => 'Intel', 'file' => 'intel.svg'],
+    ['name' => 'AMD', 'file' => 'amd.svg'],
+    ['name' => 'NVIDIA', 'file' => 'nvidia.svg'],
+    ['name' => 'Lenovo', 'file' => 'lenovo.svg'],
+    ['name' => 'Dell', 'file' => 'dell.svg'],
+    ['name' => 'HP', 'file' => 'hp.svg'],
+    ['name' => 'Toyota', 'file' => 'toyota.svg'],
+    ['name' => 'BMW', 'file' => 'bmw.svg'],
+    ['name' => 'Audi', 'file' => 'audi.svg'],
+    ['name' => 'Porsche', 'file' => 'porsche.svg'],
+    ['name' => 'Ferrari', 'file' => 'ferrari.svg'],
+    ['name' => 'Tesla', 'file' => 'tesla.svg'],
+    ['name' => 'Honda', 'file' => 'honda.svg'],
+    ['name' => 'Hyundai', 'file' => 'hyundai.svg'],
+    ['name' => 'Kia', 'file' => 'kia.svg'],
+    ['name' => 'Visa', 'file' => 'visa.svg'],
+    ['name' => 'Mastercard', 'file' => 'mastercard.svg'],
+    ['name' => 'PayPal', 'file' => 'paypal.svg'],
+];
+?>
+
+<section class="home-brand-section">
+    <div class="home-brand-container">
+        <h3 class="home-brand-title">Thương Hiệu Đồng Hành</h3>
+        <div class="home-brand-grid">
+            <?php foreach ($brands as $brand): ?>
+            <div class="home-brand-item">
+                <img
+                    src="<?= $block->escapeUrl($block->getViewFileUrl('images/brands/' . $brand['file'])) ?>"
+                    alt="<?= $block->escapeHtmlAttr($brand['name']) ?>"
+                    class="home-brand-logo"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>

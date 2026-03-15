@@ -1,0 +1,91 @@
+<?php
+/** @var \Vendor\Weather\Block\Weather $block */
+$cities = $block->getAllCitiesWeather();
+?>
+<div class="page-main">
+<div class="page-title-wrapper">
+    <h1 class="page-title">🏔️ Thời tiết khu vực leo núi</h1>
+    <p class="page-subtitle">Thông tin thời tiết thực tế tại các địa điểm trekking - cập nhật mỗi 30 phút</p>
+</div>
+
+<style>
+.weather-page { padding: 24px 0; }
+.weather-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 24px; }
+.weather-card {
+    background: linear-gradient(135deg, #1a3a2a 0%, #2d5a3d 60%, #3d7a55 100%);
+    border-radius: 16px; padding: 24px; color: #fff;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform .3s, box-shadow .3s;
+}
+.weather-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.weather-card.cold { background: linear-gradient(135deg, #0a2a4a 0%, #1a4a7a 100%); }
+.weather-card.hot  { background: linear-gradient(135deg, #4a2000 0%, #8a4010 100%); }
+.city-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+.weather-main { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+.temperature { font-size: 3rem; font-weight: 800; }
+.weather-icon img { width: 64px; height: 64px; }
+.weather-desc { font-size: 0.95rem; opacity: .9; text-transform: capitalize; }
+.weather-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; font-size: 0.85rem; }
+.weather-detail-item { background: rgba(255,255,255,.1); border-radius: 8px; padding: 8px 10px; }
+.detail-label { opacity: .75; display: block; font-size: .75rem; }
+.advice-box { margin-top: 14px; padding: 10px 14px; background: rgba(255,255,255,.15); border-radius: 10px; font-size: .875rem; }
+.weather-header { background: linear-gradient(135deg, #1a4a2a, #2d6a3d); color: #fff; border-radius: 12px; padding: 20px 28px; margin-bottom: 8px; }
+.weather-update-time { text-align: right; font-size: .8rem; color: #666; margin-top: 16px; }
+</style>
+
+<div class="weather-page">
+    <div class="weather-header">
+        <p>⛰️ PeakGear luôn cập nhật thời tiết mới nhất để bạn lên kế hoạch trekking an toàn và thú vị nhất!</p>
+    </div>
+
+    <div class="weather-grid">
+        <?php foreach ($cities as $cityKey => $w): ?>
+        <?php
+            $temp = (float)$w['temperature'];
+            $cardClass = $temp < 15 ? 'cold' : ($temp > 30 ? 'hot' : '');
+        ?>
+        <div class="weather-card <?= $block->escapeHtmlAttr($cardClass) ?>">
+            <div class="city-name">📍 <?= $block->escapeHtml($w['city_name'] ?: $cityKey) ?></div>
+
+            <div class="weather-main">
+                <div class="weather-icon">
+                    <img src="<?= $block->escapeUrl($block->getIconUrl($w['icon_code'])) ?>"
+                         alt="<?= $block->escapeHtmlAttr($w['description']) ?>"
+                         onerror="this.style.fontSize='3rem'; this.src=''; this.alt='🌡️'" />
+                </div>
+                <div>
+                    <div class="temperature"><?= number_format($temp, 1) ?>°C</div>
+                    <div class="weather-desc"><?= $block->escapeHtml($w['description']) ?></div>
+                </div>
+            </div>
+
+            <div class="weather-details">
+                <div class="weather-detail-item">
+                    <span class="detail-label">💧 Độ ẩm</span>
+                    <strong><?= (int)$w['humidity'] ?>%</strong>
+                </div>
+                <div class="weather-detail-item">
+                    <span class="detail-label">🌡️ Cảm giác như</span>
+                    <strong><?= number_format((float)$w['feels_like'], 1) ?>°C</strong>
+                </div>
+                <div class="weather-detail-item">
+                    <span class="detail-label">💨 Gió</span>
+                    <strong><?= number_format((float)$w['wind_speed'], 1) ?> m/s</strong>
+                </div>
+                <div class="weather-detail-item">
+                    <span class="detail-label">🌬️ Cấp gió</span>
+                    <strong><?= $block->escapeHtml($block->getWindSpeedLabel((float)$w['wind_speed'])) ?></strong>
+                </div>
+            </div>
+
+            <div class="advice-box">
+                <?= $block->escapeHtml($block->getTrekkingAdvice($temp, (int)$w['humidity'])) ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+
+    <p class="weather-update-time">
+        🕐 Dữ liệu cập nhật tự động mỗi 30 phút | Nguồn: OpenWeatherMap API
+    </p>
+</div>
+</div>

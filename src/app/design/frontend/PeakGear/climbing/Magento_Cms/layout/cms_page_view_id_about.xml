@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * PeakGear Climbing Theme - About Page Layout
+ *
+ * CMS Page layout handle: set URL key "about" when creating the CMS page in admin.
+ * This layout will be automatically applied.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column">
+    <head>
+        <title>Về PeakGear - Đồng Hành Cùng Đỉnh Cao</title>
+        <meta name="description" content="Tìm hiểu về PeakGear - thương hiệu trang bị leo núi và outdoor hàng đầu Việt Nam từ 2011"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <!-- Remove default CMS content block, we use full custom template -->
+            <block class="Magento\Framework\View\Element\Template"
+                   name="about.page"
+                   template="Magento_Cms::about/page.phtml"
+                   before="-"/>
+        </referenceContainer>
+        <referenceBlock name="cms_page" remove="true"/>
+        <referenceBlock name="page.main.title" remove="true"/>
+    </body>
+</page>
