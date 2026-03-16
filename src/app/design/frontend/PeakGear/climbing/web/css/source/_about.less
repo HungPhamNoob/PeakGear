@@ -1,0 +1,466 @@
+// PeakGear - About Page
+
+// ==================================================
+// ABOUT PAGE
+// Matches React app/about/page.tsx
+// ==================================================
+
+.about-page {
+    background: @peakgear-dark;
+}
+
+// Hero
+.about-hero {
+    position: relative;
+    padding: 8rem 1.5rem 5rem;
+
+    @media (min-width: 768px) {
+        padding: 8rem 3rem 5rem;
+    }
+}
+
+.about-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, #1a1a2e, @peakgear-dark);
+}
+
+.about-hero-overlay {
+    position: absolute;
+    inset: 0;
+}
+
+.about-hero-content {
+    position: relative;
+    max-width: 80rem;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-hero-title {
+    font-size: 2.25rem;
+    font-family: @font-serif;
+    color: @peakgear-text;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 768px) {
+        font-size: 3.75rem;
+    }
+}
+
+.about-hero-desc {
+    font-size: 1.25rem;
+    color: fade(@peakgear-text, 70%);
+    max-width: 48rem;
+    margin: 0 auto;
+}
+
+// Story Section (2-column)
+.about-story {
+    padding: 5rem 1.5rem;
+
+    @media (min-width: 768px) {
+        padding: 5rem 3rem;
+    }
+}
+
+.about-story-grid {
+    max-width: 80rem;
+    margin: 0 auto;
+    display: grid;
+    gap: 4rem;
+    align-items: center;
+
+    @media (min-width: 1024px) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.about-story-content {
+    // Container for text side
+}
+
+.about-story-badge {
+    font-size: 0.875rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: @peakgear-primary;
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.about-story-title {
+    font-size: 1.875rem;
+    font-family: @font-serif;
+    color: @peakgear-text;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 768px) {
+        font-size: 2.25rem;
+    }
+}
+
+.about-story-text {
+    p {
+        color: fade(@peakgear-text, 70%);
+        line-height: 1.75;
+        margin-bottom: 1rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.about-story-image {
+    position: relative;
+}
+
+.about-story-image-box {
+    aspect-ratio: 1;
+    background: linear-gradient(to bottom right, #1e293b, #0f172a);
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+.about-story-image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about-story-mountain-icon {
+    width: 8rem;
+    height: 8rem;
+    color: fade(@peakgear-primary, 30%);
+}
+
+.about-story-decorative {
+    position: absolute;
+    bottom: -1.5rem;
+    right: -1.5rem;
+    width: 12rem;
+    height: 12rem;
+    background: fade(@peakgear-primary, 10%);
+    border-radius: 1rem;
+    z-index: -1;
+}
+
+.about-gallery {
+    padding: 0 1.5rem 5rem;
+
+    @media (min-width: 768px) {
+        padding: 0 3rem 5rem;
+    }
+}
+
+.about-gallery-grid {
+    max-width: 80rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+.about-gallery-item {
+    border: 1px solid fade(@peakgear-text, 12%);
+    border-radius: 0.875rem;
+    overflow: hidden;
+    min-height: 220px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+}
+
+.about-gallery-copy {
+    border: 1px solid fade(@peakgear-text, 12%);
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, fade(@peakgear-text, 5%), fade(@peakgear-text, 1%));
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-height: 220px;
+
+    h3 {
+        margin: 0;
+        color: @peakgear-text;
+        font-family: @font-serif;
+        font-size: 1.35rem;
+    }
+
+    p {
+        margin: 0;
+        color: fade(@peakgear-text, 76%);
+        line-height: 1.7;
+    }
+}
+
+// Stats Section
+.about-stats {
+    padding: 5rem 1.5rem;
+    background: linear-gradient(to bottom, #1a1a2e, @peakgear-dark);
+
+    @media (min-width: 768px) {
+        padding: 5rem 3rem;
+    }
+}
+
+.about-stats-grid {
+    max-width: 80rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.about-stat {
+    text-align: center;
+}
+
+.about-stat-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background: fade(@peakgear-primary, 10%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        width: 2rem;
+        height: 2rem;
+        color: @peakgear-primary;
+        stroke: @peakgear-primary;
+    }
+}
+
+.about-stat-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: @peakgear-text;
+    margin-bottom: 0.5rem;
+
+    @media (min-width: 768px) {
+        font-size: 2.25rem;
+    }
+}
+
+.about-stat-label {
+    font-size: 0.875rem;
+    color: fade(@peakgear-text, 60%);
+}
+
+// Values Section
+.about-values {
+    padding: 5rem 1.5rem;
+
+    @media (min-width: 768px) {
+        padding: 5rem 3rem;
+    }
+}
+
+.about-values-container {
+    max-width: 80rem;
+    margin: 0 auto;
+}
+
+.about-values-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.about-values-badge {
+    font-size: 0.875rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: @peakgear-primary;
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.about-values-title {
+    font-size: 1.875rem;
+    font-family: @font-serif;
+    color: @peakgear-text;
+
+    @media (min-width: 768px) {
+        font-size: 2.25rem;
+    }
+}
+
+.about-values-grid {
+    display: grid;
+    gap: 2rem;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.about-value-card {
+    padding: 2rem;
+    background: linear-gradient(to bottom, fade(#ffffff, 5%), transparent);
+    border: 1px solid fade(#ffffff, 10%);
+    border-radius: 0.75rem;
+    transition: border-color 0.3s ease;
+
+    &:hover {
+        border-color: fade(@peakgear-primary, 30%);
+    }
+}
+
+.about-value-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: @peakgear-text;
+    margin-bottom: 1rem;
+}
+
+.about-value-desc {
+    color: fade(@peakgear-text, 60%);
+    line-height: 1.75;
+}
+
+.about-policies {
+    padding: 0 1.5rem 5rem;
+
+    @media (min-width: 768px) {
+        padding: 0 3rem 5rem;
+    }
+}
+
+.about-policies-container {
+    max-width: 80rem;
+    margin: 0 auto;
+}
+
+.about-policies-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.about-policy-card {
+    background: linear-gradient(180deg, fade(@peakgear-text, 4%), transparent);
+    border: 1px solid fade(@peakgear-text, 12%);
+    border-radius: 0.875rem;
+    padding: 1.25rem;
+
+    h4 {
+        margin: 0 0 0.65rem;
+        color: @peakgear-text;
+        font-size: 1rem;
+    }
+
+    p {
+        margin: 0;
+        color: fade(@peakgear-text, 72%);
+        line-height: 1.65;
+    }
+}
+
+// CTA Section
+.about-cta {
+    padding: 5rem 1.5rem;
+
+    @media (min-width: 768px) {
+        padding: 5rem 3rem;
+    }
+}
+
+.about-cta-container {
+    max-width: 56rem;
+    margin: 0 auto;
+    text-align: center;
+    background: linear-gradient(to right, fade(@peakgear-primary, 20%), fade(#f97316, 20%));
+    border-radius: 1rem;
+    padding: 3rem;
+    border: 1px solid fade(@peakgear-primary, 20%);
+}
+
+.about-cta-title {
+    font-size: 1.875rem;
+    font-family: @font-serif;
+    color: @peakgear-text;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 768px) {
+        font-size: 2.25rem;
+    }
+}
+
+.about-cta-desc {
+    color: fade(@peakgear-text, 70%);
+    margin-bottom: 2rem;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+// Fix for Magento's breadcrumbs on other pages
+.breadcrumbs {
+    background: transparent;
+    padding: 1rem 1.5rem;
+    margin: 0;
+
+    @media (min-width: 768px) {
+        padding: 1rem 3rem;
+    }
+
+    .items {
+        list-style: none;
+        display: flex;
+        gap: 0.5rem;
+        padding: 0;
+        margin: 0;
+    }
+
+    .item {
+        color: fade(@peakgear-text, 60%);
+        font-size: 0.875rem;
+
+        a {
+            color: fade(@peakgear-text, 60%) !important;
+
+            &:hover {
+                color: @peakgear-primary-light !important;
+            }
+        }
+
+        &:not(:last-child)::after {
+            content: '>';
+            margin-left: 0.5rem;
+            color: fade(@peakgear-text, 40%);
+        }
+    }
+}
+

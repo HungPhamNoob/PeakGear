@@ -1,0 +1,122 @@
+// PeakGear - Toast Notifications
+
+// ==================================================
+// TOAST NOTIFICATIONS (slide-in from right)
+// ==================================================
+
+@keyframes toast-slide-in {
+    0%   { transform: translateX(120%); opacity: 0; }
+    100% { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes toast-slide-out {
+    0%   { transform: translateX(0);    opacity: 1; }
+    100% { transform: translateX(120%); opacity: 0; }
+}
+
+.page.messages {
+    position: fixed;
+    top: 6.5rem;
+    right: 1rem;
+    left: auto;
+    width: auto;
+    max-width: 26rem;
+    min-width: 18rem;
+    z-index: 40;
+    pointer-events: none;
+
+    .messages {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .message {
+        pointer-events: auto;
+        position: relative;
+        padding: 0.875rem 2.5rem 0.875rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        font-family: @font-sans;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                    0 0 0 1px rgba(255, 255, 255, 0.05);
+        animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        backdrop-filter: blur(12px);
+        cursor: pointer;
+
+        &::before {
+            display: none; // Remove default Magento icon
+        }
+
+        > div {
+            color: @peakgear-text;
+
+            a {
+                color: @peakgear-primary-light;
+                font-weight: 600;
+                text-decoration: underline;
+                text-decoration-color: fade(@peakgear-primary-light, 40%);
+                text-underline-offset: 2px;
+
+                &:hover {
+                    color: @peakgear-primary;
+                }
+            }
+        }
+
+        // Close button
+        &::after {
+            content: '\00d7';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            font-size: 1.25rem;
+            line-height: 1;
+            color: fade(@peakgear-text, 60%);
+            cursor: pointer;
+        }
+
+        &:hover::after {
+            color: @peakgear-text;
+        }
+    }
+
+    // Success toast (add-to-cart, etc.)
+    .message-success {
+        background: linear-gradient(135deg,
+            fade(@peakgear-green, 15%),
+            fade(@peakgear-dark-secondary, 95%));
+        border-left: 3px solid @peakgear-green;
+    }
+
+    // Error toast
+    .message-error {
+        background: linear-gradient(135deg,
+            fade(@peakgear-red, 15%),
+            fade(@peakgear-dark-secondary, 95%));
+        border-left: 3px solid @peakgear-red;
+    }
+
+    // Notice / warning toast
+    .message-notice,
+    .message-warning {
+        background: linear-gradient(135deg,
+            fade(@peakgear-primary, 15%),
+            fade(@peakgear-dark-secondary, 95%));
+        border-left: 3px solid @peakgear-primary;
+    }
+
+    // Slide-out class (added by JS before removal)
+    .message.toast-dismiss {
+        animation: toast-slide-out 0.35s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+    }
+
+    @media (max-width: 767px) {
+        top: 5.75rem;
+        right: 0.75rem;
+        max-width: calc(100vw - 1.5rem);
+        min-width: 0;
+    }
+}
+

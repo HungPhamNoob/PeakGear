@@ -9,8 +9,7 @@ declare(strict_types=1);
 namespace PeakGear\Catalog\Block;
 
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\View\Element\Template;
@@ -20,14 +19,9 @@ use Magento\Store\Model\StoreManagerInterface;
 class CategoryList extends Template
 {
     /**
-     * @var CategoryCollectionFactory
+    * @var CategoryRepositoryInterface
      */
-    private $categoryCollectionFactory;
-
-    /**
-     * @var ProductCollectionFactory
-     */
-    private $productCollectionFactory;
+    private $categoryRepository;
 
     /**
      * @var Visibility
@@ -51,22 +45,19 @@ class CategoryList extends Template
 
     /**
      * @param Context $context
-     * @param CategoryCollectionFactory $categoryCollectionFactory
-     * @param ProductCollectionFactory $productCollectionFactory
+     * @param CategoryRepositoryInterface $categoryRepository
      * @param Visibility $productVisibility
      * @param StoreManagerInterface $storeManager
      * @param array $data
      */
     public function __construct(
         Context $context,
-        CategoryCollectionFactory $categoryCollectionFactory,
-        ProductCollectionFactory $productCollectionFactory,
+        CategoryRepositoryInterface $categoryRepository,
         Visibility $productVisibility,
         StoreManagerInterface $storeManager,
         array $data = []
     ) {
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
-        $this->productCollectionFactory = $productCollectionFactory;
+        $this->categoryRepository = $categoryRepository;
         $this->productVisibility = $productVisibility;
         $this->storeManager = $storeManager;
         parent::__construct($context, $data);
@@ -85,15 +76,16 @@ class CategoryList extends Template
         }
 
         // Use the default catalog root category
+        /** @var \Magento\Store\Model\Store $store */
         $store = $this->storeManager->getStore();
         $rootCategoryId = (int)$store->getRootCategoryId();
 
-        // Get top-level categories (direct children of root)
-        $collection = $this->categoryCollectionFactory->create();
-        $collection->addAttributeToSelect(['name', 'url_key', 'url_path', 'description', 'image', 'category_icon', 'name_en', 'is_active'])
-            ->addFieldToFilter('parent_id', $rootCategoryId)
-            ->addFieldToFilter('is_active', 1)
-            ->addFieldToFilter('include_in_menu', 1)
+        /** @var Category $rootCategory */
+        $rootCategory = $this->categoryRepository->get($rootCategoryId, $store->getId());
+        $collection = $rootCategory->getChildrenCategories();
+        $collection->addAttributeToSelect(['name', 'url_key', 'url_path', 'description', 'image', 'category_icon', 'name_en', 'is_active', 'include_in_menu'])
+            ->addAttributeToFilter('is_active', 1)
+            ->addAttributeToFilter('include_in_menu', 1)
             ->setOrder('position', 'ASC');
 
         $categories = [];
@@ -137,10 +129,9 @@ class CategoryList extends Template
      */
     private function getSubcategories(Category $parentCategory): array
     {
-        $collection = $this->categoryCollectionFactory->create();
+        $collection = $parentCategory->getChildrenCategories();
         $collection->addAttributeToSelect(['name', 'url_key', 'url_path', 'is_active'])
-            ->addFieldToFilter('parent_id', $parentCategory->getId())
-            ->addFieldToFilter('is_active', 1)
+            ->addAttributeToFilter('is_active', 1)
             ->setOrder('position', 'ASC');
 
         $subcategories = [];
@@ -166,9 +157,9 @@ class CategoryList extends Template
     private function getProductCount(Category $category): int
     {
         try {
-            $productCollection = $this->productCollectionFactory->create();
-            $productCollection->addCategoryFilter($category);
-            $productCollection->setVisibility($this->productVisibility->getVisibleInSiteIds());
+            $productCollection = $category->getProductCollection();
+            /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection */
+            $productCollection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
             return $productCollection->getSize();
         } catch (\Exception $e) {
             return 0;

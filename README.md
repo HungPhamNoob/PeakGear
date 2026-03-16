@@ -136,6 +136,18 @@ docker compose exec php php /var/www/html/bin/magento setup:static-content:deplo
 docker compose exec php php /var/www/html/bin/magento indexer:reindex
 ```
 
+### One-time fix để `docker compose exec php ...` chạy đúng user (không cần `--user`)
+
+Nếu từng chạy lệnh Magento bằng root trước đó, hãy chạy 1 lần:
+
+```bash
+docker compose up -d --no-deps --force-recreate php
+docker compose exec php id
+docker compose exec --user root php chown -R www-data:www-data /var/www/html/pub/static /var/www/html/var /var/www/html/generated
+```
+
+Kết quả mong muốn của `docker compose exec php id`: `uid=33(www-data)`.
+
 ### Fix lỗi permission (pub/static, var, generated)
 
 ```bash

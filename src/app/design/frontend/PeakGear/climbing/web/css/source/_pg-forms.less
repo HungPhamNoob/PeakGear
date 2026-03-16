@@ -1,0 +1,163 @@
+// PeakGear - Magento Form Overrides and Utility Classes
+
+// ==================================================
+// MAGENTO FORM OVERRIDES
+// Ensure Magento's validation messages and form
+// elements don't break the dark theme
+// ==================================================
+
+// Magento validation
+.mage-error {
+    color: @peakgear-red !important;
+    font-size: 0.75rem !important;
+    margin-top: 0.25rem;
+}
+
+div.mage-error {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+// Keep validation errors from affecting icon position in login/register forms
+.login-input-wrapper div.mage-error,
+.register-input-wrapper div.mage-error {
+    width: 100%;
+    order: 3;
+}
+
+.login-input-wrapper .login-input,
+.register-input-wrapper .register-input {
+    order: 1;
+}
+
+// Magento form elements that might appear
+.field .control {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    select,
+    textarea {
+        background: fade(@peakgear-text, 5%);
+        border: 1px solid @peakgear-border;
+        border-radius: 0.5rem;
+        color: @peakgear-text;
+        font-family: @font-sans;
+        padding: 0.75rem 2.5rem;
+
+        &::placeholder {
+            color: fade(@peakgear-text, 40%);
+        }
+
+        &:focus {
+            border-color: @peakgear-primary-light;
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
+
+.customer-account-login,
+.customer-account-create {
+    .field .label,
+    label {
+        color: fade(@peakgear-text, 85%) !important;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    textarea,
+    select {
+        color: @peakgear-text !important;
+    }
+}
+
+// Hide any Magento blocks that leaked through layout
+.block-search,
+.block-minicart,
+.minicart-wrapper,
+.panel.header,
+.panel.wrapper {
+    display: none !important;
+}
+
+// Ensure Magento's "actions-toolbar" doesn't interfere
+.actions-toolbar {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+// Make sure fieldset/legend are invisible
+.login-section,
+.register-section {
+    fieldset {
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    legend {
+        display: none;
+    }
+
+    .field {
+        margin: 0;
+    }
+}
+
+// Magento message styles
+.message {
+    &.success {
+        background: fade(@peakgear-green, 10%);
+        border: 1px solid fade(@peakgear-green, 30%);
+        color: @peakgear-green;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    &.error {
+        background: fade(@peakgear-red, 10%);
+        border: 1px solid fade(@peakgear-red, 30%);
+        color: @peakgear-red;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    &.warning,
+    &.notice {
+        background: fade(@peakgear-primary, 10%);
+        border: 1px solid fade(@peakgear-primary, 30%);
+        color: @peakgear-primary-light;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+// Hide the noscript message and cookie warnings on dark theme
+.cookie-status-message {
+    display: none;
+}
+
+// ==================================================
+// UTILITY: Override Magento's default Blank theme
+// link/button colors that bleed through
+// ==================================================
+
+.page-wrapper {
+    a:not([class]) {
+        color: @peakgear-primary-light;
+
+        &:hover {
+            color: @peakgear-primary;
+        }
+    }
+}
+

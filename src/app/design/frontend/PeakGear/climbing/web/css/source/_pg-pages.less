@@ -1,0 +1,326 @@
+// PeakGear - Static Pages (Contact + Legal)
+
+// ==================================================
+// CONTACT PAGE
+// ==================================================
+
+.contact-page {
+    padding: 7rem 1.5rem 4rem;
+
+    @media (min-width: 768px) {
+        padding: 7.5rem 3rem 4.5rem;
+    }
+}
+
+.contact-hero {
+    position: relative;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    padding: 2.5rem;
+}
+
+.contact-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(0.9);
+}
+
+.contact-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, fade(#0f172a, 88%), fade(#0b0f1a, 62%));
+}
+
+.contact-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 560px;
+}
+
+.contact-hero-title {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+    color: @peakgear-text;
+    font-family: @font-serif;
+}
+
+.contact-hero-subtitle {
+    margin: 0;
+    color: fade(@peakgear-text, 70%);
+    font-size: 1rem;
+}
+
+.contact-grid {
+    display: grid;
+    gap: 1.5rem;
+
+    @media (min-width: 960px) {
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 2rem;
+    }
+}
+
+.contact-card {
+    border: 1px solid fade(@peakgear-text, 12%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(180deg, fade(@peakgear-text, 5%), transparent);
+}
+
+.contact-card h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    color: @peakgear-text;
+}
+
+.contact-card p {
+    margin: 0 0 1rem;
+    color: fade(@peakgear-text, 70%);
+    font-size: 0.9rem;
+}
+
+.contact-info-list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: fade(@peakgear-text, 78%);
+    font-size: 0.9rem;
+
+    svg {
+        width: 1.15rem;
+        height: 1.15rem;
+        color: @peakgear-primary-light;
+        flex-shrink: 0;
+        margin-top: 0.15rem;
+    }
+
+    a {
+        color: @peakgear-text !important;
+    }
+}
+
+.contact-hours {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid fade(@peakgear-text, 10%);
+}
+
+.contact-social {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid fade(@peakgear-text, 10%);
+
+    h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.contact-social-icons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.contact-social-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid fade(@peakgear-text, 15%);
+    border-radius: 0.5rem;
+    color: @peakgear-text !important;
+    font-size: 0.85rem;
+    transition: all @transition-fast;
+
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    &:hover {
+        border-color: @peakgear-primary;
+        background: fade(@peakgear-primary, 10%);
+        color: @peakgear-primary !important;
+    }
+}
+
+.contact-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.contact-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.contact-label {
+    font-size: 0.85rem;
+    color: fade(@peakgear-text, 85%);
+}
+
+.contact-input,
+.contact-textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 0.6rem;
+    border: 1px solid fade(@peakgear-text, 18%);
+    background: #0b0f1a;
+    color: @peakgear-text;
+    font-family: @font-sans;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color @transition-fast, box-shadow @transition-fast;
+
+    &::placeholder {
+        color: fade(@peakgear-text, 45%);
+    }
+
+    &:focus {
+        border-color: @peakgear-primary;
+        box-shadow: 0 0 0 2px fade(@peakgear-primary, 15%);
+    }
+}
+
+.contact-textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.contact-submit {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: 0.6rem;
+    border: none;
+    background: @peakgear-primary;
+    color: #111827;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background @transition-fast;
+
+    &:hover {
+        background: @peakgear-primary-hover;
+    }
+}
+
+// ==================================================
+// LEGAL PAGES
+// ==================================================
+
+.legal-page {
+    padding: 7rem 1.5rem 4rem;
+
+    @media (min-width: 768px) {
+        padding: 7.5rem 3rem 4.5rem;
+    }
+}
+
+.legal-hero {
+    position: relative;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+}
+
+.legal-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.legal-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, fade(#0f172a, 88%), fade(#0b0f1a, 58%));
+}
+
+.legal-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 620px;
+}
+
+.legal-hero-title {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+    color: @peakgear-text;
+    font-family: @font-serif;
+}
+
+.legal-hero-subtitle {
+    margin: 0;
+    color: fade(@peakgear-text, 70%);
+    font-size: 1rem;
+}
+
+.legal-content {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.legal-card {
+    border: 1px solid fade(@peakgear-text, 12%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(180deg, fade(@peakgear-text, 5%), transparent);
+}
+
+.legal-card h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.2rem;
+    color: @peakgear-text;
+}
+
+.legal-card p {
+    margin: 0 0 0.75rem;
+    color: fade(@peakgear-text, 70%);
+    line-height: 1.6;
+}
+
+.legal-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+    color: fade(@peakgear-text, 70%);
+    font-size: 0.92rem;
+}
+
+.legal-list li {
+    padding-left: 1.2rem;
+    position: relative;
+}
+
+.legal-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.45rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: @peakgear-primary-light;
+}
+
