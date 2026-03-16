@@ -9,7 +9,7 @@
 // VARIABLES
 // ==================================================
 
-@peakgear-primary: #f59e0b;       // amber-500
+@peakgear-primary: #f59e0b; // amber-500
 @peakgear-primary-hover: #d97706; // amber-600
 @peakgear-primary-light: #fbbf24; // amber-400
 @peakgear-dark: #0f0f1a;
@@ -116,13 +116,27 @@
 // ==================================================
 
 @keyframes toast-slide-in {
-    0%   { transform: translateX(120%); opacity: 0; }
-    100% { transform: translateX(0);    opacity: 1; }
+    0% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @keyframes toast-slide-out {
-    0%   { transform: translateX(0);    opacity: 1; }
-    100% { transform: translateX(120%); opacity: 0; }
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
 }
 
 .page.messages {
@@ -151,7 +165,7 @@
         line-height: 1.5;
         font-family: @font-sans;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-                    0 0 0 1px rgba(255, 255, 255, 0.05);
+            0 0 0 1px rgba(255, 255, 255, 0.05);
         animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         backdrop-filter: blur(12px);
         cursor: pointer;
@@ -160,7 +174,7 @@
             display: none; // Remove default Magento icon
         }
 
-        > div {
+        >div {
             color: @peakgear-text;
 
             a {
@@ -196,16 +210,16 @@
     // Success toast (add-to-cart, etc.)
     .message-success {
         background: linear-gradient(135deg,
-            fade(@peakgear-green, 15%),
-            fade(@peakgear-dark-secondary, 95%));
+                fade(@peakgear-green, 15%),
+                fade(@peakgear-dark-secondary, 95%));
         border-left: 3px solid @peakgear-green;
     }
 
     // Error toast
     .message-error {
         background: linear-gradient(135deg,
-            fade(@peakgear-red, 15%),
-            fade(@peakgear-dark-secondary, 95%));
+                fade(@peakgear-red, 15%),
+                fade(@peakgear-dark-secondary, 95%));
         border-left: 3px solid @peakgear-red;
     }
 
@@ -213,8 +227,8 @@
     .message-notice,
     .message-warning {
         background: linear-gradient(135deg,
-            fade(@peakgear-primary, 15%),
-            fade(@peakgear-dark-secondary, 95%));
+                fade(@peakgear-primary, 15%),
+                fade(@peakgear-dark-secondary, 95%));
         border-left: 3px solid @peakgear-primary;
     }
 
@@ -245,7 +259,9 @@ body {
     overflow-x: hidden;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -271,13 +287,16 @@ a {
 ::-webkit-scrollbar {
     width: 8px;
 }
+
 ::-webkit-scrollbar-track {
     background: @peakgear-dark-secondary;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #4a5568;
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: #718096;
 }
@@ -287,43 +306,97 @@ a {
 // ==================================================
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInLeft {
-    from { opacity: 0; transform: translateX(-30px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes fadeInRight {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0) translateX(-50%); }
-    50% { transform: translateY(-10px) translateX(-50%); }
+
+    0%,
+    100% {
+        transform: translateY(0) translateX(-50%);
+    }
+
+    50% {
+        transform: translateY(-10px) translateX(-50%);
+    }
 }
 
 @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 5px fade(@peakgear-text, 20%); }
-    50% { box-shadow: 0 0 20px fade(@peakgear-text, 40%); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px fade(@peakgear-text, 20%);
+    }
+
+    50% {
+        box-shadow: 0 0 20px fade(@peakgear-text, 40%);
+    }
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes shimmer {
-    from { background-position: -200% 0; }
-    to { background-position: 200% 0; }
+    from {
+        background-position: -200% 0;
+    }
+
+    to {
+        background-position: 200% 0;
+    }
 }
 
 .animate-fade-in-up {
@@ -350,12 +423,29 @@ a {
     animation: slideDown 0.5s ease-out forwards;
 }
 
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-600 { animation-delay: 0.6s; }
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+.delay-300 {
+    animation-delay: 0.3s;
+}
+
+.delay-400 {
+    animation-delay: 0.4s;
+}
+
+.delay-500 {
+    animation-delay: 0.5s;
+}
+
+.delay-600 {
+    animation-delay: 0.6s;
+}
 
 .hover-lift {
     transition: transform @transition-base, box-shadow @transition-base;
@@ -912,8 +1002,8 @@ a {
     }
 }
 
-.account-panel > .account-info,
-.account-panel > .account-links {
+.account-panel>.account-info,
+.account-panel>.account-links {
     background: fade(@peakgear-dark-secondary, 95%);
     backdrop-filter: blur(16px);
     border: 1px solid @peakgear-border;
@@ -3054,7 +3144,7 @@ a {
         transition: opacity @transition-fast;
     }
 
-    input:checked + .terms-check-icon {
+    input:checked+.terms-check-icon {
         opacity: 1;
     }
 }
@@ -3476,6 +3566,7 @@ div.mage-error {
 
 // Magento form elements that might appear
 .field .control {
+
     input[type="text"],
     input[type="email"],
     input[type="password"],
@@ -3504,6 +3595,7 @@ div.mage-error {
 
 .customer-account-login,
 .customer-account-create {
+
     .field .label,
     label {
         color: fade(@peakgear-text, 85%) !important;
@@ -4427,8 +4519,13 @@ div.mage-error {
                     color: fade(@peakgear-text, 40%);
                     font-size: 0.8rem;
 
-                    &::before { content: '('; }
-                    &::after { content: ')'; }
+                    &::before {
+                        content: '(';
+                    }
+
+                    &::after {
+                        content: ')';
+                    }
                 }
             }
 
@@ -4901,6 +4998,7 @@ div.mage-error {
 }
 
 .products-grid .product-price {
+
     // Override Magento's default price styles
     .price-box {
         display: flex;
@@ -4997,7 +5095,9 @@ div.mage-error {
     }
 
     .item {
-        a, strong {
+
+        a,
+        strong {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -5065,6 +5165,7 @@ div.mage-error {
 // ---- Hide duplicate Magento elements on category page ----
 
 .page-products {
+
     // Hide Magento's default category image/description (we use our own header)
     .category-image,
     .category-description,
@@ -5084,13 +5185,25 @@ div.mage-error {
 // ==================================================
 
 @keyframes pdp-shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 @keyframes pdp-tab-fade {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .page-product-view {
@@ -5104,11 +5217,11 @@ div.mage-error {
     .product-social-links,
     .product-options-bottom,
     .product-addto-links,
-    .product-info-main > .stock,
-    .product-info-main > .product.attribute.sku,
-    .product-info-main > .product-reviews-summary,
-    .product-info-main > .price-box,
-    .product-info-main > .product.attribute.overview,
+    .product-info-main>.stock,
+    .product-info-main>.product.attribute.sku,
+    .product-info-main>.product-reviews-summary,
+    .product-info-main>.price-box,
+    .product-info-main>.product.attribute.overview,
     .product.info.detailed,
     // Hide PageBuilder full-width sections (removed via layout XML but add CSS safety net)
     .page-main-details,
@@ -5165,7 +5278,7 @@ div.mage-error {
         float: none !important;
         width: 100% !important;
         padding: 0;
-        display:block !important;
+        display: block !important;
 
         @media (min-width: 1024px) {
             position: sticky;
@@ -5223,14 +5336,14 @@ div.mage-error {
     }
 
     // Hide any misc Magento scripts/blocks that leak into the grid
-    .product-info-main > script,
-    .product-info-main > .product-options-wrapper {
+    .product-info-main>script,
+    .product-info-main>.product-options-wrapper {
         display: none;
     }
 
     // Hide form_key and authentication popup from grid
-    .column.main > input[name="form_key"],
-    .column.main > #authenticationPopup {
+    .column.main>input[name="form_key"],
+    .column.main>#authenticationPopup {
         display: none;
     }
 
@@ -5324,11 +5437,11 @@ div.mage-error {
                     position: absolute;
                     inset: 0;
                     background: linear-gradient(110deg,
-                        transparent 0%,
-                        fade(@peakgear-text, 6%) 35%,
-                        fade(@peakgear-text, 12%) 50%,
-                        fade(@peakgear-text, 6%) 65%,
-                        transparent 100%);
+                            transparent 0%,
+                            fade(@peakgear-text, 6%) 35%,
+                            fade(@peakgear-text, 12%) 50%,
+                            fade(@peakgear-text, 6%) 65%,
+                            transparent 100%);
                     transform: translateX(-100%);
                     animation: pdp-shimmer 1.8s infinite;
                 }
@@ -5381,8 +5494,13 @@ div.mage-error {
                 }
             }
 
-            .pdp-gallery-prev { left: 0.75rem; }
-            .pdp-gallery-next { right: 0.75rem; }
+            .pdp-gallery-prev {
+                left: 0.75rem;
+            }
+
+            .pdp-gallery-next {
+                right: 0.75rem;
+            }
 
             // Show arrows on gallery hover
             &:hover .pdp-gallery-arrow {
@@ -6474,6 +6592,7 @@ div.mage-error {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -6964,7 +7083,7 @@ div.mage-error {
             border-radius: 50%;
             background: @peakgear-primary-light;
             border: 2px solid @peakgear-text;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             cursor: grab;
             pointer-events: all;
             transition: transform 0.15s;
@@ -7130,6 +7249,7 @@ div.mage-error {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -7712,7 +7832,7 @@ div.mage-error {
     }
 
     // Hide default magento cart summary title
-    .cart-summary > .summary.title {
+    .cart-summary>.summary.title {
         display: none;
     }
 
@@ -7947,7 +8067,7 @@ div.mage-error {
     }
 
     // ---- Form Fields ----
-    .fieldset > .field {
+    .fieldset>.field {
         margin-bottom: 1.25rem;
     }
 
@@ -8223,7 +8343,7 @@ div.mage-error {
             top: 5.5rem;
         }
 
-        > .title {
+        >.title {
             font-family: @font-serif;
             font-size: 1.375rem;
             font-weight: 700;
@@ -8237,7 +8357,7 @@ div.mage-error {
         .items-in-cart {
             margin-bottom: 1rem;
 
-            > .title {
+            >.title {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -8251,7 +8371,7 @@ div.mage-error {
                     font-weight: 600;
                 }
 
-                > span {
+                >span {
                     color: fade(@peakgear-text, 50%);
                     font-size: 0.8125rem;
                 }
@@ -8375,6 +8495,7 @@ div.mage-error {
     // ---- Discount / Coupon ----
     .discount-code,
     .payment-option._collapsible {
+
         .payment-option-title,
         .title {
             display: flex;
@@ -9258,7 +9379,9 @@ html {
 }
 
 @keyframes newsSearchSpin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .news-weather-search-result {

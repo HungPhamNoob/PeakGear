@@ -21,6 +21,11 @@ $isCategoryMode = $block->isCategoryMode();
 $pageTitle = $block->getPageTitle();
 $pageDescription = $block->getPageDescription();
 
+// Get Dynamic Price Range
+$priceRange = $block->getPriceRange();
+$rangeMin = $priceRange['min'];
+$rangeMax = $priceRange['max'];
+
 // Dynamic filterable attributes (color, size, etc.)
 $filterableAttributes = $block->getFilterableAttributes();
 
@@ -260,21 +265,38 @@ $hasActiveFilters = !empty($activeFilters);
                 <div class="allprod-range-slider">
                     <div class="allprod-range-track"></div>
                     <div class="allprod-range-fill" id="allprodRangeFill"></div>
-                    <input type="range" min="0" max="10000" step="100" value="0"
-                           class="allprod-range-input" id="allprodRangeMin"
-                           oninput="allprodUpdatePriceRange()"/>
-                    <input type="range" min="0" max="10000" step="100" value="10000"
-                           class="allprod-range-input" id="allprodRangeMax"
-                           oninput="allprodUpdatePriceRange()"/>
+                    <input type="range" min="<?= $rangeMin ?>" max="<?= $rangeMax ?>" step="10" value="<?= $rangeMin ?>"
+                        class="allprod-range-input" id="allprodRangeMin"
+                        oninput="allprodUpdatePriceRange()" />
+                    <input type="range" min="<?= $rangeMin ?>" max="<?= $rangeMax ?>" step="10" value="<?= $rangeMax ?>"
+                        class="allprod-range-input" id="allprodRangeMax"
+                        oninput="allprodUpdatePriceRange()" />
                 </div>
 
                 <!-- Quick Select Buttons -->
                 <div class="allprod-price-quick">
-                    <button type="button" class="allprod-price-btn active" onclick="allprodSetPriceRange(0, 10000)">Tất cả</button>
+                    <button type="button" class="allprod-price-btn active" onclick="allprodSetPriceRange(<?= $rangeMin ?>, <?= $rangeMax ?>)">Tất cả</button>
+                    <?php if ($rangeMax > $rangeMin): ?>
+                        <?php 
+                            $step1 = floor($rangeMin + ($rangeMax - $rangeMin) * 0.25);
+                            $step2 = floor($rangeMin + ($rangeMax - $rangeMin) * 0.60);
+                        ?>
+                        <?php if ($step1 > $rangeMin): ?>
+                            <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(<?= $rangeMin ?>, <?= $step1 ?>)">Dưới $<?= number_format($step1) ?></button>
+                        <?php endif; ?>
+                        <?php if ($step2 > $step1): ?>
+                            <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(<?= $step1 ?>, <?= $step2 ?>)">$<?= number_format($step1) ?> - $<?= number_format($step2) ?></button>
+                        <?php endif; ?>
+                        <?php if ($rangeMax > $step2): ?>
+                            <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(<?= $step2 ?>, <?= $rangeMax ?>)">Trên $<?= number_format($step2) ?></button>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <!-- <button type="button" class="allprod-price-btn active" onclick="allprodSetPriceRange(0, 10000)">Tất cả</button>
                     <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(0, 500)">Dưới $500</button>
                     <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(500, 1000)">$500 - $1,000</button>
                     <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(1000, 5000)">$1,000 - $5,000</button>
-                    <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(5000, 10000)">Trên $5,000</button>
+                    <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(5000, 10000)">Trên $5,000</button> -->
                 </div>
             </div>
 
@@ -619,8 +641,18 @@ function allprodUpdatePriceRange() {
     // Update fill bar
     var fill = document.getElementById('allprodRangeFill');
     if (fill) {
-        var leftPercent = (min / 10000) * 100;
-        var rightPercent = 100 - (max / 10000) * 100;
+        var minBound = parseFloat(minInput.getAttribute('min')) || 0;
+        var maxBound = parseFloat(minInput.getAttribute('max')) || 10000;
+        var rangeBound = maxBound - minBound;
+        
+        var leftPercent = 0;
+        var rightPercent = 0;
+        
+        if (rangeBound > 0) {
+            leftPercent = ((min - minBound) / rangeBound) * 100;
+            rightPercent = 100 - ((max - minBound) / rangeBound) * 100;
+        }
+        
         fill.style.left = leftPercent + '%';
         fill.style.right = rightPercent + '%';
     }
