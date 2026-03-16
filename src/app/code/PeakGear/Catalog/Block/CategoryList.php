@@ -13,7 +13,6 @@ use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCo
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Helper\Category as CategoryHelper;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
@@ -86,7 +85,8 @@ class CategoryList extends Template
         }
 
         // Use the default catalog root category
-        $rootCategoryId = (int)$this->storeManager->getStore()->getRootCategoryId();
+        $store = $this->storeManager->getStore();
+        $rootCategoryId = (int)$store->getRootCategoryId();
 
         // Get top-level categories (direct children of root)
         $collection = $this->categoryCollectionFactory->create();

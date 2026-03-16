@@ -5,6 +5,7 @@ namespace PeakGear\CartRoute\Model;
 
 use Magento\Framework\App\Action\Forward;
 use Magento\Framework\App\ActionFactory;
+use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\RouterInterface;
 
@@ -23,7 +24,11 @@ class Router implements RouterInterface
 
     public function match(RequestInterface $request): ?\Magento\Framework\App\ActionInterface
     {
-        $path = trim((string)$request->getPathInfo(), '/');
+        if (!$request instanceof HttpRequest) {
+            return null;
+        }
+
+        $path = trim($request->getPathInfo(), '/');
 
         // /cart  or  /cart/
         if ($path === 'cart' || $path === 'cart/index' || $path === 'cart/index/index') {
