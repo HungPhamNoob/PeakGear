@@ -457,7 +457,6 @@ class AllProducts extends AbstractProduct
         return [\Magento\Catalog\Model\Product::CACHE_TAG];
     }
 
-    //new
     /**
      * Get the dynamic Min and Max price range for the current filtered collection
      *

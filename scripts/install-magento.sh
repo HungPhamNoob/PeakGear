@@ -176,6 +176,14 @@ echo ""
 echo "Running setup:upgrade..."
 docker exec peakgear_php bash -c "cd /var/www/html && php bin/magento setup:upgrade"
 
+# ---------- DI compile ----------
+# REQUIRED: Magento\Framework\App\Http\Interceptor must be pre-generated because
+# Bootstrap::createApplication() instantiates it before the lazy code-generator
+# autoloader is available — making on-demand generation impossible for this class.
+echo ""
+echo "Compiling DI (generating interceptors, factories, proxies)..."
+docker exec peakgear_php bash -c "cd /var/www/html && php bin/magento setup:di:compile"
+
 # ---------- Reindex ----------
 echo ""
 echo "Reindexing..."

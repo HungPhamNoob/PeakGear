@@ -35,7 +35,6 @@ if (empty($cartItems) && method_exists($block, 'getQuote')) {
             <!-- Cart Items Table -->
             <div class="cart-items">
                 <div class="cart-items-header">
-                    <span class="cart-header-image"></span>
                     <span class="cart-header-product">Sản phẩm</span>
                     <span class="cart-header-price">Giá</span>
                     <span class="cart-header-qty">Số lượng</span>
@@ -43,9 +42,7 @@ if (empty($cartItems) && method_exists($block, 'getQuote')) {
                     <span class="cart-header-action"></span>
                 </div>
 
-                <?php foreach ($cartItems as $_item): ?>
-                    <?= $block->getItemHtml($_item) ?>
-                <?php endforeach; ?>
+                <?= $block->getChildHtml('form-content') ?>
             </div>
 
             <!-- Update Cart Button -->
