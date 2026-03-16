@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * PeakGear Catalog - All Products Page Layout
+ * Route: /products (peakgear_catalog/index/index)
+ * 1-column layout with AllProducts block
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      layout="1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+
+    <body>
+        <attribute name="class" value="peakgear-all-products"/>
+
+        <!-- Remove default page title since we have our own hero -->
+        <referenceBlock name="page.main.title" remove="true"/>
+
+        <!-- Remove sidebars -->
+        <referenceContainer name="sidebar.main" remove="true"/>
+        <referenceContainer name="sidebar.additional" remove="true"/>
+
+        <!-- All Products block in content area -->
+        <referenceContainer name="content">
+            <block class="PeakGear\Catalog\Block\AllProducts"
+                   name="peakgear.all.products"
+                   template="PeakGear_Catalog::products/all.phtml"
+                   cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>

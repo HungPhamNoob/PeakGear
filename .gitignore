@@ -1,0 +1,40 @@
+# ===========================================
+# PeakGear .gitignore
+# ===========================================
+
+# --- Environment & Secrets ---
+.env
+src/auth.json
+
+# --- Docker ---
+docker-compose.override.yaml
+
+# --- Magento: generated at runtime (do NOT commit) ---
+src/vendor/
+src/generated/
+src/var/
+src/pub/static/_cache/
+src/pub/static/frontend/
+src/pub/static/adminhtml/
+src/pub/static/deployed_version.txt
+src/pub/media/catalog/product/cache/
+src/pub/media/tmp/
+
+# --- Magento: env.php contains credentials (per-environment) ---
+src/app/etc/env.php
+
+# --- Temp directories ---
+src_temp/
+
+# --- Logs ---
+*.log
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo

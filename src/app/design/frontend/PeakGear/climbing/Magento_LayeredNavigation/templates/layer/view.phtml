@@ -1,0 +1,75 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Layered Navigation
+ *
+ * @var \Magento\LayeredNavigation\Block\Navigation $block
+ */
+$filters = $block->getFilters();
+
+// Get active filter values from current request to highlight active items
+$activeFilters = [];
+foreach ($block->getLayer()->getState()->getFilters() as $activeFilter) {
+    $filterLabel = $activeFilter->getFilter()->getRequestVar();
+    $activeFilters[$filterLabel][] = $activeFilter->getValueString();
+}
+?>
+
+<?php if ($block->canShowBlock()): ?>
+<div class="layered-navigation">
+    <?php foreach ($filters as $filter): ?>
+        <?php if ($filter->getItemsCount()): ?>
+            <?php $requestVar = $filter->getRequestVar(); ?>
+            <div class="filter-group">
+                <button class="filter-group-title open" type="button" data-toggle="filter">
+                    <span><?= $block->escapeHtml($filter->getName()) ?></span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="filter-group-content" style="display: block;">
+                    <ul class="filter-options">
+                        <?php foreach ($filter->getItems() as $filterItem): ?>
+                            <?php
+                                $isActive = isset($activeFilters[$requestVar])
+                                    && in_array($filterItem->getValueString(), $activeFilters[$requestVar]);
+                            ?>
+                            <li class="filter-option">
+                                <a href="<?= $block->escapeUrl($filterItem->getUrl()) ?>"
+                                   class="filter-option-link <?= $isActive ? 'active' : '' ?>">
+                                    <span class="filter-option-label"><?= $block->escapeHtml($filterItem->getLabel()) ?></span>
+                                    <span class="filter-option-count">(<?= (int)$filterItem->getCount() ?>)</span>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        <?php endif; ?>
+    <?php endforeach; ?>
+
+    <?php if ($block->getLayer()->getState()->getFilters()): ?>
+        <div class="filter-active">
+            <h4 class="filter-active-title">Đang lọc:</h4>
+            <?php foreach ($block->getLayer()->getState()->getFilters() as $filter): ?>
+                <a href="<?= $block->escapeUrl($filter->getRemoveUrl()) ?>" class="filter-active-item">
+                    <span><?= $block->escapeHtml($filter->getLabel()) ?></span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </a>
+            <?php endforeach; ?>
+            <a href="<?= $block->escapeUrl($block->getClearUrl()) ?>" class="filter-clear">Xóa tất cả</a>
+        </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+<script>
+require(['jquery'], function($) {
+    'use strict';
+    $('[data-toggle="filter"]').on('click', function() {
+        $(this).toggleClass('open').next('.filter-group-content').slideToggle(200);
+    });
+});
+</script>

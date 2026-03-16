@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="vendor_news_rss_cache" resource="default" engine="innodb" comment="Vendor News RSS Cache Table">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="item_guid" nullable="false" length="255" comment="RSS Item GUID"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="500" comment="News Title"/>
+        <column xsi:type="mediumtext" name="description" nullable="true" comment="News Description"/>
+        <column xsi:type="varchar" name="link" nullable="true" length="255" comment="Original Link"/>
+        <column xsi:type="timestamp" name="pub_date" nullable="true" on_update="false" comment="Publication Date"/>
+        <column xsi:type="varchar" name="image_url" nullable="true" length="255" comment="Thumbnail Image URL"/>
+        <column xsi:type="timestamp" name="cached_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Cache Timestamp"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="VENDOR_NEWS_RSS_CACHE_ITEM_GUID">
+            <column name="item_guid"/>
+        </constraint>
+        <index referenceId="VENDOR_NEWS_RSS_CACHE_CACHED_AT" indexType="btree">
+            <column name="cached_at"/>
+        </index>
+    </table>
+</schema>

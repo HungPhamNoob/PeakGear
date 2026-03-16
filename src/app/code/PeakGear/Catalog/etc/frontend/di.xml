@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * PeakGear Catalog - Frontend Dependency Injection
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- CategoryList Block -->
+    <type name="PeakGear\Catalog\Block\CategoryList">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item name="cache_lifetime" xsi:type="number">3600</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- FeaturedProducts Block -->
+    <type name="PeakGear\Catalog\Block\FeaturedProducts">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item name="cache_lifetime" xsi:type="number">3600</item>
+            </argument>
+        </arguments>
+    </type>
+
+</config>

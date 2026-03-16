@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * PeakGear Climbing Theme - Register Page Layout
+ * Password strength is now built into register.phtml directly.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      layout="1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    
+    <body>
+        <attribute name="class" value="customer-account-create"/>
+        
+        <!-- Registration Form (includes password strength + terms) -->
+        <referenceBlock name="customer_form_register">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Magento_Customer::form/register.phtml</argument>
+            </action>
+        </referenceBlock>
+        
+        <!-- Remove the separate password strength block (now built into register.phtml) -->
+        <referenceBlock name="peakgear.password.strength" remove="true"/>
+        
+        <!-- Remove default page title -->
+        <referenceBlock name="page.main.title" remove="true"/>
+    </body>
+</page>
