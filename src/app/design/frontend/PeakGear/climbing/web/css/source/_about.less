@@ -370,21 +370,44 @@
 }
 
 .about-policy-card {
+    display: block;
+    text-decoration: none;
     background: linear-gradient(180deg, fade(@peakgear-text, 4%), transparent);
     border: 1px solid fade(@peakgear-text, 12%);
     border-radius: 0.875rem;
     padding: 1.25rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+        background: linear-gradient(180deg, fade(@peakgear-primary, 15%), fade(@peakgear-primary, 5%));
+        border-color: @peakgear-primary;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px fade(@peakgear-primary, 15%);
+    }
 
     h4 {
         margin: 0 0 0.65rem;
         color: @peakgear-text;
         font-size: 1rem;
+        transition: color 0.3s ease;
     }
 
     p {
         margin: 0;
         color: fade(@peakgear-text, 72%);
         line-height: 1.65;
+        transition: color 0.3s ease;
+    }
+
+    &:hover {
+        h4 {
+            color: @peakgear-primary;
+        }
+
+        p {
+            color: fade(@peakgear-text, 80%);
+        }
     }
 }
 

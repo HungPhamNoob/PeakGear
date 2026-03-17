@@ -6,7 +6,8 @@
  * @var \Magento\Framework\View\Element\Template $block
  */
 $storeUrl = $block->getBaseUrl();
-$aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
+$aboutImage1 = $block->getViewFileUrl('images/mountain1.jpg');
+$aboutImage2 = $block->getViewFileUrl('images/mountain2.jpg');
 ?>
 <div class="about-page">
     <!-- Hero Section -->
@@ -17,7 +18,7 @@ $aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
         <div class="about-hero-content animate-fade-in-up">
             <h1 class="about-hero-title">Về PeakGear</h1>
             <p class="about-hero-desc animate-fade-in-up delay-100">
-                Đồng hành cùng bạn chinh phục mọi đỉnh cao từ năm 2011
+                Đồng hành cùng bạn chinh phục mọi đỉnh cao
             </p>
         </div>
     </section>
@@ -30,24 +31,25 @@ $aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
                 <h3 class="about-story-title">Từ Niềm Đam Mê Đến Sứ Mệnh</h3>
                 <div class="about-story-text">
                     <p>
-                        PeakGear được thành lập bởi những người yêu thích leo núi và khám phá thiên nhiên. 
-                        Chúng tôi hiểu rằng trang bị tốt không chỉ là sự tiện lợi, mà còn là yếu tố quyết định 
-                        sự an toàn và thành công của mỗi chuyến đi.
+                        PeakGear ra đời từ niềm đam mê leo núi và khám phá thiên nhiên. Từ những 
+                        trải nghiệm thực tế, chúng tôi tin rằng trang bị chất lượng không chỉ 
+                        mang lại sự tiện lợi mà còn giúp đảm bảo an toàn và nâng cao thành công 
+                        cho mỗi hành trình.
                     </p>
                     <p>
-                        Với hơn 15 năm kinh nghiệm, chúng tôi đã trở thành đối tác tin cậy của hàng chục nghìn 
-                        người đam mê leo núi trên khắp Việt Nam. Mỗi sản phẩm được chọn lọc kỹ lưỡng từ các 
-                        thương hiệu hàng đầu thế giới, đảm bảo chất lượng và độ bền vượt trội.
+                        Với hơn 36 năm kinh nghiệm, PeakGear là người bạn đồng hành tin cậy của hàng chục 
+                        nghìn người yêu leo núi tại Việt Nam. Mỗi sản phẩm được chọn lọc từ các thương hiệu 
+                        hàng đầu thế giới, đảm bảo độ bền và hiệu suất vượt trội trong mọi điều kiện.
                     </p>
                     <p>
-                        Sứ mệnh của chúng tôi là mang đến những trang bị tốt nhất với giá cả hợp lý, 
-                        giúp mọi người có thể tự tin chinh phục những đỉnh cao trong cuộc sống.
+                        Sứ mệnh của chúng tôi là mang đến những trang bị tốt nhất giúp 
+                        bạn tự tin chinh phục mọi thử thách và vươn tới những đỉnh cao trong cuộc sống.
                     </p>
                 </div>
             </div>
             <div class="about-story-image animate-fade-in-right">
                 <div class="about-story-image-box">
-                    <img src="<?= $block->escapeUrl($aboutImage) ?>" alt="PeakGear Outdoor Team" loading="lazy" />
+                    <img src="<?= $block->escapeUrl($aboutImage1) ?>" alt="PeakGear Outdoor Team" loading="lazy" />
                 </div>
                 <!-- Decorative element -->
                 <div class="about-story-decorative"></div>
@@ -58,21 +60,28 @@ $aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
     <section class="about-gallery">
         <div class="about-gallery-grid">
             <div class="about-gallery-item animate-fade-in-up">
-                <img src="<?= $block->escapeUrl($aboutImage) ?>" alt="Kho sản phẩm PeakGear" loading="lazy" />
+                <img src="<?= $block->escapeUrl($aboutImage2) ?>" alt="Kho sản phẩm PeakGear" loading="lazy" />
             </div>
             <article class="about-gallery-copy animate-fade-in-up delay-100">
-                <h3>PeakGear là ai?</h3>
+                <strong>PeakGear là gì?</strong>
                 <p>
-                    PeakGear là cửa hàng chuyên dụng cụ leo núi, trekking và camping, tập trung vào sản phẩm thực dụng,
-                    độ bền cao và tư vấn đúng nhu cầu thực tế cho từng cung đường tại Việt Nam.
+                    PeakGear cung cấp dụng cụ leo núi, đi bộ đường dài và cắm trại, ưu tiên các sản phẩm bền bỉ, dễ dùng và phù hợp
+                    với điều kiện địa hình, thời tiết tại Việt Nam. Chúng tôi mong muốn giúp bạn chuẩn bị tốt hơn và yên tâm trên
+                    mọi hành trình.
                 </p>
                 <p>
-                    Đội ngũ tư vấn của PeakGear là người đã đi trail và leo núi thực tế, vì vậy mọi gợi ý đều dựa trên
-                    trải nghiệm sử dụng thay vì mô tả quảng cáo.
+                    Đội ngũ tư vấn của PeakGear đều đã trải nghiệm thực tế nhiều cung đường, vì vậy mọi gợi ý đều dựa trên kinh nghiệm
+                    sử dụng thật, hướng đến sự an toàn và hiệu quả thay vì quảng cáo.
                 </p>
                 <p>
-                    Chúng tôi theo đuổi tiêu chí minh bạch: mô tả đúng thông số, chính sách rõ ràng và hỗ trợ nhanh trước
-                    và sau bán hàng.
+                    Chúng tôi đề cao sự rõ ràng và tin cậy: thông tin chính xác, chính sách minh bạch và hỗ trợ nhanh chóng trước
+                    và sau khi mua hàng.
+                </p>
+                <p>
+                    <i>”Đỉnh núi không phải là nơi để chinh phục, mà là nơi để
+                    bạn khám phá giới hạn của chính mình.”</i>
+                    <br>
+                    <i style="display: block; text-align: right;">Phạm Khánh Duy</i>
                 </p>
             </article>
         </div>
@@ -106,7 +115,7 @@ $aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
                         <path d="M20 20v-7.43"/>
                     </svg>
                 </div>
-                <div class="about-stat-value">200+</div>
+                <div class="about-stat-value">100+</div>
                 <div class="about-stat-label">Sản phẩm chất lượng</div>
             </div>
             <div class="about-stat animate-fade-in-up" style="animation-delay: 0.3s">
@@ -117,7 +126,7 @@ $aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
                         <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
                     </svg>
                 </div>
-                <div class="about-stat-value">15+</div>
+                <div class="about-stat-value">36+</div>
                 <div class="about-stat-label">Năm kinh nghiệm</div>
             </div>
             <div class="about-stat animate-fade-in-up" style="animation-delay: 0.4s">
@@ -129,7 +138,7 @@ $aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
                         <path d="M2 12h20"/>
                     </svg>
                 </div>
-                <div class="about-stat-value">63</div>
+                <div class="about-stat-value">34</div>
                 <div class="about-stat-label">Tỉnh thành phục vụ</div>
             </div>
         </div>
@@ -172,22 +181,22 @@ $aboutImage = $block->getViewFileUrl('images/hero-mountains.jpg');
                 <h3 class="about-values-title">Cam Kết Minh Bạch Với Khách Hàng</h3>
             </div>
             <div class="about-policies-grid">
-                <article class="about-policy-card">
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
                     <h4>Chính sách giao hàng</h4>
                     <p>Miễn phí vận chuyển nội thành cho đơn từ 1.000.000đ. Các tỉnh thành khác tính theo biểu phí đối tác vận chuyển.</p>
-                </article>
-                <article class="about-policy-card">
+                </a>
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
                     <h4>Đổi trả và bảo hành</h4>
                     <p>Hỗ trợ đổi trả trong 30 ngày với sản phẩm còn nguyên tem. Bảo hành chính hãng theo điều kiện từng thương hiệu.</p>
-                </article>
-                <article class="about-policy-card">
+                </a>
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
                     <h4>Bảo mật thông tin</h4>
                     <p>Dữ liệu khách hàng chỉ sử dụng cho mục đích xử lý đơn hàng, chăm sóc sau bán và không chia sẻ cho bên thứ ba trái phép.</p>
-                </article>
-                <article class="about-policy-card">
+                </a>
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
                     <h4>Điều khoản sử dụng</h4>
                     <p>Khách hàng chịu trách nhiệm kiểm tra mô tả sản phẩm trước khi đặt mua. PeakGear có quyền cập nhật giá và nội dung khi cần thiết.</p>
-                </article>
+                </a>
             </div>
         </div>
     </section>
