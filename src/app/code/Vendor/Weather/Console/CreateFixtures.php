@@ -111,7 +111,7 @@ class CreateFixtures extends Command
         private ProductFactory         $productFactory,
         private StockRegistryInterface $stockRegistry,
         private State                  $appState,
-        ?string $name = null
+        string $name = null
     ) {
         parent::__construct($name);
     }
