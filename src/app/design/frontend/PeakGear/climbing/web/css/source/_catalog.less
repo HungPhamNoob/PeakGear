@@ -43,7 +43,7 @@
 
 .category-page-header {
     position: relative;
-    padding: 8rem 0 3rem;
+    padding: 1.5rem 0 3rem;
     margin-bottom: 2rem;
 }
 
@@ -359,8 +359,13 @@
                     color: fade(@peakgear-text, 40%);
                     font-size: 0.8rem;
 
-                    &::before { content: '('; }
-                    &::after { content: ')'; }
+                    &::before {
+                        content: '(';
+                    }
+
+                    &::after {
+                        content: ')';
+                    }
                 }
             }
 
@@ -833,6 +838,7 @@
 }
 
 .products-grid .product-price {
+
     // Override Magento's default price styles
     .price-box {
         display: flex;
@@ -929,7 +935,9 @@
     }
 
     .item {
-        a, strong {
+
+        a,
+        strong {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -997,6 +1005,7 @@
 // ---- Hide duplicate Magento elements on category page ----
 
 .page-products {
+
     // Hide Magento's default category image/description (we use our own header)
     .category-image,
     .category-description,
@@ -1009,4 +1018,3 @@
         // Only hide if it's not our custom toolbar
     }
 }
-

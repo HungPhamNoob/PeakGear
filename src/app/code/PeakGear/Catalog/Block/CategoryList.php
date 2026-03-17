@@ -16,6 +16,8 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
 
+use Magento\Catalog\Helper\Category as CategoryHelper;
+
 class CategoryList extends Template
 {
     /**
@@ -78,7 +80,8 @@ class CategoryList extends Template
         // Use the default catalog root category
         /** @var \Magento\Store\Model\Store $store */
         $store = $this->storeManager->getStore();
-        $rootCategoryId = (int)$store->getRootCategoryId();
+        $storeGroupId = $store->getStoreGroupId();
+        $rootCategoryId = $this->storeManager->getGroup($storeGroupId)->getRootCategoryId();
 
         /** @var Category $rootCategory */
         $rootCategory = $this->categoryRepository->get($rootCategoryId, $store->getId());
