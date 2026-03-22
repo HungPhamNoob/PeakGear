@@ -520,6 +520,39 @@
     width: 100%;
 }
 
+// Header Account
+.header-account {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.account-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.account-toggle {
+    padding: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: background @transition-fast;
+
+    &:hover {
+        background: fade(@peakgear-text, 20%) !important;
+    }
+}
+
 // Account Dropdown
 .account-avatar {
     width: 2.25rem;
@@ -528,10 +561,13 @@
     background: @peakgear-primary;
     color: #111827;
     font-weight: 600;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     font-size: 0.875rem;
+    line-height: 1;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .account-panel {

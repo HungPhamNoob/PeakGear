@@ -5,22 +5,23 @@ namespace PeakGear\Cart\Controller\Index;
 
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\Forward;
-use Magento\Framework\Controller\Result\ForwardFactory;
+use Magento\Framework\Controller\ResultFactory;
 
 class Index implements HttpGetActionInterface
 {
     public function __construct(
-        private readonly ForwardFactory $resultForwardFactory
+        private readonly ResultFactory $resultFactory
     ) {
     }
 
     public function execute(): Forward
     {
-        $result = $this->resultForwardFactory->create();
-        $result->setModule('checkout')
-               ->setController('cart')
-               ->forward('index');
+        /** @var Forward $resultForward */
+        $resultForward = $this->resultFactory->create(ResultFactory::TYPE_FORWARD);
+        $resultForward->setModule('checkout')
+                      ->setController('cart')
+                      ->forward('index');
 
-        return $result;
+        return $resultForward;
     }
 }

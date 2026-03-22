@@ -1,0 +1,216 @@
+<?php
+/**
+ * PeakGear Climbing Theme - About Page
+ * Matches Next.js app/about/page.tsx exactly
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+$storeUrl = $block->getBaseUrl();
+$aboutImage1 = $block->getViewFileUrl('images/mountain1.jpg');
+$aboutImage2 = $block->getViewFileUrl('images/mountain2.jpg');
+?>
+<div class="about-page">
+    <!-- Hero Section -->
+    <section class="about-hero">
+        <div class="about-hero-bg">
+            <div class="about-hero-overlay"></div>
+        </div>
+        <div class="about-hero-content animate-fade-in-up">
+            <h1 class="about-hero-title">Về PeakGear</h1>
+            <p class="about-hero-desc animate-fade-in-up delay-100">
+                Đồng hành cùng bạn chinh phục mọi đỉnh cao
+            </p>
+        </div>
+    </section>
+
+    <!-- Story Section (2-column layout) -->
+    <section class="about-story">
+        <div class="about-story-grid">
+            <div class="about-story-content animate-fade-in-left">
+                <h2 class="about-story-badge">Câu Chuyện Của Chúng Tôi</h2>
+                <h3 class="about-story-title">Từ Niềm Đam Mê Đến Sứ Mệnh</h3>
+                <div class="about-story-text">
+                    <p>
+                        PeakGear ra đời từ niềm đam mê leo núi và khám phá thiên nhiên. Từ những 
+                        trải nghiệm thực tế, chúng tôi tin rằng trang bị chất lượng không chỉ 
+                        mang lại sự tiện lợi mà còn giúp đảm bảo an toàn và nâng cao thành công 
+                        cho mỗi hành trình.
+                    </p>
+                    <p>
+                        Với hơn 36 năm kinh nghiệm, PeakGear là người bạn đồng hành tin cậy của hàng chục 
+                        nghìn người yêu leo núi tại Việt Nam. Mỗi sản phẩm được chọn lọc từ các thương hiệu 
+                        hàng đầu thế giới, đảm bảo độ bền và hiệu suất vượt trội trong mọi điều kiện.
+                    </p>
+                    <p>
+                        Sứ mệnh của chúng tôi là mang đến những trang bị tốt nhất giúp 
+                        bạn tự tin chinh phục mọi thử thách và vươn tới những đỉnh cao trong cuộc sống.
+                    </p>
+                </div>
+            </div>
+            <div class="about-story-image animate-fade-in-right">
+                <div class="about-story-image-box">
+                    <img src="<?= $block->escapeUrl($aboutImage1) ?>" alt="PeakGear Outdoor Team" loading="lazy" />
+                </div>
+                <!-- Decorative element -->
+                <div class="about-story-decorative"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-gallery">
+        <div class="about-gallery-grid">
+            <div class="about-gallery-item animate-fade-in-up">
+                <img src="<?= $block->escapeUrl($aboutImage2) ?>" alt="Kho sản phẩm PeakGear" loading="lazy" />
+            </div>
+            <article class="about-gallery-copy animate-fade-in-up delay-100">
+                <strong>PeakGear là gì?</strong>
+                <p>
+                    PeakGear cung cấp dụng cụ leo núi, đi bộ đường dài và cắm trại, ưu tiên các sản phẩm bền bỉ, dễ dùng và phù hợp
+                    với điều kiện địa hình, thời tiết tại Việt Nam. Chúng tôi mong muốn giúp bạn chuẩn bị tốt hơn và yên tâm trên
+                    mọi hành trình.
+                </p>
+                <p>
+                    Đội ngũ tư vấn của PeakGear đều đã trải nghiệm thực tế nhiều cung đường, vì vậy mọi gợi ý đều dựa trên kinh nghiệm
+                    sử dụng thật, hướng đến sự an toàn và hiệu quả thay vì quảng cáo.
+                </p>
+                <p>
+                    Chúng tôi đề cao sự rõ ràng và tin cậy: thông tin chính xác, chính sách minh bạch và hỗ trợ nhanh chóng trước
+                    và sau khi mua hàng.
+                </p>
+                <p>
+                    <i>”Đỉnh núi không phải là nơi để chinh phục, mà là nơi để
+                    bạn khám phá giới hạn của chính mình.”</i>
+                    <br>
+                    <i style="display: block; text-align: right;">Phạm Khánh Duy</i>
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="about-stats">
+        <div class="about-stats-grid">
+            <div class="about-stat animate-fade-in-up" style="animation-delay: 0.1s">
+                <div class="about-stat-icon">
+                    <!-- Users icon (Lucide) -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <div class="about-stat-value">50,000+</div>
+                <div class="about-stat-label">Khách hàng tin tưởng</div>
+            </div>
+            <div class="about-stat animate-fade-in-up" style="animation-delay: 0.2s">
+                <div class="about-stat-icon">
+                    <!-- Mountain icon (Lucide) -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m8 3 4 8 5-5"/>
+                        <path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19"/>
+                        <path d="m4 20 .34-2.38"/>
+                        <path d="M4.62 15.97 10.3 21"/>
+                        <path d="m12 13 5.77 5"/>
+                        <path d="M20 20v-7.43"/>
+                    </svg>
+                </div>
+                <div class="about-stat-value">100+</div>
+                <div class="about-stat-label">Sản phẩm chất lượng</div>
+            </div>
+            <div class="about-stat animate-fade-in-up" style="animation-delay: 0.3s">
+                <div class="about-stat-icon">
+                    <!-- Award icon (Lucide) -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="6"/>
+                        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                    </svg>
+                </div>
+                <div class="about-stat-value">36+</div>
+                <div class="about-stat-label">Năm kinh nghiệm</div>
+            </div>
+            <div class="about-stat animate-fade-in-up" style="animation-delay: 0.4s">
+                <div class="about-stat-icon">
+                    <!-- Globe icon (Lucide) -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                        <path d="M2 12h20"/>
+                    </svg>
+                </div>
+                <div class="about-stat-value">34</div>
+                <div class="about-stat-label">Tỉnh thành phục vụ</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Values -->
+    <section class="about-values">
+        <div class="about-values-container">
+            <div class="about-values-header">
+                <h2 class="about-values-badge">Giá Trị Cốt Lõi</h2>
+                <h3 class="about-values-title">Những Gì Chúng Tôi Đại Diện</h3>
+            </div>
+            <div class="about-values-grid">
+                <div class="about-value-card animate-fade-in-up" style="animation-delay: 0.1s">
+                    <h4 class="about-value-title">Chất Lượng</h4>
+                    <p class="about-value-desc">
+                        Chỉ cung cấp sản phẩm từ các thương hiệu uy tín, đạt chuẩn quốc tế về an toàn và độ bền.
+                    </p>
+                </div>
+                <div class="about-value-card animate-fade-in-up" style="animation-delay: 0.2s">
+                    <h4 class="about-value-title">Đam Mê</h4>
+                    <p class="about-value-desc">
+                        Đội ngũ chúng tôi đều là những người yêu thích leo núi, hiểu rõ nhu cầu của khách hàng.
+                    </p>
+                </div>
+                <div class="about-value-card animate-fade-in-up" style="animation-delay: 0.3s">
+                    <h4 class="about-value-title">Trách Nhiệm</h4>
+                    <p class="about-value-desc">
+                        Cam kết bảo hành, hỗ trợ tận tình và chính sách đổi trả linh hoạt cho mọi sản phẩm.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-policies">
+        <div class="about-policies-container">
+            <div class="about-values-header">
+                <h2 class="about-values-badge">Chính Sách &amp; Điều Khoản</h2>
+                <h3 class="about-values-title">Cam Kết Minh Bạch Với Khách Hàng</h3>
+            </div>
+            <div class="about-policies-grid">
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
+                    <h4>Chính sách giao hàng</h4>
+                    <p>Miễn phí vận chuyển nội thành cho đơn từ 1.000.000đ. Các tỉnh thành khác tính theo biểu phí đối tác vận chuyển.</p>
+                </a>
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
+                    <h4>Đổi trả và bảo hành</h4>
+                    <p>Hỗ trợ đổi trả trong 30 ngày với sản phẩm còn nguyên tem. Bảo hành chính hãng theo điều kiện từng thương hiệu.</p>
+                </a>
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
+                    <h4>Bảo mật thông tin</h4>
+                    <p>Dữ liệu khách hàng chỉ sử dụng cho mục đích xử lý đơn hàng, chăm sóc sau bán và không chia sẻ cho bên thứ ba trái phép.</p>
+                </a>
+                <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>" class="about-policy-card">
+                    <h4>Điều khoản sử dụng</h4>
+                    <p>Khách hàng chịu trách nhiệm kiểm tra mô tả sản phẩm trước khi đặt mua. PeakGear có quyền cập nhật giá và nội dung khi cần thiết.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="about-cta">
+        <div class="about-cta-container animate-fade-in-up">
+            <h2 class="about-cta-title">Sẵn Sàng Cho Chuyến Phiêu Lưu?</h2>
+            <p class="about-cta-desc">
+                Khám phá bộ sưu tập dụng cụ leo núi chuyên nghiệp của chúng tôi và bắt đầu hành trình chinh phục đỉnh cao của bạn.
+            </p>
+            <a href="<?= $block->escapeUrl($block->getUrl('products')) ?>" class="btn btn-primary btn-lg">
+                Khám Phá Ngay
+            </a>
+        </div>
+    </section>
+</div>

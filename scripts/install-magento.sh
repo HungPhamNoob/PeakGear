@@ -113,6 +113,9 @@ check_container_running "peakgear_mysql"
 check_container_running "peakgear_opensearch"
 check_container_running "peakgear_redis"
 
+# Ensure writable directories and app/etc permissions are aligned before install.
+bash "$SCRIPT_DIR/fix-magento-permissions.sh"
+
 # Check required env vars
 require_env "MYSQL_DATABASE"
 require_env "MYSQL_USER"
@@ -193,6 +196,9 @@ docker exec peakgear_php bash -c "cd /var/www/html && php bin/magento indexer:re
 echo ""
 echo "Flushing cache..."
 docker exec peakgear_php bash -c "cd /var/www/html && php bin/magento cache:flush"
+
+# Re-apply permissions because setup/deploy steps can alter generated/static ownership.
+bash "$SCRIPT_DIR/fix-magento-permissions.sh"
 
 echo ""
 echo "=========================================="

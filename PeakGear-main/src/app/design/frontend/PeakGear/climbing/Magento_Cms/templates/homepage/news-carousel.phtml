@@ -1,0 +1,136 @@
+<?php
+/**
+ * Homepage News Carousel
+ *
+ * @var \Vendor\NewsRss\Block\News $block
+ */
+$items = array_slice($block->getNewsItems(), 0, 8);
+?>
+
+<section class="home-news-section">
+    <div class="home-news-container">
+        <div class="home-news-header">
+            <div>
+                <span class="home-news-badge">VNExpress Du lịch</span>
+                <h3 class="home-news-title">Tin Tức Điểm Đến Mới Nhất</h3>
+                <p class="home-news-subtitle">Nguồn dữ liệu: https://vnexpress.net/du-lich/diem-den</p>
+            </div>
+            <a href="<?= $block->escapeUrl($block->getUrl('news')) ?>" class="home-news-view-all">Xem thêm</a>
+        </div>
+
+        <?php if (!empty($items)): ?>
+        <div class="home-news-carousel" id="homeNewsCarousel">
+            <button type="button" class="home-news-nav home-news-nav-prev" id="homeNewsPrev" aria-label="Tin trước">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="home-news-track-wrap">
+                <div class="home-news-track" id="homeNewsTrack">
+                    <?php foreach ($items as $item): ?>
+                    <article class="home-news-card">
+                        <a href="<?= $block->escapeUrl($item['link'] ?? '#') ?>" target="_blank" rel="noopener noreferrer" class="home-news-card-image-link">
+                            <?php if (!empty($item['image_url'])): ?>
+                            <img class="home-news-card-image"
+                                 src="<?= $block->escapeUrl($item['image_url']) ?>"
+                                 alt="<?= $block->escapeHtmlAttr($item['title'] ?? '') ?>"
+                                 loading="lazy"/>
+                            <?php else: ?>
+                            <div class="home-news-card-image home-news-card-image-placeholder">PeakGear</div>
+                            <?php endif; ?>
+                        </a>
+
+                        <div class="home-news-card-body">
+                            <h4 class="home-news-card-title">
+                                <a href="<?= $block->escapeUrl($item['link'] ?? '#') ?>" target="_blank" rel="noopener noreferrer">
+                                    <?= $block->escapeHtml($item['title'] ?? '') ?>
+                                </a>
+                            </h4>
+                            <?php if (!empty($item['description'])): ?>
+                            <p class="home-news-card-desc"><?= $block->escapeHtml($block->truncateText((string)$item['description'], 120)) ?></p>
+                            <?php endif; ?>
+                            <span class="home-news-card-date"><?= $block->escapeHtml($block->formatPubDate((string)($item['pub_date'] ?? ''))) ?></span>
+                        </div>
+                    </article>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <button type="button" class="home-news-nav home-news-nav-next" id="homeNewsNext" aria-label="Tin sau">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+        <?php else: ?>
+        <div class="home-news-empty">Chưa có dữ liệu tin tức. Hệ thống sẽ tự đồng bộ lại.</div>
+        <?php endif; ?>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var track = document.getElementById('homeNewsTrack');
+    var prev = document.getElementById('homeNewsPrev');
+    var next = document.getElementById('homeNewsNext');
+    if (!track || !prev || !next) {
+        return;
+    }
+
+    var cards = Array.prototype.slice.call(track.querySelectorAll('.home-news-card'));
+    if (!cards.length) {
+        return;
+    }
+    var currentIndex = 0;
+
+    function normalizeIndex(index) {
+        var length = cards.length;
+        return ((index % length) + length) % length;
+    }
+
+    function scrollToIndex(index, behavior) {
+        currentIndex = normalizeIndex(index);
+        var target = cards[currentIndex];
+        if (!target) {
+            return;
+        }
+
+        track.scrollTo({
+            left: target.offsetLeft,
+            behavior: behavior || 'smooth'
+        });
+    }
+
+    function detectCurrentIndex() {
+        var scrollLeft = track.scrollLeft;
+        var closest = 0;
+        var minDiff = Number.POSITIVE_INFINITY;
+
+        cards.forEach(function (card, idx) {
+            var diff = Math.abs(card.offsetLeft - scrollLeft);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = idx;
+            }
+        });
+
+        currentIndex = closest;
+    }
+
+    prev.addEventListener('click', function () {
+        scrollToIndex(currentIndex - 1, 'smooth');
+    });
+
+    next.addEventListener('click', function () {
+        scrollToIndex(currentIndex + 1, 'smooth');
+    });
+
+    track.addEventListener('scroll', function () {
+        window.requestAnimationFrame(detectCurrentIndex);
+    });
+    window.addEventListener('resize', function () {
+        scrollToIndex(currentIndex, 'auto');
+    });
+});
+</script>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <vendor_weather>
+            <general>
+                <enabled>1</enabled>
+                <api_key>demo_key_replace_with_real</api_key>
+                <default_city>Sapa</default_city>
+                <cities>Sapa,Da Lat,Ha Noi,Ho Chi Minh City,Da Nang,Nha Trang,Ha Giang,Phu Quoc,Hue,Quy Nhon,Can Tho,Vung Tau</cities>
+                <cache_ttl>600</cache_ttl>
+                <units>metric</units>
+            </general>
+        </vendor_weather>
+    </default>
+</config>

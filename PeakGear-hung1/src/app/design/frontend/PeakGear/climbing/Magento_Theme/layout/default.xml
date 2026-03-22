@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * PeakGear Climbing Theme - Default Layout
+ * Hides all Magento default header/footer/nav blocks.
+ * Only keeps our custom PeakGear header + footer.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    
+    <head>
+        <css src="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;family=Playfair+Display:wght@400;500;600;700&amp;display=swap" src_type="url"/>
+    </head>
+    
+    <body>
+        <attribute name="class" value="peakgear-theme"/>
+        
+        <!-- ===== CUSTOM PEAKGEAR HEADER ===== -->
+        <!-- Uses PeakGear_Catalog CategoryList block for dynamic category data -->
+        <referenceContainer name="header.container">
+            <block class="PeakGear\Catalog\Block\CategoryList" 
+                   name="peakgear.header" 
+                   template="Magento_Theme::html/header.phtml" 
+                   before="-">
+                <arguments>
+                    <argument name="logo_alt" xsi:type="string">PeakGear - Dụng Cụ Leo Núi</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <!-- Ensure toast messages render below the header (not inside nav) -->
+        <move element="page.messages" destination="page.wrapper" after="header.container"/>
+        
+        <!-- ===== HIDE ALL MAGENTO DEFAULT HEADER BLOCKS ===== -->
+        <referenceBlock name="header.panel.wrapper" remove="true"/>
+        <referenceBlock name="logo" remove="true"/>
+        <referenceBlock name="catalog.topnav" remove="true"/>
+        <referenceBlock name="top.search" remove="true"/>
+        <referenceBlock name="minicart" remove="true"/>
+        <referenceBlock name="top.links" remove="true"/>
+        <referenceBlock name="header-wrapper" remove="true"/>
+        <referenceBlock name="store.menu" remove="true"/>
+        <referenceBlock name="currency" remove="true"/>
+        <referenceBlock name="store_language" remove="true"/>
+        <referenceBlock name="authorization-link" remove="true"/>
+        <referenceBlock name="register-link" remove="true"/>
+        <referenceBlock name="top.links.extra" remove="true"/>
+        <referenceBlock name="wish-list-link" remove="true"/>
+        <referenceBlock name="my-account-link" remove="true"/>
+        
+        <!-- Hide Magento's default navigation sections -->
+        <referenceContainer name="nav-sections" display="false"/>
+        
+        <!-- ===== CUSTOM PEAKGEAR FOOTER ===== -->
+        <!-- Uses PeakGear_Catalog CategoryList block for dynamic category links -->
+        <referenceContainer name="footer-container">
+            <block class="PeakGear\Catalog\Block\CategoryList" 
+                   name="peakgear.footer" 
+                   template="Magento_Theme::html/footer.phtml"
+                   before="-"/>
+        </referenceContainer>
+        
+        <!-- ===== HIDE MAGENTO DEFAULT FOOTER BLOCKS ===== -->
+        <referenceBlock name="footer_links" remove="true"/>
+        <referenceBlock name="form.subscribe" remove="true"/>
+        <referenceBlock name="store_switcher" remove="true"/>
+        <referenceBlock name="copyright" remove="true"/>
+        <referenceBlock name="report.bugs" remove="true"/>
+    </body>
+</page>

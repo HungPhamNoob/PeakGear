@@ -1,0 +1,50 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Newsletter Section
+ *
+ * @var \Magento\Newsletter\Block\Subscribe $block
+ */
+?>
+
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-wrapper animate-fade-in-up">
+            <div class="newsletter-content">
+                <div class="newsletter-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+                <h2 class="newsletter-title">Đăng Ký Nhận Tin</h2>
+                <p class="newsletter-desc">Nhận thông tin về sản phẩm mới, khuyến mãi độc quyền và bí kíp leo núi từ chuyên gia.</p>
+            </div>
+            
+            <form class="newsletter-form" 
+                  action="<?= $block->escapeUrl($block->getFormActionUrl()) ?>" 
+                  method="post" 
+                  id="newsletter-validate-detail"
+                  data-mage-init='{"validation": {"errorClass": "mage-error"}}'>
+                <div class="newsletter-input-group">
+                    <input type="email" 
+                           name="email" 
+                           id="newsletter-email"
+                           class="form-input newsletter-input" 
+                           placeholder="Nhập email của bạn..."
+                           data-validate="{required:true, 'validate-email':true}"
+                           required/>
+                    <button type="submit" class="btn btn-primary newsletter-submit" title="<?= $block->escapeHtmlAttr(__('Đăng ký')) ?>">
+                        Đăng Ký
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="newsletter-privacy">
+                    Bằng việc đăng ký, bạn đồng ý với <a href="<?= $block->escapeUrl($block->getUrl('policies')) ?>">Chính sách bảo mật</a> của chúng tôi.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>

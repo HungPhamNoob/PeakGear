@@ -1,0 +1,569 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Merged Policies Page
+ *
+ * Combines: Privacy Policy, Terms of Use, Shipping, Returns & Warranty, Payment.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+$heroImage = $block->getViewFileUrl('images/hero-mountains.jpg');
+?>
+
+<div class="legal-page policies-page">
+    <!-- Hero Section -->
+    <section class="legal-hero">
+        <div class="legal-hero-bg" style="background-image: url('<?= $block->escapeUrl($heroImage) ?>')"></div>
+        <div class="legal-hero-overlay"></div>
+        <div class="legal-hero-content">
+            <h1 class="legal-hero-title">Chính sách &amp; Điều khoản</h1>
+            <p class="legal-hero-subtitle">
+                Tất cả chính sách và điều khoản khi mua sắm tại PeakGear. Chúng tôi cam kết mang đến trải nghiệm
+                mua sắm minh bạch, an toàn và đáng tin cậy cho cộng đồng leo núi và outdoor Việt Nam.
+            </p>
+        </div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <nav class="policies-tabs" role="tablist" aria-label="Chính sách">
+        <button class="policies-tab is-active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="panel-privacy"
+                id="tab-privacy"
+                data-tab="privacy"
+                type="button">
+            <svg class="policies-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Chính sách bảo mật</span>
+        </button>
+        <button class="policies-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-terms"
+                id="tab-terms"
+                data-tab="terms"
+                type="button">
+            <svg class="policies-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Điều khoản sử dụng</span>
+        </button>
+        <button class="policies-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-shipping"
+                id="tab-shipping"
+                data-tab="shipping"
+                type="button">
+            <svg class="policies-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Chính sách giao hàng</span>
+        </button>
+        <button class="policies-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-returns"
+                id="tab-returns"
+                data-tab="returns"
+                type="button">
+            <svg class="policies-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span>Đổi trả &amp; Bảo hành</span>
+        </button>
+        <button class="policies-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-payment"
+                id="tab-payment"
+                data-tab="payment"
+                type="button">
+            <svg class="policies-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span>Chính sách thanh toán</span>
+        </button>
+    </nav>
+
+    <!-- Tab Panels -->
+    <div class="policies-panels">
+
+        <!-- ======================== PRIVACY POLICY ======================== -->
+        <section class="policies-panel is-active"
+                 role="tabpanel"
+                 id="panel-privacy"
+                 aria-labelledby="tab-privacy"
+                 data-panel="privacy">
+            <div class="legal-content">
+                <article class="legal-card">
+                    <h2>Thông tin thu thập</h2>
+                    <p>Chúng tôi thu thập dữ liệu cần thiết để xử lý đơn hàng và hỗ trợ khách hàng. Dưới đây là các loại thông tin mà PeakGear có thể thu thập khi bạn sử dụng dịch vụ:</p>
+                    <ul class="legal-list">
+                        <li>Thông tin cá nhân: họ tên, địa chỉ email, số điện thoại liên hệ.</li>
+                        <li>Địa chỉ giao hàng, địa chỉ thanh toán và lịch sử đơn hàng.</li>
+                        <li>Thông tin tương tác khi bạn liên hệ qua email, điện thoại hoặc chat hỗ trợ.</li>
+                        <li>Dữ liệu kỹ thuật: địa chỉ IP, loại trình duyệt, hệ điều hành và thiết bị truy cập.</li>
+                        <li>Thông tin cookie và hành vi duyệt web nhằm cải thiện trải nghiệm mua sắm.</li>
+                        <li>Thông tin đăng ký tài khoản bao gồm tên đăng nhập và mật khẩu đã mã hóa.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Mục đích sử dụng</h2>
+                    <p>Dữ liệu của bạn chỉ được sử dụng để phục vụ hoạt động mua sắm và chăm sóc khách hàng. Cụ thể, PeakGear sử dụng thông tin cho các mục đích sau:</p>
+                    <ul class="legal-list">
+                        <li>Xác nhận, xử lý và giao đơn hàng đến đúng địa chỉ người nhận.</li>
+                        <li>Hỗ trợ đổi trả, bảo hành và tư vấn lựa chọn trang bị leo núi phù hợp.</li>
+                        <li>Gửi thông báo về chương trình khuyến mãi, sản phẩm mới nếu bạn đăng ký nhận tin.</li>
+                        <li>Phân tích xu hướng mua sắm để cải thiện chất lượng dịch vụ và trải nghiệm người dùng.</li>
+                        <li>Ngăn chặn gian lận, bảo vệ an toàn giao dịch và phát hiện hoạt động bất thường.</li>
+                        <li>Tuân thủ các nghĩa vụ pháp lý theo quy định hiện hành của pháp luật Việt Nam.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Bảo mật và lưu trữ</h2>
+                    <p>Chúng tôi áp dụng các biện pháp bảo mật tiên tiến để ngăn chặn truy cập trái phép và bảo vệ dữ liệu cá nhân của bạn:</p>
+                    <ul class="legal-list">
+                        <li>Dữ liệu được lưu trữ trên máy chủ bảo mật với kiểm soát truy cập nghiêm ngặt.</li>
+                        <li>Mã hóa SSL/TLS cho toàn bộ giao dịch và truyền tải dữ liệu nhạy cảm.</li>
+                        <li>Không chia sẻ dữ liệu cho bên thứ ba nếu không có sự đồng ý từ bạn, trừ trường hợp pháp luật yêu cầu.</li>
+                        <li>Bạn có quyền yêu cầu xem, chỉnh sửa hoặc xoá thông tin cá nhân bất kỳ lúc nào.</li>
+                        <li>Dữ liệu thanh toán không được lưu trữ trên hệ thống của PeakGear mà được xử lý qua cổng thanh toán bảo mật.</li>
+                        <li>Định kỳ rà soát và cập nhật chính sách bảo mật phù hợp với tiêu chuẩn mới nhất.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Cookie và công nghệ theo dõi</h2>
+                    <p>Website PeakGear sử dụng cookie để nâng cao trải nghiệm người dùng:</p>
+                    <ul class="legal-list">
+                        <li>Cookie thiết yếu: duy trì phiên đăng nhập và giỏ hàng của bạn.</li>
+                        <li>Cookie phân tích: giúp chúng tôi hiểu cách bạn sử dụng website để cải thiện dịch vụ.</li>
+                        <li>Cookie tiếp thị: hiển thị nội dung và quảng cáo phù hợp với sở thích của bạn.</li>
+                        <li>Bạn có thể từ chối cookie thông qua cài đặt trình duyệt, tuy nhiên một số tính năng có thể bị hạn chế.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Quyền của khách hàng</h2>
+                    <p>Theo quy định pháp luật, bạn có các quyền sau đối với dữ liệu cá nhân:</p>
+                    <ul class="legal-list">
+                        <li>Quyền truy cập: yêu cầu xem toàn bộ dữ liệu cá nhân mà PeakGear đang lưu trữ.</li>
+                        <li>Quyền chỉnh sửa: cập nhật hoặc sửa đổi thông tin cá nhân không chính xác.</li>
+                        <li>Quyền xoá: yêu cầu xoá dữ liệu cá nhân khi không còn cần thiết.</li>
+                        <li>Quyền phản đối: từ chối việc sử dụng dữ liệu cho mục đích tiếp thị.</li>
+                        <li>Mọi yêu cầu vui lòng gửi về email: <strong>support@peakgear.vn</strong></li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ======================== TERMS OF USE ======================== -->
+        <section class="policies-panel"
+                 role="tabpanel"
+                 id="panel-terms"
+                 aria-labelledby="tab-terms"
+                 data-panel="terms"
+                 hidden>
+            <div class="legal-content">
+                <article class="legal-card">
+                    <h2>Quy định chung</h2>
+                    <p>Khi truy cập và sử dụng website PeakGear, bạn đồng ý tuân thủ các điều khoản dưới đây. Vui lòng đọc kỹ trước khi sử dụng dịch vụ:</p>
+                    <ul class="legal-list">
+                        <li>Thông tin sản phẩm, hình ảnh và giá có thể thay đổi mà không cần báo trước.</li>
+                        <li>Khách hàng cần kiểm tra kỹ mô tả, thông số kỹ thuật và hướng dẫn sử dụng trước khi đặt hàng.</li>
+                        <li>PeakGear có quyền từ chối hoặc huỷ đơn hàng nếu phát hiện dấu hiệu bất thường hoặc gian lận.</li>
+                        <li>Người dùng phải từ 18 tuổi trở lên hoặc có sự đồng ý của phụ huynh khi mua hàng.</li>
+                        <li>Nghiêm cấm sử dụng website cho mục đích trái pháp luật hoặc xâm phạm quyền lợi của bên thứ ba.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Tài khoản người dùng</h2>
+                    <p>Khi đăng ký tài khoản tại PeakGear, bạn có trách nhiệm:</p>
+                    <ul class="legal-list">
+                        <li>Cung cấp thông tin chính xác, đầy đủ và cập nhật khi có thay đổi.</li>
+                        <li>Bảo mật mật khẩu và thông tin đăng nhập, không chia sẻ cho người khác.</li>
+                        <li>Chịu trách nhiệm cho mọi hoạt động diễn ra dưới tài khoản của mình.</li>
+                        <li>Thông báo ngay cho PeakGear nếu phát hiện truy cập trái phép vào tài khoản.</li>
+                        <li>PeakGear có quyền khoá hoặc xoá tài khoản vi phạm điều khoản sử dụng.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Đặt hàng và thanh toán</h2>
+                    <p>Chúng tôi hỗ trợ nhiều phương thức thanh toán và xác nhận đơn hàng nhanh chóng. Quy trình đặt hàng bao gồm:</p>
+                    <ul class="legal-list">
+                        <li>Đơn hàng chỉ được xử lý khi có thông tin liên hệ hợp lệ và xác nhận từ khách hàng.</li>
+                        <li>Thanh toán có thể thực hiện qua chuyển khoản ngân hàng, thẻ tín dụng/ghi nợ hoặc cổng thanh toán trực tuyến.</li>
+                        <li>Trong trường hợp lỗi giá hiển thị, PeakGear sẽ liên hệ để xác nhận lại trước khi xử lý đơn hàng.</li>
+                        <li>Đơn hàng được xác nhận qua email và/hoặc tin nhắn SMS trong vòng 24 giờ.</li>
+                        <li>PeakGear có quyền giới hạn số lượng sản phẩm mua trong một đơn hàng.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Sở hữu trí tuệ</h2>
+                    <p>Toàn bộ nội dung trên website PeakGear được bảo vệ bởi luật sở hữu trí tuệ:</p>
+                    <ul class="legal-list">
+                        <li>Hình ảnh, thiết kế, logo và nội dung văn bản thuộc quyền sở hữu của PeakGear.</li>
+                        <li>Nghiêm cấm sao chép, phân phối hoặc sử dụng nội dung mà không có sự cho phép bằng văn bản.</li>
+                        <li>Các thương hiệu sản phẩm được nhắc đến thuộc quyền sở hữu của nhà sản xuất tương ứng.</li>
+                        <li>Vi phạm bản quyền có thể bị xử lý theo quy định pháp luật Việt Nam.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Giới hạn trách nhiệm</h2>
+                    <p>PeakGear nỗ lực cung cấp dịch vụ tốt nhất, tuy nhiên:</p>
+                    <ul class="legal-list">
+                        <li>PeakGear không chịu trách nhiệm cho thiệt hại gián tiếp phát sinh từ việc sử dụng website.</li>
+                        <li>Chúng tôi không đảm bảo website hoạt động liên tục và không có lỗi kỹ thuật.</li>
+                        <li>Khách hàng tự chịu trách nhiệm kiểm tra tính tương thích của sản phẩm với nhu cầu sử dụng.</li>
+                        <li>Đối với trang bị leo núi chuyên dụng, khách hàng cần tuân thủ hướng dẫn an toàn của nhà sản xuất.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ======================== SHIPPING POLICY ======================== -->
+        <section class="policies-panel"
+                 role="tabpanel"
+                 id="panel-shipping"
+                 aria-labelledby="tab-shipping"
+                 data-panel="shipping"
+                 hidden>
+            <div class="legal-content">
+                <article class="legal-card">
+                    <h2>Phạm vi giao hàng</h2>
+                    <p>PeakGear giao hàng trên toàn quốc thông qua các đối tác vận chuyển uy tín:</p>
+                    <ul class="legal-list">
+                        <li>Giao hàng toàn quốc 63 tỉnh thành tại Việt Nam.</li>
+                        <li>Đối tác vận chuyển: Giao Hàng Nhanh (GHN), Giao Hàng Tiết Kiệm (GHTK), Viettel Post và J&amp;T Express.</li>
+                        <li>Hỗ trợ giao hàng đến các khu vực miền núi, hải đảo với thời gian linh hoạt.</li>
+                        <li>Khách hàng có thể nhận hàng trực tiếp tại cửa hàng PeakGear.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Thời gian giao hàng</h2>
+                    <p>Thời gian giao hàng dự kiến được tính từ khi đơn hàng được xác nhận thanh toán:</p>
+                    <ul class="legal-list">
+                        <li>Nội thành TP. Hồ Chí Minh và Hà Nội: 1 &ndash; 2 ngày làm việc.</li>
+                        <li>Các tỉnh lân cận và khu vực đồng bằng: 2 &ndash; 4 ngày làm việc.</li>
+                        <li>Khu vực miền núi, vùng sâu, vùng xa: 4 &ndash; 7 ngày làm việc.</li>
+                        <li>Đơn hàng đặt trước 14:00 trong ngày làm việc sẽ được xử lý và gửi đi trong ngày.</li>
+                        <li>Thời gian giao hàng có thể kéo dài trong dịp lễ, Tết hoặc khi có thiên tai.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Phí vận chuyển</h2>
+                    <p>Phí vận chuyển được tính dựa trên khối lượng, kích thước và địa chỉ giao hàng:</p>
+                    <ul class="legal-list">
+                        <li><strong>Miễn phí vận chuyển</strong> cho đơn hàng từ 1.000.000 VNĐ trở lên (nội thành).</li>
+                        <li>Đơn hàng dưới 1.000.000 VNĐ: phí vận chuyển từ 25.000 &ndash; 45.000 VNĐ tùy khu vực.</li>
+                        <li>Sản phẩm cồng kềnh (lều, balo lớn, khung leo): có thể phát sinh phụ phí vận chuyển.</li>
+                        <li>Giao hàng hoả tốc trong nội thành: phụ phí 30.000 &ndash; 50.000 VNĐ.</li>
+                        <li>Phí vận chuyển được hiển thị rõ ràng tại bước thanh toán trước khi xác nhận đơn hàng.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Kiểm tra và nhận hàng</h2>
+                    <p>Để đảm bảo quyền lợi, khách hàng cần lưu ý khi nhận hàng:</p>
+                    <ul class="legal-list">
+                        <li>Kiểm tra tình trạng bao bì bên ngoài trước khi ký nhận.</li>
+                        <li>Đối chiếu sản phẩm nhận được với thông tin trên đơn hàng (mẫu mã, số lượng, kích thước).</li>
+                        <li>Quay video hoặc chụp ảnh khi mở hàng để làm bằng chứng nếu có sai sót.</li>
+                        <li>Thông báo ngay cho PeakGear trong vòng 24 giờ nếu phát hiện hàng bị hư hỏng hoặc sai sản phẩm.</li>
+                        <li>Trường hợp không có người nhận, đơn vị vận chuyển sẽ liên hệ lại và lưu kho tối đa 3 ngày.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ======================== RETURNS & WARRANTY ======================== -->
+        <section class="policies-panel"
+                 role="tabpanel"
+                 id="panel-returns"
+                 aria-labelledby="tab-returns"
+                 data-panel="returns"
+                 hidden>
+            <div class="legal-content">
+                <article class="legal-card">
+                    <h2>Chính sách đổi trả</h2>
+                    <p>PeakGear cam kết đồng hành để đảm bảo bạn có trải nghiệm mua sắm tốt nhất. Chúng tôi chấp nhận đổi trả trong các trường hợp sau:</p>
+                    <ul class="legal-list">
+                        <li>Hỗ trợ đổi trả trong vòng <strong>30 ngày</strong> kể từ ngày nhận hàng nếu sản phẩm còn nguyên tem, nhãn mác.</li>
+                        <li>Sản phẩm bị lỗi kỹ thuật từ nhà sản xuất: đổi mới hoặc hoàn tiền 100%.</li>
+                        <li>Sản phẩm không đúng mô tả trên website: đổi hàng miễn phí hoặc hoàn tiền.</li>
+                        <li>Giao nhầm sản phẩm, sai kích thước hoặc sai màu: đổi ngay không phát sinh phí.</li>
+                        <li>Sản phẩm bị hư hỏng trong quá trình vận chuyển: đổi mới miễn phí.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Điều kiện đổi trả</h2>
+                    <p>Để yêu cầu đổi trả được xử lý nhanh chóng, sản phẩm cần đáp ứng các điều kiện:</p>
+                    <ul class="legal-list">
+                        <li>Sản phẩm còn nguyên trạng, chưa qua sử dụng, còn đầy đủ bao bì và phụ kiện đi kèm.</li>
+                        <li>Có hoá đơn mua hàng hoặc mã đơn hàng để đối chiếu.</li>
+                        <li>Không áp dụng đổi trả cho sản phẩm giảm giá trên 50% hoặc hàng thanh lý.</li>
+                        <li>Sản phẩm thuộc danh mục vệ sinh cá nhân (khăn, túi ngủ đã tháo seal) không được đổi trả.</li>
+                        <li>Chi phí vận chuyển đổi trả do PeakGear chịu nếu lỗi thuộc về chúng tôi.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Quy trình đổi trả</h2>
+                    <p>Các bước thực hiện đổi trả sản phẩm tại PeakGear:</p>
+                    <ul class="legal-list">
+                        <li><strong>Bước 1:</strong> Liên hệ bộ phận hỗ trợ qua hotline, email hoặc chat trực tiếp trên website.</li>
+                        <li><strong>Bước 2:</strong> Cung cấp mã đơn hàng, hình ảnh/video sản phẩm và mô tả vấn đề.</li>
+                        <li><strong>Bước 3:</strong> Nhân viên xác nhận yêu cầu và hướng dẫn gửi trả sản phẩm.</li>
+                        <li><strong>Bước 4:</strong> PeakGear kiểm tra sản phẩm trong 1 &ndash; 2 ngày làm việc.</li>
+                        <li><strong>Bước 5:</strong> Gửi sản phẩm thay thế hoặc hoàn tiền trong 3 &ndash; 5 ngày làm việc.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Chính sách bảo hành</h2>
+                    <p>PeakGear cung cấp bảo hành chính hãng cho tất cả sản phẩm theo chính sách của nhà sản xuất:</p>
+                    <ul class="legal-list">
+                        <li>Bảo hành chính hãng từ 6 tháng đến 2 năm tùy theo nhà sản xuất và loại sản phẩm.</li>
+                        <li>Trang bị leo núi chuyên dụng (dây, khóa, harness): bảo hành theo tiêu chuẩn an toàn quốc tế.</li>
+                        <li>Balo và túi outdoor: bảo hành khoá kéo, đường may và khung trong 12 tháng.</li>
+                        <li>Giày leo núi: bảo hành đế và đường may trong 6 tháng sử dụng bình thường.</li>
+                        <li>Không bảo hành cho hư hỏng do sử dụng sai mục đích, tác động ngoại lực mạnh hoặc thiên tai.</li>
+                        <li>Liên hệ hotline <strong>1900 xxxx</strong> hoặc email <strong>warranty@peakgear.vn</strong> để được hỗ trợ.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ======================== PAYMENT POLICY ======================== -->
+        <section class="policies-panel"
+                 role="tabpanel"
+                 id="panel-payment"
+                 aria-labelledby="tab-payment"
+                 data-panel="payment"
+                 hidden>
+            <div class="legal-content">
+                <article class="legal-card">
+                    <h2>Phương thức thanh toán</h2>
+                    <p>PeakGear hỗ trợ đa dạng phương thức thanh toán để bạn lựa chọn thuận tiện nhất:</p>
+                    <ul class="legal-list">
+                        <li><strong>Thanh toán khi nhận hàng (COD):</strong> Thanh toán trực tiếp cho nhân viên giao hàng bằng tiền mặt.</li>
+                        <li><strong>Chuyển khoản ngân hàng:</strong> Chuyển khoản đến tài khoản PeakGear tại các ngân hàng lớn (Vietcombank, Techcombank, MB Bank).</li>
+                        <li><strong>Thẻ tín dụng / ghi nợ:</strong> Chấp nhận Visa, Mastercard, JCB qua cổng thanh toán bảo mật.</li>
+                        <li><strong>Ví điện tử:</strong> Hỗ trợ thanh toán qua MoMo, ZaloPay, VNPay và ShopeePay.</li>
+                        <li><strong>Trả góp 0%:</strong> Hỗ trợ trả góp qua thẻ tín dụng cho đơn hàng từ 3.000.000 VNĐ (kỳ hạn 3 &ndash; 12 tháng).</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Quy trình thanh toán trực tuyến</h2>
+                    <p>Thanh toán trực tuyến tại PeakGear được thực hiện qua cổng thanh toán bảo mật đạt chuẩn PCI DSS:</p>
+                    <ul class="legal-list">
+                        <li>Chọn sản phẩm, thêm vào giỏ hàng và tiến hành thanh toán.</li>
+                        <li>Điền thông tin giao hàng và chọn phương thức thanh toán mong muốn.</li>
+                        <li>Xác nhận đơn hàng và hoàn tất thanh toán trên trang bảo mật.</li>
+                        <li>Nhận email xác nhận đơn hàng và biên lai thanh toán điện tử.</li>
+                        <li>Thông tin thẻ không được lưu trữ trên hệ thống PeakGear.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Hoá đơn và chứng từ</h2>
+                    <p>PeakGear cung cấp đầy đủ hoá đơn và chứng từ theo quy định:</p>
+                    <ul class="legal-list">
+                        <li>Hoá đơn điện tử (e-invoice) được gửi qua email sau khi đơn hàng hoàn thành.</li>
+                        <li>Khách hàng doanh nghiệp có thể yêu cầu xuất hoá đơn VAT khi đặt hàng.</li>
+                        <li>Vui lòng cung cấp thông tin xuất hoá đơn trước khi đơn hàng được giao.</li>
+                        <li>Yêu cầu xuất hoá đơn sau 7 ngày kể từ ngày mua có thể không được hỗ trợ.</li>
+                    </ul>
+                </article>
+
+                <article class="legal-card">
+                    <h2>Chính sách hoàn tiền</h2>
+                    <p>Trong trường hợp đơn hàng bị huỷ hoặc đổi trả, PeakGear thực hiện hoàn tiền như sau:</p>
+                    <ul class="legal-list">
+                        <li>Hoàn tiền qua hình thức thanh toán ban đầu trong 5 &ndash; 7 ngày làm việc.</li>
+                        <li>Thanh toán COD: hoàn tiền qua chuyển khoản ngân hàng trong 3 &ndash; 5 ngày làm việc.</li>
+                        <li>Thanh toán thẻ tín dụng: hoàn tiền về thẻ trong 7 &ndash; 14 ngày làm việc (tuỳ ngân hàng phát hành).</li>
+                        <li>Thanh toán ví điện tử: hoàn tiền về ví trong 1 &ndash; 3 ngày làm việc.</li>
+                        <li>Phí vận chuyển ban đầu chỉ được hoàn khi lỗi thuộc về PeakGear.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+    </div><!-- /.policies-panels -->
+
+    <!-- Last Updated -->
+    <div class="policies-footer">
+        <p>Cập nhật lần cuối: Tháng 3, 2026 &bull; Mọi thắc mắc vui lòng liên hệ <strong>support@peakgear.vn</strong></p>
+    </div>
+</div>
+
+<!-- Policies Page Styles (extends existing .legal-* classes from _theme.less) -->
+<style>
+    /* ---- Tab Navigation ---- */
+    .policies-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 0.25rem;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(245,158,11,0.3) transparent;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .policies-tabs::-webkit-scrollbar {
+        height: 4px;
+    }
+    .policies-tabs::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .policies-tabs::-webkit-scrollbar-thumb {
+        background: rgba(245,158,11,0.3);
+        border-radius: 4px;
+    }
+
+    .policies-tab {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 0.75rem;
+        background: transparent;
+        color: rgba(255,255,255,0.6);
+        font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .policies-tab:hover {
+        color: #fff;
+        border-color: rgba(245,158,11,0.4);
+        background: rgba(245,158,11,0.08);
+    }
+
+    .policies-tab:focus-visible {
+        box-shadow: 0 0 0 2px rgba(245,158,11,0.5);
+    }
+
+    .policies-tab.is-active {
+        color: #0f0f1a;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-color: transparent;
+        font-weight: 600;
+    }
+
+    .policies-tab-icon {
+        width: 1.125rem;
+        height: 1.125rem;
+        flex-shrink: 0;
+    }
+
+    /* ---- Tab Panels ---- */
+    .policies-panel {
+        display: none;
+        animation: policiesFadeIn 0.35s ease;
+    }
+
+    .policies-panel.is-active {
+        display: block;
+    }
+
+    @keyframes policiesFadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Footer ---- */
+    .policies-footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        text-align: center;
+    }
+    .policies-footer p {
+        margin: 0;
+        color: rgba(255,255,255,0.45);
+        font-size: 0.85rem;
+    }
+    .policies-footer strong {
+        color: #f59e0b;
+    }
+
+    /* ---- Responsive: stack tabs vertically on small screens ---- */
+    @media (max-width: 767px) {
+        .policies-tabs {
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+        .policies-tab {
+            justify-content: flex-start;
+            padding: 0.875rem 1rem;
+            border-radius: 0.625rem;
+        }
+    }
+</style>
+
+<!-- Tab Switching (vanilla JS, no jQuery) -->
+<script>
+    (function () {
+        'use strict';
+
+        var tabs   = document.querySelectorAll('.policies-tab');
+        var panels = document.querySelectorAll('.policies-panel');
+
+        if (!tabs.length || !panels.length) return;
+
+        function activate(tabKey) {
+            tabs.forEach(function (t) {
+                var isTarget = t.getAttribute('data-tab') === tabKey;
+                t.classList.toggle('is-active', isTarget);
+                t.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+            });
+            panels.forEach(function (p) {
+                var isTarget = p.getAttribute('data-panel') === tabKey;
+                p.classList.toggle('is-active', isTarget);
+                if (isTarget) {
+                    p.removeAttribute('hidden');
+                } else {
+                    p.setAttribute('hidden', '');
+                }
+            });
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                activate(this.getAttribute('data-tab'));
+            });
+        });
+
+        // Keyboard navigation (left/right arrows between tabs)
+        var tabArray = Array.prototype.slice.call(tabs);
+        tabArray.forEach(function (tab, index) {
+            tab.addEventListener('keydown', function (e) {
+                var dir = 0;
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') dir = 1;
+                if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   dir = -1;
+                if (dir === 0) return;
+                e.preventDefault();
+                var next = (index + dir + tabArray.length) % tabArray.length;
+                tabArray[next].focus();
+                activate(tabArray[next].getAttribute('data-tab'));
+            });
+        });
+
+        // Support direct linking via hash (e.g. #shipping)
+        var hash = window.location.hash.replace('#', '');
+        if (hash) {
+            var match = document.querySelector('.policies-tab[data-tab="' + hash + '"]');
+            if (match) activate(hash);
+        }
+    })();
+</script>

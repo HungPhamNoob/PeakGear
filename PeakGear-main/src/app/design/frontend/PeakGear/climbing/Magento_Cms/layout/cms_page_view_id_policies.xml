@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * PeakGear Climbing Theme - Merged Policies Page Layout
+ *
+ * CMS Page layout handle: set URL key "policies" when creating the CMS page in admin.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column">
+    <head>
+        <title>Chính sách &amp; Điều khoản - PeakGear</title>
+        <meta name="description" content="Chính sách bảo mật, điều khoản sử dụng, giao hàng, đổi trả, bảo hành và thanh toán tại PeakGear."/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="policies.page"
+                   template="Magento_Cms::legal/policies.phtml"
+                   before="-"/>
+        </referenceContainer>
+        <referenceBlock name="cms_page" remove="true"/>
+        <referenceBlock name="page.main.title" remove="true"/>
+    </body>
+</page>

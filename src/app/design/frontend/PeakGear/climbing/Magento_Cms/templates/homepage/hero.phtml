@@ -2,10 +2,14 @@
 /**
  * PeakGear Climbing Theme - Hero Section
  *
- * @var \Vendor\Weather\Block\Weather $block
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
  */
-$baseUrl = $block->getBaseUrl();
-$heroCities = $block->getHeroCitiesWeather(8);
+
+/** @var \Vendor\Weather\Block\Weather $weatherBlock */
+$weatherBlock = $block;
+$baseUrl = $weatherBlock->getBaseUrl();
+$heroCities = $weatherBlock->getHeroCitiesWeather(8);
 $heroWeatherJson = json_encode($heroCities, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 // ── Server-side initial values (shown before KnockoutJS hydrates) ──────────
@@ -50,13 +54,6 @@ try {
         <div class="hero-bg-image" style="background-image: url('<?= $block->escapeUrl($block->getViewFileUrl('images/hero-mountains.jpg')) ?>')"></div>
         <div class="hero-overlay-vertical"></div>
         <div class="hero-overlay-horizontal"></div>
-    </div>
-
-    <!-- Decorative dots pattern -->
-    <div class="hero-dots">
-        <?php for ($i = 0; $i < 24; $i++): ?>
-        <div class="hero-dot"></div>
-        <?php endfor; ?>
     </div>
 
     <!-- Main Content -->

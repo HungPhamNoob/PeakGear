@@ -1,0 +1,38 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Product Form wrapper
+ * Renders the product add-to-cart form with proper hidden fields.
+ * This wraps both the configurable options (swatches) and the addtocart block.
+ *
+ * @var \Magento\Catalog\Block\Product\View $block
+ */
+$product = $block->getProduct();
+?>
+
+<div class="pdp-form-wrapper">
+    <form data-product-sku="<?= $block->escapeHtml($product->getSku()) ?>"
+          action="<?= $block->escapeUrl($block->getSubmitUrl($product)) ?>"
+          method="post"
+          id="product_addtocart_form"
+          <?php if ($product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>>
+        <input type="hidden" name="product" value="<?= (int)$product->getId() ?>" />
+        <input type="hidden" name="selected_configurable_option" value="" />
+        <input type="hidden" name="related_product" id="related-products-field" value="" />
+        <input type="hidden" name="item" value="<?= (int)$block->getRequest()->getParam('id') ?>" />
+        <?= $block->getBlockHtml('formkey') ?>
+
+        <?php // Render options container (configurable swatches/dropdowns) ?>
+        <?= $block->getChildChildHtml('options_container') ?>
+
+        <?php // Render add-to-cart content (qty, button, etc.) ?>
+        <?= $block->getChildHtml('product_info_form_content') ?>
+    </form>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "#product_addtocart_form": {
+            "catalogAddToCart": {}
+        }
+    }
+</script>

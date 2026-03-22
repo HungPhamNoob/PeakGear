@@ -1,0 +1,51 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Privacy Policy Page
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+$heroImage = $block->getViewFileUrl('images/hero-mountains.jpg');
+?>
+
+<div class="legal-page">
+    <section class="legal-hero">
+        <div class="legal-hero-bg" style="background-image: url('<?= $block->escapeUrl($heroImage) ?>')"></div>
+        <div class="legal-hero-overlay"></div>
+        <div class="legal-hero-content">
+            <h1 class="legal-hero-title">Chính sách bảo mật</h1>
+            <p class="legal-hero-subtitle">PeakGear cam kết bảo vệ dữ liệu cá nhân và minh bạch cách chúng tôi sử dụng thông tin.</p>
+        </div>
+    </section>
+
+    <div class="legal-content">
+        <article class="legal-card">
+            <h2>Thông tin thu thập</h2>
+            <p>Chúng tôi thu thập dữ liệu cần thiết để xử lý đơn hàng và hỗ trợ khách hàng.</p>
+            <ul class="legal-list">
+                <li>Thông tin liên hệ: họ tên, email, số điện thoại.</li>
+                <li>Địa chỉ giao hàng và lịch sử đơn hàng.</li>
+                <li>Thông tin tương tác khi bạn liên hệ hoặc để lại yêu cầu.</li>
+            </ul>
+        </article>
+
+        <article class="legal-card">
+            <h2>Mục đích sử dụng</h2>
+            <p>Dữ liệu của bạn chỉ được dùng để phục vụ hoạt động mua sắm và chăm sóc khách hàng.</p>
+            <ul class="legal-list">
+                <li>Xác nhận, xử lý và giao đơn hàng.</li>
+                <li>Hỗ trợ đổi trả, bảo hành và tư vấn sản phẩm.</li>
+                <li>Gửi thông báo về chương trình khuyến mãi nếu bạn đăng ký nhận tin.</li>
+            </ul>
+        </article>
+
+        <article class="legal-card">
+            <h2>Bảo mật và lưu trữ</h2>
+            <p>Chúng tôi áp dụng các biện pháp bảo mật để ngăn chặn truy cập trái phép.</p>
+            <ul class="legal-list">
+                <li>Dữ liệu được lưu trữ có kiểm soát và giới hạn quyền truy cập.</li>
+                <li>Không chia sẻ dữ liệu cho bên thứ ba nếu không có sự đồng ý từ bạn.</li>
+                <li>Bạn có thể yêu cầu chỉnh sửa hoặc xoá thông tin bất kỳ lúc nào.</li>
+            </ul>
+        </article>
+    </div>
+</div>

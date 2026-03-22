@@ -1,0 +1,14 @@
+.git
+.gitignore
+Backend
+Frontend
+scripts
+*.md
+LICENSE
+.env
+.env.*
+docker-compose.override.yaml
+*.log
+.DS_Store
+Thumbs.db
+src

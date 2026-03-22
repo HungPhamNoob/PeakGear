@@ -128,7 +128,7 @@ $cities = $block->getNewsCitiesWeather(12);
                  data-city="<?= $block->escapeHtmlAttr((string)$weather['city_name']) ?>"
                  tabindex="0"
                  role="button"
-                 aria-label="Xem biểu đồ 7 ngày cho <?= $block->escapeHtmlAttr((string)$weather['city_name']) ?>">
+                 aria-label="Xem biểu đồ 10 ngày cho <?= $block->escapeHtmlAttr((string)$weather['city_name']) ?>">
             <div class="news-weather-city"><?= $block->escapeHtml((string)$weather['city_name']) ?></div>
             <div class="news-weather-main">
                 <img src="<?= $block->escapeUrl($block->getIconUrl((string)$weather['icon_code'])) ?>"
@@ -147,7 +147,7 @@ $cities = $block->getNewsCitiesWeather(12);
 
     <section class="news-weather-chart" id="newsWeatherChart" hidden>
         <div class="news-weather-chart-head">
-            <h3 id="newsWeatherChartTitle">Biểu đồ 7 ngày</h3>
+            <h3 id="newsWeatherChartTitle">Biểu đồ 10 ngày</h3>
             <p id="newsWeatherChartSub">Chọn một thành phố để xem dự báo chi tiết.</p>
         </div>
         <div class="news-weather-chart-canvas">
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderWeekly(city, days, source, timestamp) {
         chartWrap.hidden = false;
-        chartTitle.textContent = 'Biểu đồ thời tiết 7 ngày - ' + city;
+        chartTitle.textContent = 'Biểu đồ thời tiết 10 ngày - ' + city;
         drawChart(days);
         drawMeta(days);
 

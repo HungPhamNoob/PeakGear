@@ -1,0 +1,10 @@
+/*
+ * peakgear-icons.css — STUB (intentionally empty)
+ *
+ * This file's rules have been merged into the LESS source tree:
+ *   - Unique action-btn rules  → web/css/source/_header.less
+ *   - Duplicate selectors removed (already covered by _reset.less / _header.less)
+ *
+ * The <css> reference in Magento_Theme/layout/default.xml has been removed.
+ * This stub is kept to prevent stale HTTP-cache 404s during deployment.
+ */
