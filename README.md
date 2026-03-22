@@ -105,8 +105,11 @@ docker compose exec php bash
 # =========================================================
 # PeakGear Magento Workflow (Docker Compose)
 # Mục tiêu: rerender nhanh, rõ pipeline, tránh chạy dư.
-# Service php đã cấu hình user www-data trong docker-compose,
-# nên không cần thêm flag -u www-data khi exec.
+# Lưu ý quyền:
+# - PHP-FPM xử lý request web bằng user www-data
+# - service php đã chạy mặc định user www-data
+# - docker compose exec php sẽ cùng user đó, tránh tạo file root:root
+# Không nên dùng chmod 777 như cách fix mặc định.
 # =========================================================
 
 # Pipeline 0: Kiểm tra module (chỉ khi cần xác minh)
@@ -124,6 +127,9 @@ docker compose exec php php /var/www/html/bin/magento setup:static-content:deplo
 docker compose exec php php /var/www/html/bin/magento setup:upgrade
 docker compose exec php php /var/www/html/bin/magento cache:flush
 
+# Lưu ý: bin/magento đã được patch để setup:upgrade tự bật --keep-generated,
+# giúp tránh mất các interceptor quan trọng khi chạy lại pipeline nhiều lần.
+
 # Pipeline 4: Khi dữ liệu index bị lệch (catalog/product/price...)
 docker compose exec php php /var/www/html/bin/magento indexer:reindex
 
@@ -136,22 +142,36 @@ docker compose exec php php /var/www/html/bin/magento setup:static-content:deplo
 docker compose exec php php /var/www/html/bin/magento indexer:reindex
 ```
 
-### One-time fix để `docker compose exec php ...` chạy đúng user (không cần `--user`)
+### One-time fix quyền cho thư mục Magento writable
 
-Nếu từng chạy lệnh Magento bằng root trước đó, hãy chạy 1 lần:
+Nếu pull code cũ và từng bị tạo file `root:root`, chạy 1 lần để đồng bộ lại ownership:
 
 ```bash
 docker compose up -d --no-deps --force-recreate php
 docker compose exec php id
-docker compose exec --user root php chown -R www-data:www-data /var/www/html/pub/static /var/www/html/var /var/www/html/generated
+bash scripts/fix-magento-permissions.sh
 ```
 
-Kết quả mong muốn của `docker compose exec php id`: `uid=33(www-data)`.
+Kỳ vọng sau khi recreate: `docker compose exec php id` trả về `uid=33(www-data)`.
 
-### Fix lỗi permission (pub/static, var, generated)
+### Fix lỗi permission (không dùng `777`)
 
 ```bash
-docker compose exec --user root php chown -R www-data:www-data /var/www/html/pub/static /var/www/html/var /var/www/html/generated
+docker compose exec --user root php chown -R www-data:www-data /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media /var/www/html/generated
+docker compose exec --user root php find /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media /var/www/html/generated -type d -exec chmod 775 {} \;
+docker compose exec --user root php find /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media /var/www/html/generated -type f -exec chmod 664 {} \;
+docker compose exec --user root php chgrp www-data /var/www/html/app/etc
+docker compose exec --user root php chmod 2775 /var/www/html/app/etc
+docker compose exec --user root php chgrp www-data /var/www/html/app/etc/config.php /var/www/html/app/etc/env.php
+docker compose exec --user root php chmod 664 /var/www/html/app/etc/config.php
+docker compose exec --user root php chmod 660 /var/www/html/app/etc/env.php
+```
+
+Nếu `setup:upgrade` vẫn báo `app/etc/config.php` không writable, sửa nhanh file đó:
+
+```bash
+docker compose exec --user root php chown www-data:www-data /var/www/html/app/etc/config.php
+docker compose exec --user root php chmod 664 /var/www/html/app/etc/config.php
 ```
 
 ## Cấu trúc dự án
@@ -217,6 +237,24 @@ docker compose logs
 # Khởi động lại từ đầu
 docker compose down
 docker compose up -d
+```
+
+### `FileSystemException: The path ".../pub/static/..." is not writable`
+
+Nguyên nhân gốc là request web chạy bằng `www-data`, nhưng các thư mục writable của Magento như `var/`, `pub/static/`, `pub/media/`, `generated/` không thuộc quyền ghi của user đó.
+
+Fix đúng là sửa ownership và permission như mục trên. Không dùng `chmod -R 777`, vì đó chỉ che lỗi quyền và làm môi trường dev bẩn, khó kiểm soát.
+
+### `ReflectionException: Class "Magento\\Framework\\App\\Http\\Interceptor" does not exist`
+
+Nguyên nhân gốc: `setup:upgrade` có thể dọn `generated/code`, trong khi `Magento\\Framework\\App\\Http\\Interceptor` là class cần tồn tại sẵn trước khi bootstrap web app.
+
+Project đã fix ở `src/bin/magento`: khi chạy `setup:upgrade`, CLI tự thêm `--keep-generated` nên bạn giữ nguyên command cũ, không cần đổi workflow.
+
+Nếu môi trường hiện tại đã rơi vào trạng thái thiếu interceptor từ trước, chạy 1 lần để tái tạo:
+
+```bash
+docker compose exec php php /var/www/html/bin/magento setup:di:compile
 ```
 
 ### OpenSearch unhealthy

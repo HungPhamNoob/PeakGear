@@ -12,6 +12,8 @@ use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product\Visibility;
+use Magento\Customer\Model\Context as CustomerContext;
+use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
@@ -36,6 +38,11 @@ class CategoryList extends Template
     private $storeManager;
 
     /**
+     * @var HttpContext
+     */
+    private $httpContext;
+
+    /**
      * @var array|null
      */
     private $categoriesCache = null;
@@ -50,6 +57,7 @@ class CategoryList extends Template
      * @param CategoryRepositoryInterface $categoryRepository
      * @param Visibility $productVisibility
      * @param StoreManagerInterface $storeManager
+     * @param HttpContext $httpContext
      * @param array $data
      */
     public function __construct(
@@ -57,11 +65,13 @@ class CategoryList extends Template
         CategoryRepositoryInterface $categoryRepository,
         Visibility $productVisibility,
         StoreManagerInterface $storeManager,
+        HttpContext $httpContext,
         array $data = []
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->productVisibility = $productVisibility;
         $this->storeManager = $storeManager;
+        $this->httpContext = $httpContext;
         parent::__construct($context, $data);
     }
 
@@ -180,8 +190,17 @@ class CategoryList extends Template
             'PEAKGEAR_CATEGORY_LIST',
             $this->storeManager->getStore()->getId(),
             $this->_design->getDesignTheme()->getId(),
+            'is_customer_logged_in' => $this->isCustomerLoggedIn() ? 1 : 0,
             'template' => $this->getTemplate(),
         ];
+    }
+
+    /**
+     * Lightweight login flag for header rendering.
+     */
+    public function isCustomerLoggedIn(): bool
+    {
+        return (bool)$this->httpContext->getValue(CustomerContext::CONTEXT_AUTH);
     }
 
     /**

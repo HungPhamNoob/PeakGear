@@ -102,6 +102,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     container_name: peakgear_php
+    user: "www-data:www-data"
     restart: unless-stopped
     env_file:
       - .env

@@ -36,28 +36,6 @@
     background: linear-gradient(to right, fade(#000, 30%), transparent, fade(#000, 30%));
 }
 
-// Decorative dots
-.hero-dots {
-    position: absolute;
-    top: 6rem;
-    right: 3rem;
-    display: none;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 0.5rem;
-    opacity: 0.4;
-
-    @media (min-width: 1024px) {
-        display: grid;
-    }
-}
-
-.hero-dot {
-    width: 0.375rem;
-    height: 0.375rem;
-    background: @peakgear-text;
-    border-radius: 50%;
-}
-
 // Hero Content
 .hero-content {
     position: relative;

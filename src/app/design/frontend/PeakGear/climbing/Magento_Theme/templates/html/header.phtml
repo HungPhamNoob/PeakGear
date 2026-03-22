@@ -3,13 +3,14 @@
  * PeakGear Climbing Theme - Header Template
  * Dynamic categories loaded from Magento catalog database
  *
- * @var \PeakGear\Catalog\Block\CategoryList $block
+ * @var \PeakGear\Catalog\Block\CategoryList|\Magento\Framework\View\Element\Template $block
  */
 $logoAlt = $block->getData('logo_alt') ?: 'PeakGear';
 $baseUrl = $block->getBaseUrl();
 
 // Dynamic categories from database via CategoryList block
 $categories = $block->getCategories();
+$isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCustomerLoggedIn() : false;
 ?>
 
 <header class="peakgear-header" id="peakgear-header">
@@ -143,7 +144,7 @@ $categories = $block->getCategories();
             
             <!-- Mini Cart -->
             <div class="header-minicart">
-                <a href="<?= $block->escapeUrl($block->getUrl('checkout/cart')) ?>" class="action-btn minicart-toggle">
+                <a href="<?= $block->escapeUrl($block->getUrl('cart')) ?>" class="action-btn minicart-toggle">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="width:24px !important;height:24px !important;display:block !important;">
                         <circle cx="8" cy="21" r="1"/>
                         <circle cx="19" cy="21" r="1"/>
@@ -156,9 +157,9 @@ $categories = $block->getCategories();
             <!-- User Account -->
             <div class="header-account" id="headerAccount">
                 <!-- Logged-in state (hidden by default, shown via JS/customer-data) -->
-                <div class="account-dropdown" id="accountDropdown" style="display:none;">
+                <div class="account-dropdown" id="accountDropdown" data-logged-in="<?= $isLoggedIn ? 'true' : 'false' ?>">
                     <button class="action-btn account-toggle" type="button">
-                        <span class="account-avatar" id="accountAvatar"></span>
+                        <span class="account-avatar" id="accountAvatar"><?= $isLoggedIn ? 'U' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="display:block;margin:auto;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' ?></span>
                     </button>
                     
                     <div class="account-panel" id="accountPanel">
@@ -167,14 +168,14 @@ $categories = $block->getCategories();
                             <p class="account-email" id="accountEmail"></p>
                         </div>
                         <div class="account-links">
-                            <a href="<?= $block->escapeUrl($block->getUrl('customer/account')) ?>" class="account-link">
+                            <a href="<?= $block->escapeUrl($block->getUrl('myaccount')) ?>" class="account-link">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
                                     <circle cx="12" cy="7" r="4"/>
                                 </svg>
                                 Tài khoản
                             </a>
-                            <a href="<?= $block->escapeUrl($block->getUrl('sales/order/history')) ?>" class="account-link">
+                            <a href="<?= $block->escapeUrl($block->getUrl('myaccount/orders')) ?>" class="account-link">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
                                     <path d="M3 6h18"/>
@@ -182,13 +183,13 @@ $categories = $block->getCategories();
                                 </svg>
                                 Đơn hàng
                             </a>
-                            <a href="<?= $block->escapeUrl($block->getUrl('wishlist')) ?>" class="account-link">
+                            <a href="<?= $block->escapeUrl($block->getUrl('myaccount/wishlist')) ?>" class="account-link">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                                 </svg>
                                 Yêu thích
                             </a>
-                            <a href="<?= $block->escapeUrl($block->getUrl('customer/account/edit')) ?>" class="account-link">
+                            <a href="<?= $block->escapeUrl($block->getUrl('myaccount/info')) ?>" class="account-link">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
                                     <circle cx="12" cy="12" r="3"/>
@@ -208,7 +209,7 @@ $categories = $block->getCategories();
                 </div>
                 
                 <!-- Not logged in -->
-                <div class="auth-buttons" id="authButtons">
+                <div class="auth-buttons" id="authButtons"<?= $isLoggedIn ? ' style="display:none;"' : '' ?>>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>" class="btn btn-outline">Đăng nhập</a>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>" class="btn btn-primary">Đăng ký</a>
                 </div>
@@ -283,22 +284,22 @@ $categories = $block->getCategories();
             <!-- Mobile Auth -->
             <div class="mobile-auth" id="mobileAuth">
                 <!-- Logged-in (hidden by default) -->
-                <div class="mobile-auth-logged-in" id="mobileAuthLoggedIn" style="display:none;">
+                <div class="mobile-auth-logged-in" id="mobileAuthLoggedIn"<?= $isLoggedIn ? '' : ' style="display:none;"' ?>>
                     <div class="mobile-auth-info">
-                        <span class="mobile-auth-avatar" id="mobileAuthAvatar"></span>
+                        <span class="mobile-auth-avatar" id="mobileAuthAvatar"><?= $isLoggedIn ? 'U' : '' ?></span>
                         <div>
                             <p class="mobile-auth-name" id="mobileAuthName"></p>
                             <p class="mobile-auth-email" id="mobileAuthEmail"></p>
                         </div>
                     </div>
-                    <a href="<?= $block->escapeUrl($block->getUrl('customer/account')) ?>" class="mobile-menu-link">
+                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount')) ?>" class="mobile-menu-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
                             <circle cx="12" cy="7" r="4"/>
                         </svg>
                         Tài khoản
                     </a>
-                    <a href="<?= $block->escapeUrl($block->getUrl('sales/order/history')) ?>" class="mobile-menu-link">
+                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount/orders')) ?>" class="mobile-menu-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
                             <path d="M3 6h18"/>
@@ -317,7 +318,7 @@ $categories = $block->getCategories();
                 </div>
                 
                 <!-- Not logged in -->
-                <div class="mobile-auth-buttons" id="mobileAuthButtons">
+                <div class="mobile-auth-buttons" id="mobileAuthButtons"<?= $isLoggedIn ? ' style="display:none;"' : '' ?>>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>" class="btn btn-outline btn-block">Đăng nhập</a>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>" class="btn btn-primary btn-block">Đăng ký</a>
                 </div>
@@ -404,13 +405,46 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Account dropdown (desktop)
-    if (accountDropdown) {
-        accountDropdown.addEventListener('mouseenter', function() {
-            accountPanel.classList.add('open');
+    // Account dropdown (desktop) - click toggle
+    var accountDropdownOpen = false;
+    if (accountDropdown && accountPanel) {
+        var accountToggle = accountDropdown.querySelector('.account-toggle');
+        if (accountToggle) {
+            accountToggle.addEventListener('click', function(e) {
+                if (accountDropdown.getAttribute('data-logged-in') === 'false') {
+                    window.location.href = '<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>';
+                    return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                accountDropdownOpen = !accountDropdownOpen;
+                if (accountDropdownOpen) {
+                    accountPanel.classList.add('open');
+                } else {
+                    accountPanel.classList.remove('open');
+                }
+            });
+        }
+
+        // Prevent clicks inside the panel from closing it
+        accountPanel.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
-        accountDropdown.addEventListener('mouseleave', function() {
-            accountPanel.classList.remove('open');
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (accountDropdownOpen && !accountDropdown.contains(e.target)) {
+                accountDropdownOpen = false;
+                accountPanel.classList.remove('open');
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && accountDropdownOpen) {
+                accountDropdownOpen = false;
+                accountPanel.classList.remove('open');
+            }
         });
     }
 
@@ -494,39 +528,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Customer data integration (Magento)
     try {
         require(['Magento_Customer/js/customer-data'], function(customerData) {
-            var customer = customerData.get('customer');
-            customer.subscribe(function(data) {
-                if (data && data.fullname) {
-                    // Show logged-in state
-                    var initial = data.fullname.charAt(0).toUpperCase();
+            function applyCustomerState(data) {
+                var fullName = (data && (data.fullname || data.firstname || '') || '').toString().trim();
+                var email = (data && data.email || '').toString();
+                var isLogged = !!(data && (fullName || email || data.firstname));
+
+                if (isLogged) {
+                    var initial = fullName ? fullName.charAt(0).toUpperCase() : 'U';
+
                     document.getElementById('accountAvatar').textContent = initial;
-                    document.getElementById('accountName').textContent = data.fullname;
-                    document.getElementById('accountEmail').textContent = data.email || '';
-                    document.getElementById('accountDropdown').style.display = '';
+                    document.getElementById('accountName').textContent = fullName || 'Tài khoản';
+                    document.getElementById('accountEmail').textContent = email;
+                    document.getElementById('accountDropdown').setAttribute('data-logged-in', 'true');
                     document.getElementById('authButtons').style.display = 'none';
-                    // Mobile
+
                     document.getElementById('mobileAuthAvatar').textContent = initial;
-                    document.getElementById('mobileAuthName').textContent = data.fullname;
-                    document.getElementById('mobileAuthEmail').textContent = data.email || '';
+                    document.getElementById('mobileAuthName').textContent = fullName || 'Tài khoản';
+                    document.getElementById('mobileAuthEmail').textContent = email;
                     document.getElementById('mobileAuthLoggedIn').style.display = '';
                     document.getElementById('mobileAuthButtons').style.display = 'none';
+                    return;
                 }
-            });
-            // Check initial value
-            var data = customer();
-            if (data && data.fullname) {
-                var initial = data.fullname.charAt(0).toUpperCase();
-                document.getElementById('accountAvatar').textContent = initial;
-                document.getElementById('accountName').textContent = data.fullname;
-                document.getElementById('accountEmail').textContent = data.email || '';
-                document.getElementById('accountDropdown').style.display = '';
-                document.getElementById('authButtons').style.display = 'none';
-                document.getElementById('mobileAuthAvatar').textContent = initial;
-                document.getElementById('mobileAuthName').textContent = data.fullname;
-                document.getElementById('mobileAuthEmail').textContent = data.email || '';
-                document.getElementById('mobileAuthLoggedIn').style.display = '';
-                document.getElementById('mobileAuthButtons').style.display = 'none';
+
+                document.getElementById('accountAvatar').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="display:block;margin:auto;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+                document.getElementById('accountDropdown').setAttribute('data-logged-in', 'false');
+                document.getElementById('authButtons').style.display = '';
+                document.getElementById('mobileAuthLoggedIn').style.display = 'none';
+                document.getElementById('mobileAuthButtons').style.display = '';
             }
+
+            var customer = customerData.get('customer');
+            customer.subscribe(function(data) {
+                applyCustomerState(data || {});
+            });
+
+            // Check initial value
+            applyCustomerState(customer() || {});
         });
     } catch(e) {}
 

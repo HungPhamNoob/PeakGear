@@ -93,6 +93,9 @@ cd "$PROJECT_DIR"
 docker compose build
 docker compose up -d
 
+# Normalize Magento writable permissions after container start.
+bash "$SCRIPT_DIR/fix-magento-permissions.sh"
+
 # Wait for containers to be ready
 echo ""
 echo "Waiting for containers to start..."
