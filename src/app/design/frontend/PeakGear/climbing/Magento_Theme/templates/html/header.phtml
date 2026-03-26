@@ -157,9 +157,13 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
             <!-- User Account -->
             <div class="header-account" id="headerAccount">
                 <!-- Logged-in state (hidden by default, shown via JS/customer-data) -->
-                <div class="account-dropdown" id="accountDropdown" data-logged-in="<?= $isLoggedIn ? 'true' : 'false' ?>">
+                <div class="account-dropdown" id="accountDropdown" data-logged-in="true">
                     <button class="action-btn account-toggle" type="button">
-                        <span class="account-avatar" id="accountAvatar"><?= $isLoggedIn ? 'U' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="display:block;margin:auto;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' ?></span>
+                        <span id="accountAvatar" style="display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;font-size:0.875rem;font-weight:600;color:#111827;line-height:1;background:#d97706;border-radius:50%;">
+                                <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </span>
                     </button>
                     
                     <div class="account-panel" id="accountPanel">
@@ -209,7 +213,7 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
                 </div>
                 
                 <!-- Not logged in -->
-                <div class="auth-buttons" id="authButtons"<?= $isLoggedIn ? ' style="display:none;"' : '' ?>>
+                <div class="auth-buttons" id="authButtons" style="display:none;">
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>" class="btn btn-outline">Đăng nhập</a>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>" class="btn btn-primary">Đăng ký</a>
                 </div>
@@ -408,13 +412,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Account dropdown (desktop) - click toggle
     var accountDropdownOpen = false;
     if (accountDropdown && accountPanel) {
+        console.log('Account dropdown found', accountDropdown, accountPanel);
         var accountToggle = accountDropdown.querySelector('.account-toggle');
+        console.log('Account toggle', accountToggle);
         if (accountToggle) {
             accountToggle.addEventListener('click', function(e) {
-                if (accountDropdown.getAttribute('data-logged-in') === 'false') {
-                    window.location.href = '<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>';
-                    return;
-                }
+                console.log('Click detected');
                 e.preventDefault();
                 e.stopPropagation();
                 accountDropdownOpen = !accountDropdownOpen;
