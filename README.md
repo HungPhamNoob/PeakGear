@@ -32,6 +32,7 @@ MAGENTO_PRIVATE_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 **Cách lấy Magento Keys (miễn phí):**
+
 1. Vào https://marketplace.magento.com, đăng ký tài khoản (miễn phí)
 2. Vào **My Profile** > **Access Keys**
 3. Nhấn **Create A New Access Key**, đặt tên bất kỳ
@@ -44,6 +45,7 @@ bash scripts/setup-for-developer.sh
 ```
 
 Script sẽ tự động:
+
 1. Tạo file `src/auth.json` từ keys trong `.env`
 2. Build Docker images và khởi động containers
 3. Cài đặt Composer dependencies (`src/vendor/`)
@@ -53,14 +55,15 @@ Script sẽ tự động:
 
 ### Bước 4: Truy cập website
 
-| Service    | URL                          |
-|------------|------------------------------|
-| Storefront | http://localhost             |
-| Admin      | http://localhost/admin       |
-| phpMyAdmin | http://localhost:8080        |
-| OpenSearch | http://localhost:9200        |
+| Service    | URL                    |
+| ---------- | ---------------------- |
+| Storefront | http://localhost       |
+| Admin      | http://localhost/admin |
+| phpMyAdmin | http://localhost:8080  |
+| OpenSearch | http://localhost:9200  |
 
 **Tài khoản Admin mặc định:**
+
 - Username: `admin`
 - Password: `admin123`
 
@@ -207,20 +210,21 @@ PeakGear/
 
 ## Docker Services
 
-| Container            | Image                          | Port  | Mô tả                    |
-|----------------------|--------------------------------|-------|---------------------------|
-| peakgear_php         | PHP 8.2 FPM (custom)          | 9000  | PHP + Composer + Cron     |
-| peakgear_nginx       | Nginx 1.24                     | 80    | Web server                |
-| peakgear_mysql       | MySQL 8.0                      | 3307  | Database                  |
-| peakgear_opensearch  | OpenSearch 2.12                | 9200  | Search engine             |
-| peakgear_redis       | Redis 7                        | 6379  | Cache & Sessions          |
-| peakgear_phpmyadmin  | phpMyAdmin                     | 8080  | Database GUI              |
+| Container           | Image                | Port | Mô tả                 |
+| ------------------- | -------------------- | ---- | --------------------- |
+| peakgear_php        | PHP 8.2 FPM (custom) | 9000 | PHP + Composer + Cron |
+| peakgear_nginx      | Nginx 1.24           | 80   | Web server            |
+| peakgear_mysql      | MySQL 8.0            | 3307 | Database              |
+| peakgear_opensearch | OpenSearch 2.12      | 9200 | Search engine         |
+| peakgear_redis      | Redis 7              | 6379 | Cache & Sessions      |
+| peakgear_phpmyadmin | phpMyAdmin           | 8080 | Database GUI          |
 
 ## Khắc phục sự cố
 
 ### "The page isn't working" / ERR_TOO_MANY_REDIRECTS
 
 Magento chưa được cài đặt. Chạy:
+
 ```bash
 bash scripts/install-magento.sh
 ```
@@ -260,6 +264,7 @@ docker compose exec php php /var/www/html/bin/magento setup:di:compile
 ### OpenSearch unhealthy
 
 OpenSearch cần khoảng 30-60 giây để khởi động hoàn tất:
+
 ```bash
 # Kiểm tra trực tiếp
 curl http://localhost:9200
