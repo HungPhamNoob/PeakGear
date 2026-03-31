@@ -96,7 +96,6 @@ $categories = $block->getCategories();
                     </div>
                 </div>
             </div>
-
             <a href="<?= $block->escapeUrl($block->getUrl('news')) ?>" class="menu-link">
                 <span>Tiện ích</span>
                 <span class="menu-link-underline"></span>
@@ -106,7 +105,6 @@ $categories = $block->getCategories();
                 <span>Về Chúng Tôi</span>
                 <span class="menu-link-underline"></span>
             </a>
-
             <a href="<?= $block->escapeUrl($block->getUrl('contact')) ?>" class="menu-link">
                 <span>Liên Hệ</span>
                 <span class="menu-link-underline"></span>
@@ -208,7 +206,7 @@ $categories = $block->getCategories();
                 </div>
                 
                 <!-- Not logged in -->
-                <div class="auth-buttons" id="authButtons">
+                 <div class="auth-buttons" id="authButtons">
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>" class="btn btn-outline">Đăng nhập</a>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>" class="btn btn-primary">Đăng ký</a>
                 </div>

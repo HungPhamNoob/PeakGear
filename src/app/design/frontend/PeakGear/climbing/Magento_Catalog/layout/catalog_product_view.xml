@@ -54,6 +54,9 @@
 
         <!-- Product Form wrapper -->
         <referenceBlock name="product.info.form">
+            <arguments>
+                <argument name="view_model" xsi:type="object">PeakGear\Catalog\ViewModel\ProductViewData</argument>
+            </arguments>
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Magento_Catalog::product/view/form.phtml</argument>
             </action>

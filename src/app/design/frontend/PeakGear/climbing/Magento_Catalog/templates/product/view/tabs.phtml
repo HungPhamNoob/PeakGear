@@ -167,13 +167,85 @@ $ratingFull = (int)floor($ratingStars);
 require(['jquery'], function($) {
     'use strict';
 
-    // Tab switching
-    $('.pdp-tab-btn').on('click', function() {
+    function syncTabContentHeight(section) {
+        var activePanel = section.find('.pdp-tab-panel.active');
+        var contentWrap = section.find('.pdp-tabs-content');
+        if (!activePanel.length || !contentWrap.length) {
+            return;
+        }
+        contentWrap.css('min-height', activePanel.outerHeight() + 'px');
+    }
+
+    // Ensure breadcrumb + tabs are direct children of .column.main so CSS grid
+    // can place them correctly even if Magento nests blocks differently.
+    function normalizePdpStructure() {
+        var main = $('.page-product-view .column.main').first();
+        if (!main.length) {
+            return false;
+        }
+
+        var breadcrumb = $('.page-product-view .pdp-breadcrumb').first();
+        if (breadcrumb.length && !breadcrumb.parent().is(main)) {
+            main.prepend(breadcrumb);
+        }
+
+        var tabs = $('.page-product-view .pdp-tabs-section').first();
+        var infoMain = main.find('.product-info-main').first();
+        if (tabs.length && infoMain.length && !tabs.parent().is(main)) {
+            tabs.insertAfter(infoMain);
+        }
+
+        return !!(tabs.length && infoMain.length && tabs.parent().is(main));
+    }
+
+    function stabilizePdpLayout() {
+        var retries = 0;
+        var maxRetries = 12;
+
+        function runNormalize() {
+            var done = normalizePdpStructure();
+            retries += 1;
+            if (!done && retries < maxRetries) {
+                window.setTimeout(runNormalize, 120);
+            }
+        }
+
+        runNormalize();
+    }
+
+    // Tab switching (scoped to section)
+    $('.pdp-tabs-section').on('click', '.pdp-tab-btn', function() {
+        var section = $(this).closest('.pdp-tabs-section');
         var tabId = $(this).data('tab');
-        $('.pdp-tab-btn').removeClass('active');
+        section.find('.pdp-tab-btn').removeClass('active');
         $(this).addClass('active');
-        $('.pdp-tab-panel').removeClass('active');
-        $('#tab-' + tabId).addClass('active');
+        section.find('.pdp-tab-panel').removeClass('active');
+        section.find('#tab-' + tabId).addClass('active');
+        syncTabContentHeight(section);
+    });
+
+    $('.pdp-tabs-section').each(function() {
+        syncTabContentHeight($(this));
+    });
+
+    $(window).on('resize', function() {
+        $('.pdp-tabs-section').each(function() {
+            syncTabContentHeight($(this));
+        });
+    });
+
+    $(function() {
+        stabilizePdpLayout();
+        $('.pdp-tabs-section').each(function() {
+            syncTabContentHeight($(this));
+        });
+    });
+
+    $(window).on('load', function() {
+        stabilizePdpLayout();
+        $('.pdp-tabs-section').each(function() {
+            syncTabContentHeight($(this));
+        });
     });
 
     // Review form toggle
