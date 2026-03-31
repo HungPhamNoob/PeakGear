@@ -135,7 +135,7 @@ class Weekly implements HttpGetActionInterface
                 'latitude' => $lat,
                 'longitude' => $lon,
                 'daily' => 'temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode',
-                'forecast_days' => 7,
+                'forecast_days' => 10,
                 'timezone' => 'Asia/Ho_Chi_Minh',
             ]));
             if ($forecast === null || !isset($forecast['daily']) || !is_array($forecast['daily'])) {
@@ -207,7 +207,7 @@ class Weekly implements HttpGetActionInterface
 
         $start = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
         $days = [];
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $delta = sin((float)$i / 2.0) * 2.4 + (($i % 3) - 1) * 0.4;
             $avg = round($base + $delta, 1);
             $min = round($avg - 2.2, 1);

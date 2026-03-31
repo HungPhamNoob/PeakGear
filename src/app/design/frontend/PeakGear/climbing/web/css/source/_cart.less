@@ -7,6 +7,27 @@
 .checkout-cart-index {
     background: @peakgear-dark;
 
+    * {
+        box-sizing: border-box;
+    }
+
+    // ---- Reset table elements to block display to prevent CSS Grid conflicts ----
+    .cart.table-wrapper {
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .cart.items.data.table,
+    .cart.items.data.table tbody,
+    .cart.items.data.table tr,
+    .cart.items.data.table td,
+    .cart.items.data.table th {
+        display: block;
+        width: 100%;
+        border: none;
+        padding: 0;
+    }
+
     // Hide default Magento page title
     .page-title-wrapper.page-title-cart {
         display: none;

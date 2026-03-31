@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" layout="1column" label="Customer Account Edit" design_abstraction="custom">
+    <head>
+        <title>Thông tin cá nhân - PeakGear</title>
+    </head>
+    <body>
+        <attribute name="class" value="account-page"/>
+
+        <!-- Remove default Magento blocks -->
+        <referenceBlock name="sidebar.main" remove="true"/>
+        <referenceBlock name="sidebar.extra" remove="true"/>
+        <referenceBlock name="page.main.title" remove="true"/>
+
+        <!-- Add PeakGear edit form -->
+        <referenceContainer name="content">
+            <block class="Magento\Customer\Block\Account\Edit" name="peakgear.account.edit" template="Magento_Customer::account/edit.phtml" cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>
