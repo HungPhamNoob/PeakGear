@@ -285,7 +285,11 @@ class AllProducts extends AbstractProduct
      */
     public function getCategories(): array
     {
-        $rootCategoryId = $this->storeManager->getStore()->getRootCategoryId();
+        $store = $this->storeManager->getStore();
+    
+        // Sửa: Lấy Store Group ID từ Store, sau đó lấy Root Category ID từ Group - sửa 
+        $storeGroupId = $store->getStoreGroupId();
+        $rootCategoryId = $this->storeManager->getGroup($storeGroupId)->getRootCategoryId();
 
         $collection = $this->categoryCollectionFactory->create();
         $collection->addAttributeToSelect(['name', 'url_key', 'url_path', 'product_count', 'category_icon']);
@@ -452,6 +456,49 @@ class AllProducts extends AbstractProduct
     {
         return [\Magento\Catalog\Model\Product::CACHE_TAG];
     }
+
+    /**
+     * Get the dynamic Min and Max price range for the current filtered collection
+     *
+     * @return array ['min' => float, 'max' => float]
+     */
+    public function getPriceRange(): array
+    {
+        $collection = clone $this->getProductCollection();
+        $collection->clear();
+        $collection->setPageSize(null);
+        
+        $minPrice = 0;
+        $maxPrice = 0;
+        
+        // We use loaded items to correctly reflect special price, tier price etc if present
+        $items = $collection->getItems();
+        
+        if (empty($items)) {
+             return ['min' => 0, 'max' => 1000000];
+        }
+
+        $prices = [];
+        foreach ($items as $item) {
+            $prices[] = (float) $item->getFinalPrice();
+        }
+
+        if (!empty($prices)) {
+            $minPrice = min($prices);
+            $maxPrice = max($prices);
+        }
+
+        // Just to be safe, if max is still 0, default it
+        if ($maxPrice == 0) {
+            $maxPrice = 1000000;
+        }
+
+        return [
+            'min' => floor($minPrice),
+            'max' => ceil($maxPrice)
+        ];
+    }
+    //new
 
     private function getCategoryAttributeValue(CategoryInterface $category, string $attributeCode): string
     {
