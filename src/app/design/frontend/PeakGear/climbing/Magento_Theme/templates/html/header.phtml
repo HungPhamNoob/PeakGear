@@ -157,7 +157,7 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
             <!-- User Account -->
             <div class="header-account" id="headerAccount">
                 <!-- Logged-in state (hidden by default, shown via JS/customer-data) -->
-                <div class="account-dropdown" id="accountDropdown" data-logged-in="true">
+                <div class="account-dropdown" id="accountDropdown" data-logged-in="false" style="display:none;">
                     <button class="action-btn account-toggle" type="button">
                         <span id="accountAvatar" style="display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;font-size:0.875rem;font-weight:600;color:#111827;line-height:1;background:#d97706;border-radius:50%;">
                                 <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
@@ -212,8 +212,8 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
                     </div>
                 </div>
                 
-                <!-- Not logged in -->
-                <div class="auth-buttons" id="authButtons" style="display:none;">
+                <!-- Not logged in (shown by default) -->
+                <div class="auth-buttons" id="authButtons">
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>" class="btn btn-outline">Đăng nhập</a>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>" class="btn btn-primary">Đăng ký</a>
                 </div>
@@ -543,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('accountName').textContent = fullName || 'Tài khoản';
                     document.getElementById('accountEmail').textContent = email;
                     document.getElementById('accountDropdown').setAttribute('data-logged-in', 'true');
+                    document.getElementById('accountDropdown').style.display = '';
                     document.getElementById('authButtons').style.display = 'none';
 
                     document.getElementById('mobileAuthAvatar').textContent = initial;
@@ -553,8 +554,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                document.getElementById('accountAvatar').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="display:block;margin:auto;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
                 document.getElementById('accountDropdown').setAttribute('data-logged-in', 'false');
+                document.getElementById('accountDropdown').style.display = 'none';
                 document.getElementById('authButtons').style.display = '';
                 document.getElementById('mobileAuthLoggedIn').style.display = 'none';
                 document.getElementById('mobileAuthButtons').style.display = '';
