@@ -143,6 +143,11 @@ docker compose exec php php /var/www/html/bin/magento cache:flush
 docker compose exec php rm -rf /var/www/html/pub/static/frontend/PeakGear/climbing/* /var/www/html/var/view_preprocessed/*
 docker compose exec php php /var/www/html/bin/magento setup:static-content:deploy -f
 docker compose exec php php /var/www/html/bin/magento indexer:reindex
+
+#nếu có lỗi:
+docker compose exec php bash -c "rm -rf generated/* var/cache/* var/page_cache/* var/di/* && php bin/magento setup:di:compile && php bin/magento cache:flush"
+
+docker compose exec php bash -c "chmod -R 777 var pub/static generated"
 ```
 
 ### One-time fix quyền cho thư mục Magento writable

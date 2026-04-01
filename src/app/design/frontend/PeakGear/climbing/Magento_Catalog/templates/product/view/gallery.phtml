@@ -1,8 +1,8 @@
 <?php
 /**
  * PeakGear Climbing Theme - Product Gallery
- * Layout: main image on top, horizontal thumbnail strip BELOW
- * Supports navigation arrows, thumbnail click, sale badge overlay
+ * Layout: vertical thumbnail strip on LEFT, main image on RIGHT (like reference)
+ * Supports navigation arrows, thumbnail click, zoom on hover, sale badge overlay
  *
  * @var \Magento\Catalog\Block\Product\View\Gallery $block
  */
@@ -12,67 +12,50 @@ $imageCount = count($images);
 
 // Calculate discount percentage
 $originalPrice = $product->getPrice();
-$finalPrice = $product->getFinalPrice();
-$hasDiscount = ($originalPrice > $finalPrice);
+$finalPrice    = $product->getFinalPrice();
+$hasDiscount   = ($originalPrice > $finalPrice);
 $discountPercent = $hasDiscount ? round((1 - $finalPrice / $originalPrice) * 100) : 0;
 
 // Category initial letter for placeholder
 $categoryCollection = $product->getCategoryCollection()->addAttributeToSelect('name');
-$category = $categoryCollection->getFirstItem();
-$categoryInitial = ($category && $category->getName()) ? mb_substr($category->getName(), 0, 1) : 'P';
+$category           = $categoryCollection->getFirstItem();
+$categoryInitial    = ($category && $category->getName()) ? mb_substr($category->getName(), 0, 1) : 'P';
 
-// Build images array for JS
+// Build images array for JS - skip disabled or empty
 $galleryImages = [];
 foreach ($images as $image) {
-    $galleryImages[] = [
-        'medium' => $image->getData('medium_image_url'),
-        'small'  => $image->getData('small_image_url'),
-        'large'  => $image->getData('large_image_url') ?: $image->getData('medium_image_url'),
-        'label'  => $image->getLabel() ?: $product->getName(),
-    ];
+    if (!$image->getDisabled() && $image->getData('medium_image_url')) {
+        $galleryImages[] = [
+            'medium' => $image->getData('medium_image_url'),
+            'small'  => $image->getData('small_image_url'),
+            'large'  => $image->getData('large_image_url') ?: $image->getData('medium_image_url'),
+            'label'  => $image->getLabel() ?: $product->getName(),
+        ];
+    }
 }
-$mainImage = !empty($galleryImages) ? $galleryImages[0] : null;
+
+// Fallback to product base image if gallery is empty
+if (empty($galleryImages)) {
+    $mainImageObj  = $block->getImage($product, 'product_page_image_medium');
+    $smallImageObj = $block->getImage($product, 'product_page_image_small');
+    if ($mainImageObj && $mainImageObj->getImageUrl()) {
+        $galleryImages[] = [
+            'medium' => $mainImageObj->getImageUrl(),
+            'small'  => $smallImageObj->getImageUrl() ?: $mainImageObj->getImageUrl(),
+            'large'  => $mainImageObj->getImageUrl(),
+            'label'  => $product->getName(),
+        ];
+    }
+}
+
+$mainImage     = !empty($galleryImages) ? $galleryImages[0] : null;
+$showThumbs    = count($galleryImages) > 1;
 ?>
 
-<div class="pdp-gallery" data-role="gallery" data-image-count="<?= (int)$imageCount ?>">
-    <!-- Main Image Area -->
-    <div class="pdp-gallery-main">
-        <?php if ($hasDiscount): ?>
-            <div class="pdp-sale-badge">-<?= (int)$discountPercent ?>%</div>
-        <?php endif; ?>
+<div class="pdp-gallery" data-image-count="<?= (int)count($galleryImages) ?>">
 
-        <?php if ($mainImage): ?>
-            <img id="pdp-main-image"
-                 src="<?= $block->escapeUrl($mainImage['medium']) ?>"
-                 alt="<?= $block->escapeHtmlAttr($mainImage['label']) ?>"
-                 class="pdp-gallery-image"/>
-        <?php else: ?>
-            <!-- Placeholder when no image -->
-            <div class="pdp-gallery-placeholder">
-                <div class="pdp-gallery-placeholder-circle">
-                    <span class="pdp-gallery-placeholder-letter"><?= $block->escapeHtml($categoryInitial) ?></span>
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <!-- Slide navigation arrows (over main image) -->
-        <?php if ($imageCount > 1): ?>
-        <button type="button" class="pdp-gallery-arrow pdp-gallery-prev" aria-label="Ảnh trước">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <button type="button" class="pdp-gallery-arrow pdp-gallery-next" aria-label="Ảnh tiếp">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
-        </button>
-
-        <!-- Image counter -->
-        <div class="pdp-gallery-counter">
-            <span id="pdp-gallery-current">1</span> / <?= (int)$imageCount ?>
-        </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Horizontal Thumbnail Strip (BELOW main image) -->
-    <?php if ($imageCount > 1): ?>
+    <?php if ($showThumbs): ?>
+    <!-- Vertical Thumbnail Strip (LEFT side) -->
     <div class="pdp-gallery-thumbs">
         <?php foreach ($galleryImages as $idx => $img): ?>
             <button class="pdp-gallery-thumb<?= $idx === 0 ? ' active' : '' ?>"
@@ -86,6 +69,44 @@ $mainImage = !empty($galleryImages) ? $galleryImages[0] : null;
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
+
+    <!-- Main Image Area (RIGHT side) -->
+    <div class="pdp-gallery-main">
+        <?php if ($hasDiscount): ?>
+            <div class="pdp-sale-badge">-<?= (int)$discountPercent ?>%</div>
+        <?php endif; ?>
+
+        <?php if ($mainImage): ?>
+            <div class="pdp-gallery-zoom-wrap">
+                <img id="pdp-main-image"
+                     src="<?= $block->escapeUrl($mainImage['medium']) ?>"
+                     alt="<?= $block->escapeHtmlAttr($mainImage['label']) ?>"
+                     class="pdp-gallery-image"/>
+            </div>
+        <?php else: ?>
+            <!-- Placeholder when no image -->
+            <div class="pdp-gallery-placeholder">
+                <div class="pdp-gallery-placeholder-circle">
+                    <span class="pdp-gallery-placeholder-letter"><?= $block->escapeHtml($categoryInitial) ?></span>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Navigation arrows -->
+        <?php if ($showThumbs): ?>
+        <button type="button" class="pdp-gallery-arrow pdp-gallery-prev" aria-label="Ảnh trước">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button type="button" class="pdp-gallery-arrow pdp-gallery-next" aria-label="Ảnh tiếp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+
+        <!-- Image counter -->
+        <div class="pdp-gallery-counter">
+            <span id="pdp-gallery-current">1</span> / <?= (int)count($galleryImages) ?>
+        </div>
+        <?php endif; ?>
+    </div>
 </div>
 
 <script>
@@ -101,36 +122,28 @@ require(['jquery'], function($) {
         if (index >= total) index = 0;
         currentIndex = index;
 
-        // Update main image
         var img = images[currentIndex];
         $('#pdp-main-image').attr('src', img.medium).attr('alt', img.label);
-
-        // Update counter
         $('#pdp-gallery-current').text(currentIndex + 1);
 
-        // Update thumbnail active state
         $('.pdp-gallery-thumb').removeClass('active');
         $('.pdp-gallery-thumb[data-index="' + currentIndex + '"]').addClass('active');
+
+        // Scroll thumb into view
+        var activeThumb = $('.pdp-gallery-thumb.active')[0];
+        if (activeThumb) activeThumb.scrollIntoView({ block: 'nearest' });
     }
 
-    // Thumbnail click
     $(document).on('click', '.pdp-gallery-thumb', function() {
-        var idx = parseInt($(this).data('index'), 10);
-        goToSlide(idx);
+        goToSlide(parseInt($(this).data('index'), 10));
     });
 
-    // Arrow navigation
-    $(document).on('click', '.pdp-gallery-prev', function() {
-        goToSlide(currentIndex - 1);
-    });
-    $(document).on('click', '.pdp-gallery-next', function() {
-        goToSlide(currentIndex + 1);
-    });
+    $(document).on('click', '.pdp-gallery-prev', function() { goToSlide(currentIndex - 1); });
+    $(document).on('click', '.pdp-gallery-next', function() { goToSlide(currentIndex + 1); });
 
-    // Keyboard navigation
     $(document).on('keydown', function(e) {
         if ($('.pdp-gallery:visible').length && total > 1) {
-            if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+            if (e.key === 'ArrowLeft')  goToSlide(currentIndex - 1);
             if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
         }
     });
