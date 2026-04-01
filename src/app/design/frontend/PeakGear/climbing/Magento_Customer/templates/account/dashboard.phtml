@@ -15,6 +15,29 @@ if ($customer && $customer->getId()) {
     $customerEmail = $customer->getEmail();
 }
 $initial = $customerName ? strtoupper($customerName[0]) : 'U';
+
+$shippingAddressInfo = 'Chưa cập nhật địa chỉ';
+$shippingPhoneInfo = 'Chưa cập nhật số điện thoại';
+if ($customer && $customer->getId()) {
+    $primaryShipping = $customer->getPrimaryShippingAddress();
+    if ($primaryShipping) {
+        $street = $primaryShipping->getStreet();
+        $streetStr = is_array($street) ? implode(', ', $street) : (string)$street;
+        $city = $primaryShipping->getCity();
+        
+        $fullAddress = [];
+        if ($streetStr) $fullAddress[] = $streetStr;
+        if ($city) $fullAddress[] = $city;
+        
+        if (!empty($fullAddress)) {
+            $shippingAddressInfo = implode(', ', $fullAddress);
+        }
+        $telephone = $primaryShipping->getTelephone();
+        if ($telephone) {
+            $shippingPhoneInfo = $telephone;
+        }
+    }
+}
 ?>
 
 <div class="main-content">
@@ -36,7 +59,7 @@ $initial = $customerName ? strtoupper($customerName[0]) : 'U';
         <!-- Info Cards -->
         <div class="account-grid">
             <!-- Account Info Card -->
-            <div class="account-card">
+            <a href="<?= $block->escapeUrl($block->getUrl('myaccount/info')) ?>" class="account-card account-info-card">
                 <div class="account-card-header">
                     <div class="account-card-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -46,22 +69,20 @@ $initial = $customerName ? strtoupper($customerName[0]) : 'U';
                     </div>
                     <h3 class="account-card-title">Thông Tin Cá Nhân</h3>
                 </div>
-                <div class="account-card-content">
-                    <p><strong>Họ tên:</strong> <?= $block->escapeHtml($customerName) ?></p>
-                    <p><strong>Email:</strong> <?= $block->escapeHtml($customerEmail) ?></p>
+                <div class="account-card-content info-split">
+                    <div class="info-split-column">
+                        <p><strong>Họ tên:</strong> <?= $block->escapeHtml($customerName) ?></p>
+                        <p><strong>Email:</strong> <?= $block->escapeHtml($customerEmail) ?></p>
+                    </div>
+                    <div class="info-split-column">
+                        <p><strong>Địa chỉ:</strong> <?= $block->escapeHtml($shippingAddressInfo) ?></p>
+                        <p><strong>Điện thoại:</strong> <?= $block->escapeHtml($shippingPhoneInfo) ?></p>
+                    </div>
                 </div>
-                <div class="account-card-action">
-                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount/info')) ?>" class="btn-account">
-                        Chỉnh sửa
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
+            </a>
 
             <!-- Orders Card -->
-            <div class="account-card">
+            <a href="<?= $block->escapeUrl($block->getUrl('myaccount/orders')) ?>" class="account-card">
                 <div class="account-card-header">
                     <div class="account-card-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -75,18 +96,10 @@ $initial = $customerName ? strtoupper($customerName[0]) : 'U';
                 <div class="account-card-content">
                     <p>Theo dõi và quản lý các đơn hàng của bạn</p>
                 </div>
-                <div class="account-card-action">
-                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount/orders')) ?>" class="btn-account">
-                        Xem đơn hàng
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
+            </a>
 
             <!-- Wishlist Card -->
-            <div class="account-card">
+            <a href="<?= $block->escapeUrl($block->getUrl('myaccount/wishlist')) ?>" class="account-card">
                 <div class="account-card-header">
                     <div class="account-card-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -98,18 +111,10 @@ $initial = $customerName ? strtoupper($customerName[0]) : 'U';
                 <div class="account-card-content">
                     <p>Xem và quản lý danh sách sản phẩm yêu thích</p>
                 </div>
-                <div class="account-card-action">
-                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount/wishlist')) ?>" class="btn-account">
-                        Xem yêu thích
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
+            </a>
 
             <!-- Reviews Card -->
-            <div class="account-card">
+            <a href="<?= $block->escapeUrl($block->getUrl('myaccount/reviews')) ?>" class="account-card">
                 <div class="account-card-header">
                     <div class="account-card-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -121,15 +126,7 @@ $initial = $customerName ? strtoupper($customerName[0]) : 'U';
                 <div class="account-card-content">
                     <p>Xem lịch sử đánh giá sản phẩm của bạn</p>
                 </div>
-                <div class="account-card-action">
-                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount/reviews')) ?>" class="btn-account">
-                        Xem đánh giá
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 </div>
