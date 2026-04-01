@@ -114,6 +114,8 @@ $formData = $block->getFormData();
                                class="register-input register-input-password"
                                placeholder="Tạo mật khẩu"
                                autocomplete="new-password"
+                               data-password-min-length="<?= $block->escapeHtmlAttr($block->getMinimumPasswordLength()) ?>"
+                               data-password-min-character-sets="<?= $block->escapeHtmlAttr($block->getRequiredCharacterClassesNumber()) ?>"
                                data-validate="{required:true, 'validate-customer-password':true}"
                                required/>
                         <button type="button" class="register-eye-toggle" onclick="toggleRegPassword(this)">
@@ -277,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('lastname').value = parts.slice(1).join(' ');
             } else {
                 document.getElementById('firstname').value = fullname;
-                document.getElementById('lastname').value = fullname;
+                document.getElementById('lastname').value = '-';
             }
         });
     }

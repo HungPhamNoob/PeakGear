@@ -28,13 +28,13 @@
     // 1. PAGE WRAPPER — override _pg-reset !important rules
     // -------------------------------------------------------------------------
     .page-main {
-        max-width: 90rem !important;
+        max-width: @max-width !important; // Sử dụng biến @max-width (80rem/1280px) giống với header
         margin-left: auto !important;
         margin-right: auto !important;
-        padding: 9.5rem 1.25rem 4rem !important;
+        padding: 6.5rem 1.25rem 4rem !important;
 
         @media (min-width: 768px) {
-            padding: 10.5rem 2.25rem 5rem !important;
+            padding: 7rem 2.25rem 5rem !important;
         }
     }
 
@@ -88,7 +88,7 @@
             order: 2;
             grid-row: 1 / span 2; // Allow scrolling beside left column
             position: sticky !important;
-            top: 9.5rem;
+            top: 6.5rem;
             padding-left: 2rem !important;
         }
     }
@@ -176,7 +176,8 @@
         .pdp-breadcrumb-nav {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            white-space: nowrap;
             gap: 0.5rem;
             font-size: 0.95rem;
             color: fade(@peakgear-text, 60%);
@@ -198,6 +199,10 @@
         .pdp-breadcrumb-current {
             color: @peakgear-primary-light;
             font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
         }
     }
 
@@ -361,11 +366,11 @@
         }
 
         .pdp-product-name {
-            font-family: @font-serif;
-            font-size: 1.85rem; font-weight: 700;
+            font-family: @font-sans;
+            font-size: 1.6rem; font-weight: 700;
             color: @peakgear-text; margin: 0 0 1rem; line-height: 1.35;
 
-            @media (min-width: 768px) { font-size: 2.45rem !important; }
+            @media (min-width: 768px) { font-size: 1.6rem !important; }
         }
 
         .pdp-meta-row {
@@ -414,7 +419,7 @@
         // }
         .pdp-magento-price-wrapper {
             .price-box { margin: 0; }
-            .price { font-size: 1.85rem !important; font-weight: 800; color: @peakgear-primary; line-height: 1; }
+            .price { font-size: 1.1rem !important; font-weight: 800; color: @peakgear-primary; line-height: 1; }
             .old-price .price { font-size: 0.95rem !important; font-weight: 400; color: fade(@peakgear-text, 40%); text-decoration: line-through; }
             .special-price, .old-price { display: inline-block; margin-bottom: 0; }
             .special-price { margin-right: 0.75rem; }
@@ -556,8 +561,17 @@
             color: fade(@peakgear-text, 55%); font-size: 0.875rem;
             font-family: @font-sans; padding: 0.5rem 0; cursor: pointer;
             transition: color @transition-fast;
-            &:hover { color: @peakgear-primary-light; }
-            svg { width: 1rem; height: 1rem; }
+            &:hover:not(:disabled) { color: @peakgear-primary-light; }
+            svg { width: 1rem; height: 1rem; transition: fill @transition-fast; }
+
+            // Trạng thái đã thêm vào yêu thích
+            &.is-wishlisted,
+            &:disabled {
+                color: @peakgear-primary;
+                cursor: default;
+                opacity: 1;
+            }
+            &.is-wishlisted svg { fill: currentColor; }
         }
 
         .pdp-unavailable {
