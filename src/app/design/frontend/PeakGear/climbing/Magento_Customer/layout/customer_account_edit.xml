@@ -10,10 +10,12 @@
         <referenceBlock name="sidebar.main" remove="true"/>
         <referenceBlock name="sidebar.extra" remove="true"/>
         <referenceBlock name="page.main.title" remove="true"/>
+        <referenceBlock name="customer_edit" remove="true"/>
+        <referenceBlock name="form.edit.account" remove="true"/>
 
         <!-- Add PeakGear edit form -->
         <referenceContainer name="content">
-            <block class="Magento\Customer\Block\Account\Edit" name="peakgear.account.edit" template="Magento_Customer::account/edit.phtml" cacheable="false"/>
+            <block class="Magento\Customer\Block\Form\Edit" name="peakgear.account.edit" template="Magento_Customer::account/edit.phtml" cacheable="false"/>
         </referenceContainer>
     </body>
 </page>
