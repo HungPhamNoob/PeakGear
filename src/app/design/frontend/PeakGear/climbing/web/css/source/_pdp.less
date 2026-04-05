@@ -232,7 +232,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            width: 4.5rem;
+            width: 5.5rem;
             flex-shrink: 0;
             max-height: 500px;
             overflow-y: auto;
@@ -241,7 +241,7 @@
             scrollbar-color: fade(@peakgear-text, 20%) transparent;
 
             .pdp-gallery-thumb {
-                width: 5rem;
+                width: 100%;
                 height: 5rem;
                 flex-shrink: 0;
                 background: fade(@peakgear-dark-secondary, 80%);
@@ -260,7 +260,11 @@
 
                 img {
                     width: 100%; height: 100%;
-                    object-fit: cover; display: block;
+                    object-fit: contain;
+                    object-position: center;
+                    display: block;
+                    background: #ffffff;
+                    padding: 2px;
                 }
             }
 
@@ -281,11 +285,11 @@
             position: relative;
             flex: 1;
             min-width: 0;
-            background: fade(@peakgear-dark-secondary, 55%);
+            background: #ffffff;
             border-radius: 0.875rem;
             border: 1px solid fade(@peakgear-text, 12%);
             overflow: hidden;
-            min-height: 34rem;
+            aspect-ratio: 1 / 1;
 
             .pdp-sale-badge {
                 position: absolute; top: 1rem; left: 1rem; z-index: 10;
@@ -294,19 +298,21 @@
                 padding: 0.3rem 0.75rem; border-radius: 9999px;
             }
 
-            .pdp-gallery-zoom-wrap { overflow: hidden; display: block; line-height: 0; }
-
-            .pdp-gallery-image {
-                width: 100%; height: auto; display: block;
-                object-fit: contain; max-height: 800px;
-                padding: 0;
-                transition: transform 0.4s ease;
+            .pdp-gallery-zoom-wrap {
+                width: 100%; height: 100%;
+                display: flex; align-items: center; justify-content: center;
             }
 
-            &:hover .pdp-gallery-image { transform: scale(1.05); }
+            .pdp-gallery-image {
+                width: 100%; height: 100%; display: block;
+                object-fit: contain;
+                object-position: center;
+                padding: 1rem;
+                // Không dùng transition scale để tránh ảnh bị mờ khi phóng
+            }
 
             .pdp-gallery-placeholder {
-                aspect-ratio: 1/1;
+                width: 100%; height: 100%;
                 display: flex; align-items: center; justify-content: center;
                 background: fade(@peakgear-text, 4%);
 

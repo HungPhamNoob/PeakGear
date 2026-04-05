@@ -79,7 +79,7 @@ $showThumbs    = count($galleryImages) > 1;
         <?php if ($mainImage): ?>
             <div class="pdp-gallery-zoom-wrap">
                 <img id="pdp-main-image"
-                     src="<?= $block->escapeUrl($mainImage['medium']) ?>"
+                     src="<?= $block->escapeUrl($mainImage['large']) ?>"
                      alt="<?= $block->escapeHtmlAttr($mainImage['label']) ?>"
                      class="pdp-gallery-image"/>
             </div>
@@ -123,7 +123,7 @@ require(['jquery'], function($) {
         currentIndex = index;
 
         var img = images[currentIndex];
-        $('#pdp-main-image').attr('src', img.medium).attr('alt', img.label);
+        $('#pdp-main-image').attr('src', img.large).attr('alt', img.label);
         $('#pdp-gallery-current').text(currentIndex + 1);
 
         $('.pdp-gallery-thumb').removeClass('active');
