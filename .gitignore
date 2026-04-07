@@ -21,6 +21,7 @@ src/pub/media/catalog/product/cache/
 src/pub/media/tmp/
 src/pub/media/catalog/product/*
 src/var/import/images/*
+src/pub/media/captcha/
 
 
 # --- Magento: env.php contains credentials (per-environment) ---

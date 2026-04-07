@@ -18,3 +18,19 @@ deploy-static:
 
 # Lệnh thực hiện tất cả các tác vụ trên
 themes: cache-flush clean-static deploy-static
+
+.PHONY: deploy-full
+
+deploy-full:
+	$(DOCKER_COMPOSE) php bash -c "\
+	set -e && \
+	php $(MAGENTO_BIN) setup:upgrade && \
+	php $(MAGENTO_BIN) cache:flush && \
+	rm -rf $(STATIC_DIR) $(VIEW_PREPROCESS_DIR) && \
+	php $(MAGENTO_BIN) setup:static-content:deploy -f && \
+	php $(MAGENTO_BIN) indexer:reindex && \
+	rm -rf generated/* var/cache/* var/page_cache/* var/di/* && \
+	php $(MAGENTO_BIN) setup:di:compile && \
+	php $(MAGENTO_BIN) cache:flush && \
+	chmod -R 777 var pub/static generated \
+	"
