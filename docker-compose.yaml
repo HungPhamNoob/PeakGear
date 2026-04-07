@@ -51,6 +51,7 @@ services:
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=P@ssw0rd!2024Secure
       #- OPENSEARCH_NODE_MEMORY=1g
+      - cluster.routing.allocation.disk.threshold_enabled=false
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     ports:
