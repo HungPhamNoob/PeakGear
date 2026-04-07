@@ -2,35 +2,58 @@
 /**
  * PeakGear Climbing Theme - Product Tabs Container
  * Renders tabs for Specs, Description, and Reviews with JS switching
- * Matches React PDP tabs exactly
  *
  * @var \Magento\Catalog\Block\Product\View $block
  */
-$product = $block->getProduct();
+$product   = $block->getProduct();
+$productId = (int)$product->getId();
+$storeId   = (int)$block->getLayout()->createBlock(\Magento\Store\Block\Switcher::class)->getCurrentStoreId();
 
-// Get description
-$description = $product->getDescription();
-
-// Get additional attributes
+// ── Mô tả & Thông số kỹ thuật ────────────────────────────────────────────────
+$description    = $product->getDescription();
 $attributesBlock = $block->getChildBlock('peakgear.tab.attributes');
-$additionalData = [];
-if ($attributesBlock) {
-    $additionalData = $attributesBlock->getAdditionalData();
-}
+$additionalData  = $attributesBlock ? $attributesBlock->getAdditionalData() : [];
 
-// Rating data for reviews tab
-$reviewCount = 0;
-$ratingSummary = 0;
+// ── Lấy dữ liệu đánh giá trực tiếp từ Magento Review module ─────────────────
+$reviewCount  = 0;
+$reviewItems  = [];
+
+// ── Kiểm tra đăng nhập & lấy tên tự động ─────────────────────────────────────
+$isLoggedIn      = false;
+$customerNickname = '';
+$loginUrl         = $block->getUrl('customer/account/login',
+                        ['referer' => base64_encode($block->getUrl('*/*/*', ['_use_rewrite' => true]))]);
 try {
-    $reviewSummary = $product->getRatingSummary();
-    if ($reviewSummary) {
-        $ratingSummary = $reviewSummary->getRatingSummary() ?: 0;
-        $reviewCount = $reviewSummary->getReviewsCount() ?: 0;
+    $objectManager   = \Magento\Framework\App\ObjectManager::getInstance();
+    $customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
+    $isLoggedIn      = $customerSession->isLoggedIn();
+
+    if ($isLoggedIn) {
+        $customer = $customerSession->getCustomer();
+        $firstName = $customer->getFirstname() ?: '';
+        $lastName  = $customer->getLastname()  ?: '';
+        // Hiển thị: Tên + chữ cái đầu của họ (ví dụ: "Hiếu N.")
+        $customerNickname = trim($firstName . ($lastName ? ' ' . mb_substr($lastName, 0, 1) . '.' : ''));
     }
-} catch (\Exception $e) {}
-$ratingStars = $ratingSummary ? round($ratingSummary / 20, 1) : 0;
-$ratingFull = (int)floor($ratingStars);
+
+    // Lấy collection review đã approved
+    $reviewCollection = $objectManager->create(\Magento\Review\Model\ResourceModel\Review\Collection::class);
+    $reviewCollection
+        ->addStoreFilter($storeId)
+        ->addStatusFilter(\Magento\Review\Model\Review::STATUS_APPROVED)
+        ->addEntityFilter('product', $productId)
+        ->setDateOrder()
+        ->addRateVotes();
+
+    $reviewCount = $reviewCollection->getSize();
+    if ($reviewCount > 0) {
+        $reviewItems = $reviewCollection->getItems();
+    }
+} catch (\Exception $e) {
+    $reviewCount = 0;
+}
 ?>
+
 
 <div class="pdp-tabs-section">
     <!-- Tab Buttons -->
@@ -83,20 +106,42 @@ $ratingFull = (int)floor($ratingStars);
         <!-- Reviews Tab -->
         <div class="pdp-tab-panel" id="tab-reviews">
             <?php if ($reviewCount > 0): ?>
-            <div class="pdp-reviews-summary">
-                <div class="pdp-reviews-score">
-                    <div class="pdp-reviews-number"><?= $block->escapeHtml($ratingStars) ?></div>
-                    <div class="pdp-reviews-stars">
-                        <?php for ($i = 0; $i < 5; $i++): ?>
-                            <?php if ($i < $ratingFull): ?>
-                                <svg class="pdp-star pdp-star-filled pdp-star-sm" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <?php else: ?>
-                                <svg class="pdp-star pdp-star-empty pdp-star-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <?php endif; ?>
-                        <?php endfor; ?>
+            <!-- Danh sách từng đánh giá -->
+            <div class="pdp-review-list">
+                <?php foreach ($reviewItems as $review): ?>
+                    <?php
+                        $votes = $review->getRatingVotes();
+                        $reviewPct = 0; $voteNum = 0;
+                        foreach ($votes as $v) { $reviewPct += $v->getPercent(); $voteNum++; }
+                        $reviewStars = $voteNum ? round(($reviewPct / $voteNum) / 20) : 0;
+                        $reviewDate  = $review->getCreatedAt()
+                            ? date('d/m/Y', strtotime($review->getCreatedAt())) : '';
+                    ?>
+                    <div class="pdp-review-item">
+                        <div class="pdp-review-item-header">
+                            <div class="pdp-review-item-meta">
+                                <span class="pdp-review-item-author"><?= $block->escapeHtml($review->getNickname()) ?></span>
+                                <?php if ($reviewDate): ?>
+                                    <span class="pdp-review-item-date"><?= $block->escapeHtml($reviewDate) ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="pdp-review-item-stars">
+                                <?php for ($s = 1; $s <= 5; $s++): ?>
+                                    <svg viewBox="0 0 24 24" width="14" height="14"
+                                         fill="<?= $s <= $reviewStars ? 'currentColor' : 'none' ?>"
+                                         stroke="currentColor" stroke-width="1.5"
+                                         class="pdp-star <?= $s <= $reviewStars ? 'pdp-star-filled' : 'pdp-star-empty' ?>">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                <?php endfor; ?>
+                            </div>
+                        </div>
+                        <?php if ($review->getTitle()): ?>
+                            <div class="pdp-review-item-title"><?= $block->escapeHtml($review->getTitle()) ?></div>
+                        <?php endif; ?>
+                        <div class="pdp-review-item-body"><?= $block->escapeHtml($review->getDetail()) ?></div>
                     </div>
-                    <div class="pdp-reviews-count"><?= (int)$reviewCount ?> đánh giá</div>
-                </div>
+                <?php endforeach; ?>
             </div>
             <?php else: ?>
             <div class="pdp-reviews-empty">
@@ -108,57 +153,67 @@ $ratingFull = (int)floor($ratingStars);
             </div>
             <?php endif; ?>
 
-            <!-- Write Review Button -->
-            <div class="pdp-review-write-toggle">
-                <button type="button" class="pdp-review-write-btn" id="toggleReviewForm">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                        <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
-                    </svg>
-                    Viết đánh giá
-                </button>
-            </div>
+            <!-- Nút / Form viết đánh giá -->
+            <?php if ($isLoggedIn): ?>
+                <!-- Đã đăng nhập → hiện nút và form -->
+                <div class="pdp-review-write-toggle">
+                    <button type="button" class="pdp-review-write-btn" id="toggleReviewForm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                            <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
+                        </svg>
+                        Viết đánh giá
+                    </button>
+                </div>
 
-            <!-- Review Form (hidden by default) -->
-            <div class="pdp-review-form-wrapper" id="reviewFormWrapper" style="display: none;">
-                <form class="pdp-review-form" id="reviewForm"
-                      action="<?= $block->escapeUrl($block->getUrl('review/product/post', ['id' => $product->getId()])) ?>"
-                      method="post">
-                    <?= $block->getBlockHtml('formkey') ?>
-                    <input type="hidden" name="product_id" value="<?= (int)$product->getId() ?>"/>
-
-                    <div class="pdp-review-field">
-                        <label for="review-nickname">Tên hiển thị</label>
-                        <input type="text" id="review-nickname" name="nickname" required class="pdp-review-input" placeholder="Nhập tên của bạn"/>
+                <div class="pdp-review-form-wrapper" id="reviewFormWrapper" style="display: none;">
+                    <div class="pdp-review-user-tag">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Đánh giá với tư cách: <strong><?= $block->escapeHtml($customerNickname) ?></strong>
                     </div>
+                    <form class="pdp-review-form" id="reviewForm"
+                          action="<?= $block->escapeUrl($block->getUrl('review/product/post', ['id' => $product->getId()])) ?>"
+                          method="post">
+                        <?= $block->getBlockHtml('formkey') ?>
+                        <input type="hidden" name="product_id" value="<?= (int)$product->getId() ?>"/>
+                        <!-- Nickname tự động từ tài khoản, ẩn với người dùng -->
+                        <input type="hidden" name="nickname" value="<?= $block->escapeHtmlAttr($customerNickname) ?>"/>
 
-                    <div class="pdp-review-field">
-                        <label for="review-title">Tiêu đề</label>
-                        <input type="text" id="review-title" name="title" required class="pdp-review-input" placeholder="Tóm tắt đánh giá"/>
-                    </div>
-
-                    <div class="pdp-review-field">
-                        <label>Đánh giá sao</label>
-                        <div class="pdp-review-rating-select" id="reviewRatingSelect">
-                            <?php for ($i = 1; $i <= 5; $i++): ?>
-                                <button type="button" class="pdp-review-star-btn" data-rating="<?= $i ?>">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                </button>
-                            <?php endfor; ?>
-                            <input type="hidden" name="ratings[1]" id="review-rating-value" value=""/>
+                        <div class="pdp-review-field">
+                            <label for="review-title">Tiêu đề</label>
+                            <input type="text" id="review-title" name="title" required class="pdp-review-input" placeholder="Tóm tắt đánh giá của bạn"/>
                         </div>
-                    </div>
 
-                    <div class="pdp-review-field">
-                        <label for="review-detail">Nội dung đánh giá</label>
-                        <textarea id="review-detail" name="detail" required class="pdp-review-textarea" rows="4" placeholder="Chia sẻ trải nghiệm của bạn..."></textarea>
-                    </div>
+                        <div class="pdp-review-field">
+                            <label>Đánh giá sao</label>
+                            <div class="pdp-review-rating-select" id="reviewRatingSelect">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <button type="button" class="pdp-review-star-btn" data-rating="<?= $i ?>">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    </button>
+                                <?php endfor; ?>
+                                <input type="hidden" name="ratings[1]" id="review-rating-value" value=""/>
+                            </div>
+                        </div>
 
-                    <div class="pdp-review-actions">
-                        <button type="button" class="pdp-review-cancel-btn" id="cancelReviewForm">Hủy</button>
-                        <button type="submit" class="pdp-review-submit-btn">Gửi đánh giá</button>
-                    </div>
-                </form>
-            </div>
+                        <div class="pdp-review-field">
+                            <label for="review-detail">Nội dung đánh giá</label>
+                            <textarea id="review-detail" name="detail" required class="pdp-review-textarea" rows="4" placeholder="Chia sẻ trải nghiệm của bạn..."></textarea>
+                        </div>
+
+                        <div class="pdp-review-actions">
+                            <button type="button" class="pdp-review-cancel-btn" id="cancelReviewForm">Hủy</button>
+                            <button type="submit" class="pdp-review-submit-btn">Gửi đánh giá</button>
+                        </div>
+                    </form>
+                </div>
+
+            <?php else: ?>
+                <!-- Chưa đăng nhập → hiện CTA đăng nhập -->
+                <div class="pdp-review-login-cta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Bạn cần <a href="<?= $block->escapeUrl($loginUrl) ?>" class="pdp-review-login-link">đăng nhập</a> để viết đánh giá</span>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

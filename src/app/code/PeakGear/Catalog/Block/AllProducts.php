@@ -181,8 +181,17 @@ class AllProducts extends AbstractProduct
      *
      * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
      */
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection|null
+     */
+    private $_productCollectionCache;
+
     public function getProductCollection()
     {
+        if ($this->_productCollectionCache !== null) {
+            return $this->_productCollectionCache;
+        }
+
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect([
             'name', 'price', 'special_price', 'special_from_date', 'special_to_date',
@@ -257,10 +266,39 @@ class AllProducts extends AbstractProduct
                 break;
         }
 
+        // Apply pagination
+        $page = (int)$this->request->getParam('p', 1);
+        $collection->setPageSize(9);
+        $collection->setCurPage($page);
+
         // Add review summary
         $this->reviewFactory->create()->appendSummary($collection);
 
-        return $collection;
+        $this->_productCollectionCache = $collection;
+        return $this->_productCollectionCache;
+    }
+
+    protected function _prepareLayout()
+    {
+        parent::_prepareLayout();
+        if ($this->getProductCollection()) {
+            $pager = $this->getLayout()->createBlock(
+                \Magento\Theme\Block\Html\Pager::class,
+                'peakgear_allproducts_pager'
+            #chỗ này để quyết định phân trang
+            )->setAvailableLimit([9 => 9])
+             ->setShowPerPage(false)
+             ->setCollection($this->getProductCollection());
+            
+            $this->setChild('pager', $pager);
+            $this->getProductCollection()->load();
+        }
+        return $this;
+    }
+
+    public function getPagerHtml()
+    {
+        return $this->getChildHtml('pager');
     }
 
     /**

@@ -469,6 +469,11 @@ $hasActiveFilters = !empty($activeFilters);
                         </div>
                     <?php endforeach; ?>
                 </div>
+
+                <!-- Pagination -->
+                <div class="allprod-toolbar-bottom" style="margin-top: 2rem;">
+                    <?= $block->getPagerHtml() ?>
+                </div>
             <?php else: ?>
                 <!-- Empty State -->
                 <div class="allprod-empty">
