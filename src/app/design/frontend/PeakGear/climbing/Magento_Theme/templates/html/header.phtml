@@ -13,10 +13,132 @@ $categories = $block->getCategories();
 $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCustomerLoggedIn() : false;
 ?>
 
+<style>
+/* === HAMBURGER MENU OVERRIDE === */
+@media (max-width: 767px) {
+    #pg-hamburger {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 5px !important;
+        width: 44px !important;
+        height: 44px !important;
+        background: rgba(255,255,255,0.1) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+        padding: 0 !important;
+        z-index: 100 !important;
+        position: relative !important;
+    }
+    #pg-hamburger .pg-bar {
+        display: block !important;
+        width: 22px !important;
+        height: 2px !important;
+        background: #ffffff !important;
+        border-radius: 2px !important;
+        transition: all 0.3s ease !important;
+        transform-origin: center !important;
+    }
+    #pg-hamburger.open .pg-bar:nth-child(1) {
+        transform: translateY(7px) rotate(45deg) !important;
+    }
+    #pg-hamburger.open .pg-bar:nth-child(2) {
+        opacity: 0 !important;
+        transform: scaleX(0) !important;
+    }
+    #pg-hamburger.open .pg-bar:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg) !important;
+    }
+    /* Hide the old toggle button on mobile */
+    #mobileMenuToggle {
+        display: none !important;
+    }
+    /* Prevent Magento default white/light background on all mobile menu elements */
+    #mobileMenu,
+    #mobileMenu *,
+    #mobileMenu button,
+    #mobileMenu button:focus,
+    #mobileMenu button:active,
+    #mobileMenu button:hover,
+    #mobileMenu button:focus-within,
+    #mobileMenu button:focus-visible,
+    #mobileMenu a:focus,
+    #mobileMenu a:active,
+    #mobileMenu .mobile-menu-link,
+    #mobileMenu .mobile-menu-link:focus,
+    #mobileMenu .mobile-menu-link:active,
+    #mobileMenu .mobile-menu-link:hover,
+    #mobileMenu .mobile-category-toggle,
+    #mobileMenu .mobile-category-toggle:focus,
+    #mobileMenu .mobile-category-toggle:active,
+    #mobileMenu .mobile-category-toggle:hover,
+    #mobileMenu .mobile-category-item,
+    #mobileMenu .mobile-menu-accordion,
+    #mobileMenu .mobile-menu-accordion-content,
+    #mobileMenu .mobile-menu-accordion-toggle,
+    #mobileMenu .mobile-menu-accordion-toggle:focus,
+    #mobileMenu .mobile-menu-accordion-toggle:active {
+        background-color: transparent !important;
+        background: transparent !important;
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    /* Fixed Register button colors on mobile */
+    #mobileMenu .btn-primary {
+        background-color: #f59e0b !important;
+        background: #f59e0b !important;
+        color: #111827 !important;
+        opacity: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 0.375rem !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        text-transform: none !important;
+        border: none !important;
+    }
+    #mobileMenu .btn-outline {
+        background-color: transparent !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 0.375rem !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        text-transform: none !important;
+    }
+    /* Dynamic scrolling for mobile menu */
+    #mobileMenu {
+        max-height: 85vh;
+        overflow-y: hidden; /* Default: no scroll */
+    }
+    #mobileMenu.can-scroll {
+        overflow-y: auto !important;
+        scrollbar-width: thin;
+    }
+    body.mobile-menu-active {
+        overflow: hidden !important; /* Lock background */
+    }
+}
+@media (min-width: 768px) {
+    #pg-hamburger {
+        display: none !important;
+    }
+}
+</style>
 <header class="peakgear-header" id="peakgear-header">
     <div class="header-overlay"></div>
     
-    <nav class="header-nav">
+    <nav class="header-nav" style="position:relative;z-index:10;">
         <!-- Logo -->
         <a href="<?= $block->escapeUrl($baseUrl) ?>" class="header-logo" title="<?= $block->escapeHtmlAttr($logoAlt) ?>">
             <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -129,13 +251,26 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
                                name="q" 
                                class="search-input" 
                                placeholder="Tìm kiếm..."
-                               autocomplete="off"/>
+                               autocomplete="off"
+                               data-mage-init='{"quickSearch":{
+                                    "formSelector":"#headerSearch form",
+                                    "url":"<?= $block->escapeUrl($block->getUrl("catalogsearch/ajax/suggest")) ?>",
+                                    "destinationSelector":"#search_autocomplete",
+                                    "minSearchLength":"3"
+                               }}'/>
+                        <button type="submit" class="search-submit" title="<?= $block->escapeHtmlAttr(__('Search')) ?>">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="display:block;">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </button>
                         <button type="button" class="search-close" id="searchClose">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
                                 <line x1="18" y1="6" x2="6" y2="18"/>
                                 <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
                         </button>
+                        <div id="search_autocomplete" class="search-autocomplete"></div>
                     </form>
                 </div>
             </div>
@@ -217,38 +352,34 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
                 </div>
             </div>
 
-            <!-- Mobile Menu Toggle -->
-            <button class="action-btn mobile-menu-toggle" type="button" id="mobileMenuToggle">
-                <svg class="mobile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="4" y1="12" x2="20" y2="12"/>
-                    <line x1="4" y1="6" x2="20" y2="6"/>
-                    <line x1="4" y1="18" x2="20" y2="18"/>
-                </svg>
-                <svg class="mobile-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+            <!-- Mobile Menu Toggle (new standalone hamburger) -->
+            <button id="pg-hamburger" type="button" aria-label="Menu" aria-expanded="false">
+                <span class="pg-bar"></span>
+                <span class="pg-bar"></span>
+                <span class="pg-bar"></span>
             </button>
+            <!-- Keep old button hidden for JS compatibility -->
+            <button class="action-btn mobile-menu-toggle" type="button" id="mobileMenuToggle" style="display:none !important;"></button>
         </div>
     </nav>
     
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-content">
-            <a href="<?= $block->escapeUrl($baseUrl) ?>" class="mobile-menu-link">Trang Chủ</a>
+            <a href="<?= $block->escapeUrl($baseUrl) ?>" class="mobile-menu-link" id="mobileHomeLink">Trang Chủ</a>
             
             <!-- Mobile Categories -->
-            <div class="mobile-menu-accordion">
-                <button class="mobile-menu-link mobile-menu-accordion-toggle" type="button" id="mobileCategoryToggle">
+            <div class="mobile-menu-accordion" style="background:transparent;">
+                <button class="mobile-menu-link mobile-menu-accordion-toggle" type="button" id="mobileCategoryToggle" style="background:transparent !important;">
                     <span>Danh Mục</span>
                     <svg class="mobile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"/>
                     </svg>
                 </button>
                 
-                <div class="mobile-menu-accordion-content" id="mobileCategoryContent">
+                <div class="mobile-menu-accordion-content" id="mobileCategoryContent" style="background:transparent;">
                     <!-- All Products -->
-                    <a href="<?= $block->escapeUrl($block->getUrl('products')) ?>" class="mobile-category-all">
+                    <a href="<?= $block->escapeUrl($block->getUrl('products')) ?>" class="mobile-category-all" style="background:transparent;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                             <path d="m7.5 4.27 9 5.15"/>
                             <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
@@ -259,8 +390,8 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
                     </a>
                     
                     <?php foreach ($categories as $cat): ?>
-                    <div class="mobile-category-item">
-                        <button class="mobile-category-toggle" type="button" data-mobile-category="<?= (int)$cat['id'] ?>">
+                    <div class="mobile-category-item" style="background:transparent;">
+                        <button class="mobile-category-toggle" type="button" data-mobile-category="<?= (int)$cat['id'] ?>" style="background:transparent;">
                             <span class="mobile-category-icon"><?= /* @noEscape */ $cat['icon'] ?></span>
                             <span class="mobile-category-name"><?= $block->escapeHtml($cat['name']) ?></span>
                             <svg class="mobile-category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -268,10 +399,10 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
                             </svg>
                         </button>
                         
-                        <div class="mobile-subcategories" data-mobile-subcategory="<?= (int)$cat['id'] ?>">
-                            <a href="<?= $block->escapeUrl($block->getUrl('products') . '?category=' . (int)$cat['id']) ?>" class="mobile-subcategory-link mobile-subcategory-all">Xem tất cả <?= $block->escapeHtml($cat['name']) ?></a>
+                        <div class="mobile-subcategories" data-mobile-subcategory="<?= (int)$cat['id'] ?>" style="background:transparent;">
+                            <a href="<?= $block->escapeUrl($block->getUrl('products') . '?category=' . (int)$cat['id']) ?>" class="mobile-subcategory-link mobile-subcategory-all" style="background:transparent;">Xem tất cả <?= $block->escapeHtml($cat['name']) ?></a>
                             <?php foreach ($cat['subcategories'] as $sub): ?>
-                            <a href="<?= $block->escapeUrl($block->getUrl('products') . '?category=' . (int)$cat['id'] . '&sub=' . $block->escapeHtmlAttr($sub['slug'])) ?>" class="mobile-subcategory-link"><?= $block->escapeHtml($sub['name']) ?></a>
+                            <a href="<?= $block->escapeUrl($block->getUrl('products') . '?category=' . (int)$cat['id'] . '&sub=' . $block->escapeHtmlAttr($sub['slug'])) ?>" class="mobile-subcategory-link" style="background:transparent;"><?= $block->escapeHtml($sub['name']) ?></a>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -283,44 +414,9 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
             <a href="<?= $block->escapeUrl($block->getUrl('about')) ?>" class="mobile-menu-link">Về Chúng Tôi</a>
             <a href="<?= $block->escapeUrl($block->getUrl('contact')) ?>" class="mobile-menu-link">Liên Hệ</a>
             
-            <!-- Mobile Auth -->
-            <div class="mobile-auth" id="mobileAuth">
-                <!-- Logged-in (hidden by default) -->
-                <div class="mobile-auth-logged-in" id="mobileAuthLoggedIn"<?= $isLoggedIn ? '' : ' style="display:none;"' ?>>
-                    <div class="mobile-auth-info">
-                        <span class="mobile-auth-avatar" id="mobileAuthAvatar"><?= $isLoggedIn ? 'U' : '' ?></span>
-                        <div>
-                            <p class="mobile-auth-name" id="mobileAuthName"></p>
-                            <p class="mobile-auth-email" id="mobileAuthEmail"></p>
-                        </div>
-                    </div>
-                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount')) ?>" class="mobile-menu-link">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        Tài khoản
-                    </a>
-                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount/orders')) ?>" class="mobile-menu-link">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-                            <path d="M3 6h18"/>
-                            <path d="M16 10a4 4 0 0 1-8 0"/>
-                        </svg>
-                        Đơn hàng
-                    </a>
-                    <a href="<?= $block->escapeUrl($block->getUrl('customer/account/logout')) ?>" class="mobile-menu-link mobile-menu-link-logout">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16 17 21 12 16 7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        Đăng xuất
-                    </a>
-                </div>
-                
-                <!-- Not logged in -->
-                <div class="mobile-auth-buttons" id="mobileAuthButtons"<?= $isLoggedIn ? ' style="display:none;"' : '' ?>>
+            <!-- Mobile Auth — only show login/register when NOT logged in -->
+            <div class="mobile-auth" id="mobileAuth"<?= $isLoggedIn ? ' style="display:none;"' : '' ?>>
+                <div class="mobile-auth-buttons" id="mobileAuthButtons">
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>" class="btn btn-outline btn-block">Đăng nhập</a>
                     <a href="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>" class="btn btn-primary btn-block">Đăng ký</a>
                 </div>
@@ -468,24 +564,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mobile menu toggle
+    // Mobile menu toggle — new #pg-hamburger button
     var mobileOpen = false;
-    var menuIcon = mobileMenuToggle.querySelector('.mobile-menu-icon');
-    var closeIcon = mobileMenuToggle.querySelector('.mobile-close-icon');
-    mobileMenuToggle.addEventListener('click', function() {
-        mobileOpen = !mobileOpen;
-        if (mobileOpen) {
-            mobileMenu.classList.add('open');
-            menuIcon.style.display = 'none';
-            closeIcon.style.display = 'block';
-            document.body.classList.add('mobile-menu-active');
-        } else {
+    var pgHamburger = document.getElementById('pg-hamburger');
+    if (pgHamburger) {
+        pgHamburger.addEventListener('click', function() {
+            mobileOpen = !mobileOpen;
+            if (mobileOpen) {
+                mobileMenu.classList.add('open');
+                pgHamburger.classList.add('open');
+                pgHamburger.setAttribute('aria-expanded', 'true');
+                document.body.classList.add('mobile-menu-active');
+            } else {
+                mobileMenu.classList.remove('open');
+                pgHamburger.classList.remove('open');
+                pgHamburger.setAttribute('aria-expanded', 'false');
+                document.body.classList.remove('mobile-menu-active');
+            }
+        });
+    }
+    // Close mobile menu when clicking overlay/outside
+    document.addEventListener('click', function(e) {
+        if (mobileOpen && !mobileMenu.contains(e.target) && !pgHamburger.contains(e.target)) {
+            mobileOpen = false;
             mobileMenu.classList.remove('open');
-            menuIcon.style.display = 'block';
-            closeIcon.style.display = 'none';
+            if (pgHamburger) { pgHamburger.classList.remove('open'); pgHamburger.setAttribute('aria-expanded', 'false'); }
             document.body.classList.remove('mobile-menu-active');
         }
     });
+
+    // Close menu when Trang Chủ is clicked
+    var mobileHomeLink = document.getElementById('mobileHomeLink');
+    if (mobileHomeLink) {
+        mobileHomeLink.addEventListener('click', function() {
+            mobileOpen = false;
+            mobileMenu.classList.remove('open');
+            if (pgHamburger) { pgHamburger.classList.remove('open'); pgHamburger.setAttribute('aria-expanded', 'false'); }
+            document.body.classList.remove('mobile-menu-active');
+        });
+    }
 
     // Mobile category toggle
     var mobileCatOpen = false;
@@ -494,9 +611,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var chevron = this.querySelector('.mobile-chevron');
         if (mobileCatOpen) {
             mobileCategoryContent.classList.add('open');
+            mobileMenu.classList.add('can-scroll'); // Allow scrolling when expanded
             if (chevron) chevron.classList.add('rotate');
         } else {
             mobileCategoryContent.classList.remove('open');
+            mobileMenu.classList.remove('can-scroll'); // Lock scrolling when collapsed
             if (chevron) chevron.classList.remove('rotate');
         }
     });
@@ -537,6 +656,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (isLogged) {
                     var initial = fullName ? fullName.charAt(0).toUpperCase() : 'U';
 
+                    // Desktop account dropdown
                     document.getElementById('accountAvatar').textContent = initial;
                     document.getElementById('accountName').textContent = fullName || 'Tài khoản';
                     document.getElementById('accountEmail').textContent = email;
@@ -544,19 +664,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('accountDropdown').style.display = '';
                     document.getElementById('authButtons').style.display = 'none';
 
-                    document.getElementById('mobileAuthAvatar').textContent = initial;
-                    document.getElementById('mobileAuthName').textContent = fullName || 'Tài khoản';
-                    document.getElementById('mobileAuthEmail').textContent = email;
-                    document.getElementById('mobileAuthLoggedIn').style.display = '';
-                    document.getElementById('mobileAuthButtons').style.display = 'none';
+                    // Mobile: hide entire auth section (account is in header dropdown)
+                    var mobileAuth = document.getElementById('mobileAuth');
+                    if (mobileAuth) mobileAuth.style.display = 'none';
                     return;
                 }
 
+                // Not logged in
                 document.getElementById('accountDropdown').setAttribute('data-logged-in', 'false');
                 document.getElementById('accountDropdown').style.display = 'none';
                 document.getElementById('authButtons').style.display = '';
-                document.getElementById('mobileAuthLoggedIn').style.display = 'none';
-                document.getElementById('mobileAuthButtons').style.display = '';
+                var mobileAuth = document.getElementById('mobileAuth');
+                if (mobileAuth) mobileAuth.style.display = '';
+                var mobileAuthButtons = document.getElementById('mobileAuthButtons');
+                if (mobileAuthButtons) mobileAuthButtons.style.display = '';
             }
 
             var customer = customerData.get('customer');
