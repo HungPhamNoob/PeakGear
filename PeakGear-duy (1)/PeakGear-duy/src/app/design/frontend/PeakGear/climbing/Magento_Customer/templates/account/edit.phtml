@@ -1,0 +1,303 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Account Info (Edit + Address)
+ *
+ * @var \Magento\Customer\Block\Account\Edit $block
+ */
+
+// Get customer from session using ObjectManager
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
+$customer = $customerSession->getCustomer();
+
+$firstname = ($customer && $customer->getId()) ? $customer->getFirstname() : '';
+$lastname = ($customer && $customer->getId()) ? $customer->getLastname() : '';
+$email = ($customer && $customer->getId()) ? $customer->getEmail() : '';
+
+$shippingAddressInfo = 'Chưa cập nhật địa chỉ giao hàng';
+$shippingPhoneInfo = 'Chưa cập nhật số điện thoại';
+if ($customer && $customer->getId() && ($primaryShipping = $customer->getPrimaryShippingAddress())) {
+    $street = $primaryShipping->getStreet();
+    $streetStr = is_array($street) ? implode(', ', $street) : (string)$street;
+    $city = $primaryShipping->getCity();
+    
+    $fullAddress = [];
+    if ($streetStr) $fullAddress[] = $streetStr;
+    if ($city) $fullAddress[] = $city;
+    
+    if (!empty($fullAddress)) {
+        $shippingAddressInfo = implode(', ', $fullAddress);
+    }
+    if ($telephone = $primaryShipping->getTelephone()) {
+        $shippingPhoneInfo = $telephone;
+    }
+}
+
+$billingAddressInfo = 'Chưa cập nhật địa chỉ thanh toán';
+$billingPhoneInfo = 'Chưa cập nhật số điện thoại';
+if ($customer && $customer->getId() && ($primaryBilling = $customer->getPrimaryBillingAddress())) {
+    $street = $primaryBilling->getStreet();
+    $streetStr = is_array($street) ? implode(', ', $street) : (string)$street;
+    $city = $primaryBilling->getCity();
+    
+    $fullAddress = [];
+    if ($streetStr) $fullAddress[] = $streetStr;
+    if ($city) $fullAddress[] = $city;
+    
+    if (!empty($fullAddress)) {
+        $billingAddressInfo = implode(', ', $fullAddress);
+    }
+    if ($telephone = $primaryBilling->getTelephone()) {
+        $billingPhoneInfo = $telephone;
+    }
+}
+?>
+
+<div class="main-content">
+    <section class="edit-hero">
+        <div class="edit-hero-content">
+            <h1>Thông Tin Cá Nhân</h1>
+        </div>
+    </section>
+
+    <div class="edit-container">
+        <!-- Personal Info Form -->
+        <div class="edit-form-card">
+            <h2 class="form-title">Thông tin tài khoản</h2>
+
+            <form action="<?= $block->escapeUrl($block->getUrl('customer/account/editPost')) ?>"
+                  method="post"
+                  id="form-validate"
+                  enctype="multipart/form-data"
+                  data-mage-init='{"validation":{}}'>
+                <?= $block->getBlockHtml('formkey') ?>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label for="firstname">Họ</label>
+                        <input type="text" name="firstname" id="firstname"
+                               value="<?= $block->escapeHtmlAttr($firstname) ?>"
+                               placeholder="Nhập họ của bạn"
+                               data-validate="{required:true}"/>
+                    </div>
+
+                    <div class="field">
+                        <label for="lastname">Tên</label>
+                        <input type="text" name="lastname" id="lastname"
+                               value="<?= $block->escapeHtmlAttr($lastname) ?>"
+                               placeholder="Nhập tên của bạn"
+                               data-validate="{required:true}"/>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="email">Địa chỉ Email</label>
+                    <input type="email" name="email" id="email"
+                           value="<?= $block->escapeHtmlAttr($email) ?>"
+                           placeholder="example@email.com"
+                           data-validate="{required:true, 'validate-email':true}"/>
+                </div>
+
+                <div class="field" style="display:none;">
+                    <label for="current-password">Mật khẩu hiện tại <span style="color: rgba(255,255,255,0.5); font-weight: normal;">(bắt buộc khi đổi email)</span></label>
+                    <input type="password" name="current_password" id="current-password"
+                           placeholder="Nhập mật khẩu hiện tại"/>
+                </div>
+                <input type="hidden" name="change_email" id="change-email-input" value="0"/>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">
+                        Lưu thay đổi
+                    </button>
+                    <a href="<?= $block->escapeUrl($block->getUrl('myaccount')) ?>" class="btn-back">
+                        Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Change Password Form -->
+        <div class="edit-form-card">
+            <h2 class="form-title">Đổi mật khẩu</h2>
+
+            <form action="<?= $block->escapeUrl($block->getUrl('customer/account/editPost')) ?>"
+                  method="post"
+                  id="change-password-form"
+                  data-mage-init='{"validation":{}}'>
+                <?= $block->getBlockHtml('formkey') ?>
+                <input type="hidden" name="change_password" value="1"/>
+
+                <div class="field">
+                    <label for="current-password-change">Mật khẩu hiện tại</label>
+                    <input type="password" name="current_password" id="current-password-change"
+                           placeholder="Nhập mật khẩu hiện tại"
+                           data-validate="{required:true}"/>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label for="password">Mật khẩu mới</label>
+                        <input type="password" name="password" id="password"
+                               placeholder="Tối thiểu <?= $block->escapeHtmlAttr($block->getMinimumPasswordLength()) ?> ký tự"
+                               data-password-min-length="<?= $block->escapeHtmlAttr($block->getMinimumPasswordLength()) ?>"
+                               data-password-min-character-sets="<?= $block->escapeHtmlAttr($block->getRequiredCharacterClassesNumber()) ?>"
+                               data-validate="{required:true, 'validate-customer-password':true}"/>
+                    </div>
+
+                    <div class="field">
+                        <label for="password_confirmation">Xác nhận mật khẩu</label>
+                        <input type="password" name="password_confirmation" id="password_confirmation"
+                               placeholder="Nhập lại mật khẩu mới"
+                               data-validate="{required:true, equalTo:'#password'}"/>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">
+                        Đổi mật khẩu
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Address Section -->
+        <div class="edit-form-card">
+            <h2 class="form-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; color: #ff6b6b;">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Thông tin giao hàng
+            </h2>
+
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                Quản lý địa chỉ giao hàng và thanh toán của bạn.
+            </p>
+
+            <div class="shipping-info-display">
+                <div class="info-row">
+                    <span class="info-label">Địa chỉ:</span>
+                    <span class="info-value"><?= $block->escapeHtml($shippingAddressInfo) ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Điện thoại:</span>
+                    <span class="info-value"><?= $block->escapeHtml($shippingPhoneInfo) ?></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="<?= $block->escapeUrl($block->getUrl('customer/address')) ?>" class="btn-save">
+                    Quản lý địa chỉ
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1rem; height: 1rem;">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Billing Section -->
+        <div class="edit-form-card">
+            <h2 class="form-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; color: #5a8a3c;">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                </svg>
+                Thông tin thanh toán
+            </h2>
+
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                Mặc định được dùng như phương thức tính phí và biên lai gốc.
+            </p>
+
+            <div class="shipping-info-display">
+                <div class="info-row">
+                    <span class="info-label">Địa chỉ:</span>
+                    <span class="info-value"><?= $block->escapeHtml($billingAddressInfo) ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Điện thoại:</span>
+                    <span class="info-value"><?= $block->escapeHtml($billingPhoneInfo) ?></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="<?= $block->escapeUrl($block->getUrl('customer/address')) ?>" class="btn-save">
+                    Quản lý địa chỉ
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1rem; height: 1rem;">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="password-modal" style="display:none;" title="Xác nhận thay đổi">
+    <p>Thuộc tính bảo mật yêu cầu bạn cung cấp mật khẩu hiện tại trước khi thay đổi địa chỉ Email.</p>
+    <div class="field">
+        <label for="modal-current-password" style="display:block; margin-bottom: 0.5rem; color: #fff;">Mật khẩu hiện tại</label>
+        <input type="password" id="modal-current-password" class="input-text" style="width: 100%; max-width: 100%; padding: 0.75rem 1rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: #fff; box-sizing: border-box;" />
+        <div id="modal-password-error" style="color: #ff6b6b; font-size: 0.8125rem; margin-top: 0.5rem; display: none;">Vui lòng nhập mật khẩu.</div>
+    </div>
+</div>
+
+<script>
+require([
+    'jquery',
+    'Magento_Ui/js/modal/modal'
+], function ($, modal) {
+    var originalEmail = '<?= $block->escapeJs($email) ?>';
+
+    var options = {
+        type: 'popup',
+        responsive: true,
+        innerScroll: true,
+        title: 'Yêu cầu mật khẩu',
+        buttons: [{
+            text: $.mage.__('Xác nhận thay đổi'),
+            class: 'action primary',
+            click: function () {
+                var pwd = $('#modal-current-password').val();
+                if (!pwd) {
+                    $('#modal-password-error').show();
+                    return;
+                }
+                
+                $('#modal-password-error').hide();
+                $('#current-password').val(pwd);
+                $('#change-email-input').val('1'); 
+                
+                // Submit form directly skipping jquery intercept hook sequence
+                $('#form-validate').off('submit').submit();
+            }
+        }]
+    };
+
+    var popup = modal(options, $('#password-modal'));
+    
+    $('#form-validate').on('submit', function(e) {
+        // Prevent if form is not valid
+        if (!$(this).valid()) {
+            return false;
+        }
+
+        var newEmail = $('#email').val();
+        if (newEmail && newEmail !== originalEmail) {
+            e.preventDefault();
+            $('#modal-current-password').val('');
+            $('#modal-password-error').hide();
+            $('#password-modal').modal('openModal');
+            return false;
+        } else {
+            $('#change-email-input').val('0');
+        }
+    });
+
+    $('#modal-current-password').on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('.modal-popup .action.primary').click();
+        }
+    });
+});
+</script>

@@ -271,9 +271,6 @@ class AllProducts extends AbstractProduct
         $collection->setPageSize(9);
         $collection->setCurPage($page);
 
-        // Add review summary
-        $this->reviewFactory->create()->appendSummary($collection);
-
         $this->_productCollectionCache = $collection;
         return $this->_productCollectionCache;
     }
@@ -282,13 +279,15 @@ class AllProducts extends AbstractProduct
     {
         parent::_prepareLayout();
         if ($this->getProductCollection()) {
+            /** @var \Magento\Theme\Block\Html\Pager $pager */
             $pager = $this->getLayout()->createBlock(
                 \Magento\Theme\Block\Html\Pager::class,
                 'peakgear_allproducts_pager'
             #chỗ này để quyết định phân trang
-            )->setAvailableLimit([9 => 9])
-             ->setShowPerPage(false)
-             ->setCollection($this->getProductCollection());
+            );
+            $pager->setAvailableLimit([9 => 9])
+                ->setShowPerPage(false)
+                ->setCollection($this->getProductCollection());
             
             $this->setChild('pager', $pager);
             $this->getProductCollection()->load();

@@ -1,0 +1,138 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Hero Section
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+/** @var \Vendor\Weather\Block\Weather $weatherBlock */
+$weatherBlock = $block;
+$baseUrl = $weatherBlock->getBaseUrl();
+$heroCities = $weatherBlock->getHeroCitiesWeather(8);
+$heroWeatherJson = json_encode($heroCities, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+// ── Server-side initial values (shown before KnockoutJS hydrates) ──────────
+// Pick Ha Noi weather from the pre-fetched list; fall back to first city.
+$heroCity = null;
+foreach ($heroCities as $_c) {
+    $_name = strtolower((string)($_c['city_name'] ?? ''));
+    if (in_array($_name, ['ha noi', 'hanoi', 'hà nội'], true)) {
+        $heroCity = $_c;
+        break;
+    }
+}
+if ($heroCity === null && !empty($heroCities)) {
+    $heroCity = reset($heroCities);
+}
+
+$initialTemp      = '';
+$initialCondition = '';
+$initialCityName  = 'Hà Nội';
+if ($heroCity !== null) {
+    $initialTemp      = round((float)($heroCity['temperature'] ?? 0), 1) . '°C';
+    $initialCondition = (string)($heroCity['description'] ?? '');
+    $initialCityName  = (string)($heroCity['city_name'] ?? 'Hà Nội');
+    if (in_array(strtolower($initialCityName), ['ha noi', 'hanoi'], true)) {
+        $initialCityName = 'Hà Nội';
+    }
+}
+
+// Real current date in Vietnam timezone (dd/mm/yyyy only).
+try {
+    $_tz  = new \DateTimeZone('Asia/Ho_Chi_Minh');
+    $_now = new \DateTime('now', $_tz);
+    $initialDate = $_now->format('d/m/Y');
+} catch (\Exception $_e) {
+    $initialDate = date('d/m/Y');
+}
+?>
+
+<section class="hero-section" id="hero-section-root" data-bind="scope: 'heroSection'">
+    <!-- Background Image -->
+    <div class="hero-bg">
+        <div class="hero-bg-image" style="background-image: url('<?= $block->escapeUrl($block->getViewFileUrl('images/hero-mountains.jpg')) ?>')"></div>
+        <div class="hero-overlay-vertical"></div>
+        <div class="hero-overlay-horizontal"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="hero-content">
+        <div class="hero-content-inner">
+            <!-- Left Content -->
+            <div class="hero-left">
+                <h1 class="hero-title animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards; opacity: 0;">
+                    PeakGear
+                </h1>
+                <p class="hero-subtitle animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards; opacity: 0;">
+                    Hành trình giữa thiên nhiên hùng vĩ
+                </p>
+                <p class="hero-description animate-fade-in-up" style="animation-delay: 0.6s; animation-fill-mode: forwards; opacity: 0;">
+                    Khám phá bộ sưu tập dụng cụ leo núi chuyên nghiệp, đồng hành cùng bạn chinh phục mọi đỉnh cao.
+                </p>
+
+                <div class="hero-buttons animate-fade-in-up" style="animation-delay: 0.8s; animation-fill-mode: forwards; opacity: 0;">
+                    <a href="<?= $block->escapeUrl($block->getUrl('products')) ?>" class="hero-btn-primary">
+                        <span class="hero-btn-text">Khám Phá Ngay</span>
+                        <div class="hero-btn-fill"></div>
+                        <span class="hero-btn-hover-text">Khám Phá Ngay</span>
+                    </a>
+                    <a href="<?= $block->escapeUrl($block->getUrl('about')) ?>" class="hero-btn-outline">
+                        Về Chúng Tôi
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Content - Weather & Date -->
+            <div class="hero-right animate-fade-in-right" style="animation-delay: 0.6s; animation-fill-mode: forwards; opacity: 0;">
+                <!-- Weather -->
+                <div class="hero-weather">
+                    <p class="hero-info-label">Thời tiết</p>
+                    <p class="hero-info-value" data-bind="text: temperature"><?= $block->escapeHtml($initialTemp) ?></p>
+                    <p class="hero-info-city" data-bind="text: cityName"><?= $block->escapeHtml($initialCityName) ?></p>
+                    <p class="hero-info-sub" data-bind="text: condition"><?= $block->escapeHtml($initialCondition) ?></p>
+                </div>
+
+                <!-- Date -->
+                <div class="hero-time">
+                    <p class="hero-info-label">Ngày</p>
+                    <p class="hero-info-value hero-info-date" data-bind="text: currentDate"><?= $block->escapeHtml($initialDate) ?></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom URL Bar -->
+        <div class="hero-url-bar animate-fade-in-left" style="animation-delay: 1s; animation-fill-mode: forwards; opacity: 0;">
+            <div class="hero-url-badge">
+                <span>www.peakgear.vn</span>
+            </div>
+            <div class="hero-url-line"></div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="hero-scroll-indicator animate-float">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "heroSection": {
+                    "component": "js/hero-section",
+                    "weatherData": <?= /* @noEscape */ ($heroWeatherJson ?: '[]') ?>,
+                    "weatherRefreshUrl": "<?= $block->escapeUrl($block->getUrl('weather/index/data')) ?>",
+                    "switchIntervalMs": 300000,
+                    "weatherRefreshIntervalMs": 300000,
+                    "timezone": "Asia/Ho_Chi_Minh"
+                }
+            }
+        }
+    }
+}
+</script>

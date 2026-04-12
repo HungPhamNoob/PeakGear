@@ -1,0 +1,107 @@
+<?php
+/**
+ * PeakGear Climbing Theme – Customer Reviews
+ * @var \Magento\Review\Block\Customer\ListCustomer $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ */
+$reviewHelper = $block->getData('reviewHelper');
+$reviews = $block->getReviews();
+?>
+
+<div class="main-content">
+    <section class="edit-hero">
+        <div class="edit-hero-content">
+            <h1>Đánh giá của tôi</h1>
+        </div>
+    </section>
+
+    <div class="edit-container">
+        <div class="edit-form-card">
+            <h2 class="form-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:1.25rem;height:1.25rem;margin-right:.5rem;color:#f5a623;">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                Nhận xét sản phẩm
+            </h2>
+
+            <?php if ($reviews && count($reviews)): ?>
+                <div class="pg-table-scroll">
+                    <table class="pg-table" id="my-reviews-table">
+                        <thead>
+                            <tr>
+                                <th><?= $escaper->escapeHtml(__('Ngày')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('Sản phẩm')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('Xếp hạng')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('Nội dung')) ?></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($reviews as $review):
+                                $pct = $review->getSum() ? (int)$review->getSum() / (int)$review->getCount() : 0;
+                                $stars = round($pct / 20);
+                            ?>
+                            <tr>
+                                <td class="pg-table__muted" style="white-space:nowrap;">
+                                    <?= $escaper->escapeHtml($block->dateFormat($review->getReviewCreatedAt())) ?>
+                                </td>
+                                <td>
+                                    <a href="<?= $escaper->escapeUrl($block->getProductUrl($review)) ?>" class="pg-table__link">
+                                        <?= $escaper->escapeHtml($review->getName()) ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <?php if ($pct): ?>
+                                        <div class="pg-stars" title="<?= (int)$pct ?>%">
+                                            <?php for ($s = 1; $s <= 5; $s++): ?>
+                                                <svg viewBox="0 0 24 24" width="14" height="14"
+                                                     fill="<?= $s <= $stars ? '#f5a623' : 'none' ?>"
+                                                     stroke="<?= $s <= $stars ? '#f5a623' : 'rgba(255,255,255,0.2)' ?>"
+                                                     stroke-width="2">
+                                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                                </svg>
+                                            <?php endfor; ?>
+                                        </div>
+                                        <?= /* @noEscape */ $secureRenderer->renderStyleAsTag(
+                                            "width:{$pct}%;",
+                                            "div.rating-result>span.rating_{$escaper->escapeUrl($review->getReviewId())}"
+                                        ) ?>
+                                    <?php else: ?>
+                                        <span class="pg-table__muted">—</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="pg-table__excerpt">
+                                    <?= $reviewHelper->getDetailHtml($review->getDetail()) ?>
+                                </td>
+                                <td class="pg-table__actions">
+                                    <a href="<?= $escaper->escapeUrl($block->getReviewUrl($review)) ?>" class="pg-action-btn">
+                                        Chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <?php if ($block->getToolbarHtml()): ?>
+                    <div class="pg-pager-wrap"><?= $block->getToolbarHtml() ?></div>
+                <?php endif; ?>
+
+            <?php else: ?>
+                <div class="pg-empty-notice">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>Bạn chưa có đánh giá nào.</span>
+                </div>
+            <?php endif; ?>
+
+            <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08);">
+                <a class="btn-back" href="<?= $escaper->escapeUrl($block->getBackUrl()) ?>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:1rem;height:1rem;"><polyline points="15 18 9 12 15 6"/></svg>
+                    Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

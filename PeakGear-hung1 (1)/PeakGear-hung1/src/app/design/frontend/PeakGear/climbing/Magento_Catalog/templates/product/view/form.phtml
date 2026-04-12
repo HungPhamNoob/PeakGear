@@ -1,0 +1,150 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Product Form wrapper
+ * Layout: flat info column (no card border), matches reference PDP design.
+ * Category badge → Title → Rating/SKU → Description → Divider →
+ * Price → Trust strip → Swatches → Qty+Buttons → Wishlist
+ *
+ * @var \Magento\Catalog\Block\Product\View $block
+ */
+$product   = $block->getProduct();
+$viewModel = $block->getData('view_model');
+
+// Category
+$categoryName = $viewModel ? $viewModel->getPrimaryCategoryName($product) : '';
+
+// Rating
+$reviewCount   = 0;
+$ratingSummary = 0;
+try {
+    $reviewSummary = $product->getRatingSummary();
+    if ($reviewSummary) {
+        $ratingSummary = $reviewSummary->getRatingSummary() ?: 0;
+        $reviewCount   = $reviewSummary->getReviewsCount()  ?: 0;
+    }
+} catch (\Exception $e) {}
+$ratingStars = $ratingSummary ? round($ratingSummary / 20, 1) : 0;
+$ratingFull  = (int)floor($ratingStars);
+
+// Prices
+$finalPrice    = $product->getFinalPrice();
+$originalPrice = $product->getPrice();
+$hasDiscount   = ($originalPrice > $finalPrice);
+$discountPercent = $hasDiscount ? round((1 - $finalPrice / $originalPrice) * 100) : 0;
+
+// Stock & SKU
+$stockStatus = $product->isAvailable();
+$sku         = $product->getSku();
+?>
+
+<div class="pdp-form-wrapper">
+    <div class="pdp-info-wrapper">
+
+        <!-- Category Badge -->
+        <?php if ($categoryName): ?>
+            <a href="#" class="pdp-category-badge"><?= $block->escapeHtml($categoryName) ?></a>
+        <?php endif; ?>
+
+        <!-- Product Name -->
+        <h1 class="pdp-product-name"><?= $block->escapeHtml($product->getName()) ?></h1>
+
+        <!-- Rating & Meta row -->
+        <div class="pdp-meta-row">
+            <!-- Stars -->
+            <div class="pdp-rating-stars">
+                <?php for ($i = 0; $i < 5; $i++): ?>
+                    <?php if ($i < $ratingFull): ?>
+                        <svg class="pdp-star pdp-star-filled" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <?php else: ?>
+                        <svg class="pdp-star pdp-star-empty" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <?php endif; ?>
+                <?php endfor; ?>
+            </div>
+            <?php if ($reviewCount > 0): ?>
+                <span class="pdp-meta-sep">|</span>
+                <span class="pdp-meta-text">Xem <?= (int)$reviewCount ?> đánh giá</span>
+            <?php else: ?>
+                <span class="pdp-meta-sep">|</span>
+                <span class="pdp-meta-text">Chưa có đánh giá</span>
+            <?php endif; ?>
+            <?php if ($sku): ?>
+                <span class="pdp-meta-sep">|</span>
+                <span class="pdp-meta-text">Mã hàng: <strong><?= $block->escapeHtml($sku) ?></strong></span>
+            <?php endif; ?>
+        </div>
+
+        <!-- Short Description -->
+        <?php if ($shortDescription = $product->getShortDescription()): ?>
+            <div class="pdp-description"><?= /* @noEscape */ $shortDescription ?></div>
+        <?php else: ?>
+            <p class="pdp-description"><?= $block->escapeHtml($product->getName()) ?> - Sản phẩm chất lượng cao dành cho người yêu thích leo núi và hoạt động ngoài trời.</p>
+        <?php endif; ?>
+
+        <!-- Divider -->
+        <div class="pdp-divider"></div>
+
+        <!-- Price Block -->
+        <div class="pdp-price-block">
+            <div class="pdp-price-row">
+                <span class="pdp-price-label">Giá bán:</span>
+                <div class="pdp-magento-price-wrapper">
+                    <?= /* @noEscape */ $block->getProductPrice($product) ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust Badge Strip (horizontal) -->
+        <div class="pdp-trust-strip">
+            <div class="pdp-trust-strip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span><strong>MIỄN PHÍ</strong><br/>Ship từ 1 triệu</span>
+            </div>
+            <div class="pdp-trust-strip-sep"></div>
+            <div class="pdp-trust-strip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                <span><strong>MIỄN PHÍ</strong><br/>30 ngày đổi trả</span>
+            </div>
+            <div class="pdp-trust-strip-sep"></div>
+            <div class="pdp-trust-strip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span><strong>100%</strong><br/>Chính hãng</span>
+            </div>
+        </div>
+
+        <!-- Stock Status -->
+        <div class="pdp-stock-status">
+            <span class="pdp-stock-dot <?= $stockStatus ? 'pdp-stock-in' : 'pdp-stock-out' ?>"></span>
+            <span class="pdp-stock-text <?= $stockStatus ? 'pdp-stock-in-text' : 'pdp-stock-out-text' ?>">
+                <?= $stockStatus ? 'Còn hàng' : 'Hết hàng' ?>
+            </span>
+        </div>
+
+        <!-- Form: Configurable options + Actions -->
+        <form data-product-sku="<?= $block->escapeHtml($sku) ?>"
+              action="<?= $block->escapeUrl($block->getSubmitUrl($product)) ?>"
+              method="post"
+              id="product_addtocart_form"
+              <?php if ($product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>>
+            <input type="hidden" name="product" value="<?= (int)$product->getId() ?>" />
+            <input type="hidden" name="selected_configurable_option" value="" />
+            <input type="hidden" name="related_product" id="related-products-field" value="" />
+            <input type="hidden" name="item" value="<?= (int)$block->getRequest()->getParam('id') ?>" />
+            <?= $block->getBlockHtml('formkey') ?>
+
+            <?php // Configurable options / swatches ?>
+            <?= $block->getChildChildHtml('options_container') ?>
+
+            <?php // Qty + Buttons (from addtocart.phtml) ?>
+            <?= $block->getChildHtml('product_info_form_content') ?>
+        </form>
+
+    </div><!-- .pdp-info-wrapper -->
+</div><!-- .pdp-form-wrapper -->
+
+<script type="text/x-magento-init">
+    {
+        "#product_addtocart_form": {
+            "catalogAddToCart": {}
+        }
+    }
+</script>

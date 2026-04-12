@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <vnpay>
+                <active>1</active>
+                <title>VNPay</title>
+                <model>Vendor\VNPay\Model\Payment\VNPay</model>
+                <tmn_code></tmn_code>
+                <hash_secret></hash_secret>
+                <vnp_url>https://sandbox.vnpayment.vn/paymentv2/vpcpay.html</vnp_url>
+                <vnp_return_url_path>vnpay/payment/return/index</vnp_return_url_path>
+                <currency>VND</currency>
+                <order_status>pending</order_status>
+                <instructions>Bạn sẽ được chuyển đến cổng thanh toán VNPay để hoàn tất giao dịch.</instructions>
+                <sandbox>1</sandbox>
+                <bank_code></bank_code>
+            </vnpay>
+        </payment>
+    </default>
+</config>

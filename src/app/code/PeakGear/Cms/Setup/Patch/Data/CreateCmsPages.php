@@ -20,18 +20,14 @@ use Magento\Store\Model\Store;
 class CreateCmsPages implements DataPatchInterface
 {
     private ModuleDataSetupInterface $moduleDataSetup;
-
-    /**
-     * @var PageFactory
-     */
-    private $pageFactory;
+    private PageFactory $pageFactory;
 
     private PageRepositoryInterface $pageRepository;
     private GetPageByIdentifierInterface $getPageByIdentifier;
 
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
-        $pageFactory,
+        PageFactory $pageFactory,
         PageRepositoryInterface $pageRepository,
         GetPageByIdentifierInterface $getPageByIdentifier
     ) {

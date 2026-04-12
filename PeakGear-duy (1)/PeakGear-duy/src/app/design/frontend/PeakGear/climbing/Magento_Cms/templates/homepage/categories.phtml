@@ -1,0 +1,91 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Categories Section
+ * Dynamic categories loaded from Magento catalog database
+ *
+ * @var \PeakGear\Catalog\Block\CategoryList $block
+ */
+
+$categories = $block->getCategories();
+?>
+
+<section class="categories-section">
+    <div class="categories-container">
+        <!-- Section Header -->
+        <div class="categories-header">
+            <h2 class="categories-badge animate-fade-in-up">Danh Mục Sản Phẩm</h2>
+            <h3 class="categories-title animate-fade-in-up delay-100">Khám Phá Theo Danh Mục</h3>
+            <p class="categories-subtitle animate-fade-in-up delay-200">
+                Trang bị đầy đủ từ giày, ba lô đến lều trại - Mọi thứ bạn cần cho chuyến phiêu lưu tiếp theo
+            </p>
+        </div>
+
+        <!-- Categories Grid -->
+        <?php if (!empty($categories)): ?>
+        <div class="categories-grid">
+            <?php foreach ($categories as $index => $cat): ?>
+            <a href="<?= $block->escapeUrl($block->getUrl('products') . '?category=' . (int)$cat['id']) ?>"
+               class="category-card hover-lift animate-fade-in-up"
+               style="animation-delay: <?= $block->escapeHtmlAttr(0.1 * ($index + 1)) ?>s">
+                <!-- Background Gradient -->
+                <div class="category-card-bg"></div>
+
+                <!-- Category Image (if available) -->
+                <?php if (!empty($cat['image'])): ?>
+                <div class="category-card-image">
+                    <img src="<?= $block->escapeUrl($cat['image']) ?>" 
+                         alt="<?= $block->escapeHtmlAttr($cat['name']) ?>" 
+                         loading="lazy"/>
+                </div>
+                <?php else: ?>
+                <!-- Decorative Pattern (fallback when no image) -->
+                <div class="category-card-pattern">
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <pattern id="pattern-<?= $block->escapeHtmlAttr($index) ?>" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <circle cx="2" cy="2" r="1" fill="white"/>
+                        </pattern>
+                        <rect x="0" y="0" width="100" height="100" fill="url(#pattern-<?= $block->escapeHtmlAttr($index) ?>)"/>
+                    </svg>
+                </div>
+                <?php endif; ?>
+
+                <!-- Hover Overlay -->
+                <div class="category-card-hover-overlay"></div>
+
+                <!-- Content -->
+                <div class="category-card-content">
+                    <!-- Product Count Circle -->
+                    <div class="category-card-count">
+                        <span><?= (int)$cat['count'] ?></span>
+                    </div>
+
+                    <div class="category-card-info">
+                        <?php if (!empty($cat['nameEn'])): ?>
+                        <span class="category-card-name-en"><?= $block->escapeHtml($cat['nameEn']) ?></span>
+                        <?php endif; ?>
+                        <h4 class="category-card-name"><?= $block->escapeHtml($cat['name']) ?></h4>
+                        <?php if (!empty($cat['description'])): ?>
+                        <p class="category-card-desc"><?= $block->escapeHtml($cat['description']) ?></p>
+                        <?php endif; ?>
+                        <div class="category-card-link">
+                            <span>Xem sản phẩm</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Line Animation -->
+                <div class="category-card-bottom-line"></div>
+            </a>
+            <?php endforeach; ?>
+        </div>
+        <?php else: ?>
+        <div class="categories-empty">
+            <p>Chưa có danh mục nào. Vui lòng thêm danh mục trong Admin Panel.</p>
+        </div>
+        <?php endif; ?>
+    </div>
+</section>

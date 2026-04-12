@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="zalopay" translate="label" type="text" sortOrder="510" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>ZaloPay</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1">
+                    <label>Title</label>
+                </field>
+                <field id="app_id" translate="label" type="text" sortOrder="30" showInDefault="1">
+                    <label>App ID</label>
+                    <comment>Sandbox App ID: 2554</comment>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="app_user" translate="label" type="text" sortOrder="35" showInDefault="1">
+                    <label>App User</label>
+                    <comment>Ví dụ: user_test hoặc mã khách</comment>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="key1" translate="label" type="obscure" sortOrder="40" showInDefault="1">
+                    <label>Key 1 (HMAC-SHA256)</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="key2" translate="label" type="obscure" sortOrder="50" showInDefault="1">
+                    <label>Key 2 (Callback Verify)</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="sandbox" translate="label" type="select" sortOrder="60" showInDefault="1">
+                    <label>Sandbox Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_url" translate="label" type="text" sortOrder="70" showInDefault="1">
+                    <label>API URL</label>
+                    <comment>Default sandbox URL: https://sb-openapi.zalopay.vn/v2/create</comment>
+                    <validate>required-entry validate-url</validate>
+                </field>
+                <field id="query_url" translate="label" type="text" sortOrder="75" showInDefault="1">
+                    <label>Query URL</label>
+                    <comment>Default sandbox URL: https://sb-openapi.zalopay.vn/v2/query</comment>
+                    <validate>required-entry validate-url</validate>
+                </field>
+                <field id="instructions" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1">
+                    <label>Instructions</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

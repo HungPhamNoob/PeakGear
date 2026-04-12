@@ -1,0 +1,171 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Add to Cart actions
+ * Layout: Qty → Buy Now (primary) → Add to Cart (secondary) → Wishlist link
+ *
+ * @var \Magento\Catalog\Block\Product\View $block
+ */
+$product = $block->getProduct();
+
+// ── Kiểm tra sản phẩm đã trong wishlist chưa (PHP phía server) ──────────────
+$isInWishlist = false;
+try {
+    $objectManager   = \Magento\Framework\App\ObjectManager::getInstance();
+    $customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
+    if ($customerSession->isLoggedIn()) {
+        $wishlistHelper = $objectManager->get(\Magento\Wishlist\Helper\Data::class);
+        $wishlist       = $wishlistHelper->getWishlist();
+        if ($wishlist) {
+            foreach ($wishlist->getItemCollection() as $item) {
+                if ((int)$item->getProductId() === (int)$product->getId()) {
+                    $isInWishlist = true;
+                    break;
+                }
+            }
+        }
+    }
+} catch (\Exception $e) {
+    $isInWishlist = false;
+}
+?>
+
+<?php if ($product->isSaleable()): ?>
+    <input type="hidden" name="qty" id="qty" value="1"/>
+
+    <!-- Quantity Row -->
+    <div class="pdp-qty-row">
+        <label class="pdp-qty-label" for="qty-input">Số lượng:</label>
+        <div class="pdp-qty-selector">
+            <button type="button" class="pdp-qty-btn pdp-qty-decrease" aria-label="Giảm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <input type="number" name="qty" id="qty-input" value="1" min="1" class="pdp-qty-input"
+                   data-validate="{required:true, 'validate-item-quantity':{'minAllowed':1}}"/>
+            <button type="button" class="pdp-qty-btn pdp-qty-increase" aria-label="Tăng">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="pdp-actions">
+        <button type="button" class="pdp-buynow-btn" id="pdp-buynow-btn">MUA NGAY</button>
+        <button type="submit" class="pdp-addtocart-btn">THÊM VÀO GIỎ</button>
+    </div>
+
+    <!-- Wishlist -->
+    <div class="pdp-wishlist-row">
+        <button type="button"
+                class="pdp-wishlist-btn<?= $isInWishlist ? ' is-wishlisted' : '' ?>"
+                id="pdp-wishlist-btn"
+                data-product-id="<?= (int)$product->getId() ?>"
+                data-wishlist-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/add')) ?>"
+                data-login-url="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>"
+                data-in-wishlist="<?= $isInWishlist ? '1' : '0' ?>"
+                <?= $isInWishlist ? 'disabled' : '' ?>
+                aria-label="Yêu thích">
+            <svg class="pdp-wishlist-icon"
+                 viewBox="0 0 24 24"
+                 fill="<?= $isInWishlist ? 'currentColor' : 'none' ?>"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span class="pdp-wishlist-label">
+                <?= $isInWishlist ? 'Đã thêm vào yêu thích ✓' : 'Thêm vào danh sách yêu thích' ?>
+            </span>
+        </button>
+    </div>
+
+<?php else: ?>
+    <div class="pdp-unavailable">
+        <p>Sản phẩm hiện đang hết hàng</p>
+    </div>
+<?php endif; ?>
+
+<script>
+require(['jquery'], function($) {
+    'use strict';
+
+    // ── Qty ──────────────────────────────────────────────────────────────────
+    var qtyInput = $('#qty-input');
+    var hiddenQty = $('#qty');
+
+    function syncQty(val) {
+        val = Math.max(1, val);
+        qtyInput.val(val);
+        hiddenQty.val(val);
+    }
+
+    $('.pdp-qty-decrease').on('click', function() {
+        syncQty((parseInt(qtyInput.val()) || 1) - 1);
+    });
+    $('.pdp-qty-increase').on('click', function() {
+        syncQty((parseInt(qtyInput.val()) || 1) + 1);
+    });
+    qtyInput.on('change input', function() {
+        hiddenQty.val($(this).val());
+    });
+
+    // ── Buy Now ───────────────────────────────────────────────────────────────
+    $('#pdp-buynow-btn').on('click', function() {
+        var form = $('#product_addtocart_form');
+        if (form.length) {
+            form.find('input[name="return_url"]').remove();
+            form.append('<input type="hidden" name="return_url" value="' + window.BASE_URL + 'checkout/"/>');
+            form.trigger('submit');
+        }
+    });
+
+    // ── Wishlist ──────────────────────────────────────────────────────────────
+    var $wishlistBtn   = $('#pdp-wishlist-btn');
+    // Trạng thái ban đầu do PHP server trả về
+    var alreadyInWishlist = ($wishlistBtn.data('in-wishlist') === 1 ||
+                             $wishlistBtn.data('in-wishlist') === '1');
+
+    $wishlistBtn.on('click', function () {
+        if (alreadyInWishlist) return;
+
+        var wishlistUrl = $wishlistBtn.data('wishlist-url');
+        var productId   = $wishlistBtn.data('product-id');
+        var loginUrl    = $wishlistBtn.data('login-url');
+        var formKey     = $('input[name="form_key"]').first().val();
+
+        // Loading state
+        $wishlistBtn.prop('disabled', true);
+        $wishlistBtn.find('.pdp-wishlist-label').text('Đang thêm...');
+
+        // Dùng fetch để đọc được response.url sau các redirect của Magento
+        var formData = new FormData();
+        formData.append('product',  productId);
+        formData.append('form_key', formKey);
+        formData.append('uenc',     btoa(window.location.href));
+
+        fetch(wishlistUrl, {
+            method: 'POST',
+            body: formData,
+            redirect: 'follow',
+            credentials: 'same-origin'
+        })
+        .then(function(response) {
+            var finalUrl = response.url || '';
+            if (finalUrl.indexOf('customer/account/login') !== -1) {
+                // Chưa đăng nhập → chuyển sang trang login
+                window.location.href = loginUrl;
+                return;
+            }
+            // Thành công
+            alreadyInWishlist = true;
+            $wishlistBtn.find('.pdp-wishlist-icon').attr('fill', 'currentColor');
+            $wishlistBtn.find('.pdp-wishlist-label').text('Đã thêm vào yêu thích');
+            $wishlistBtn.addClass('is-wishlisted');
+            // Giữ disabled — không cho bấm thêm lần nữa
+        })
+        .catch(function() {
+            // Lỗi mạng
+            $wishlistBtn.find('.pdp-wishlist-label').text('Có lỗi xảy ra, thử lại!');
+            $wishlistBtn.prop('disabled', false);
+        });
+    });
+});
+</script>

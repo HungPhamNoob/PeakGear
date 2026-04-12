@@ -1,0 +1,53 @@
+<?php
+/**
+ * PeakGear Climbing Theme - Upsell Products
+ * Same styling as Related Products
+ *
+ * @var \Magento\Catalog\Block\Product\ProductList\Upsell $block
+ */
+$items = $block->getItemCollection();
+$viewModel = $block->getData('view_model');
+$title = $block->getData('title') ?: __('Có Thể Bạn Cũng Thích');
+?>
+
+<?php if ($items && count($items) > 0): ?>
+<section class="pdp-related-section">
+    <h2 class="pdp-related-title"><?= $block->escapeHtml($title) ?></h2>
+
+    <div class="pdp-related-grid">
+        <?php foreach ($items as $product): ?>
+            <?php
+                $productUrl = $product->getProductUrl();
+                $productName = $block->escapeHtml($product->getName());
+                $productImage = $viewModel ? $viewModel->getImageUrl($product, 'upsell_products_list') : '';
+                $finalPrice = $product->getFinalPrice();
+                $originalPrice = $product->getPrice();
+                $hasDiscount = ($originalPrice > $finalPrice);
+                $catName = $viewModel ? $viewModel->getPrimaryCategoryName($product) : '';
+            ?>
+            <a href="<?= $block->escapeUrl($productUrl) ?>" class="pdp-related-card">
+                <div class="pdp-related-card-image">
+                    <?php if ($hasDiscount): ?>
+                        <span class="pdp-related-badge">-<?= round((1 - $finalPrice / $originalPrice) * 100) ?>%</span>
+                    <?php endif; ?>
+                    <img src="<?= $block->escapeUrl($productImage) ?>"
+                         alt="<?= $block->escapeHtmlAttr($productName) ?>"
+                         loading="lazy"/>
+                </div>
+                <div class="pdp-related-card-info">
+                    <?php if ($catName): ?>
+                        <span class="pdp-related-card-category"><?= $block->escapeHtml($catName) ?></span>
+                    <?php endif; ?>
+                    <h3 class="pdp-related-card-name"><?= /* @noEscape */ $productName ?></h3>
+                    <div class="pdp-related-card-price">
+                        <span class="pdp-related-price-final"><?= /* @noEscape */ ($viewModel ? $viewModel->formatPrice((float)$finalPrice) : '') ?></span>
+                        <?php if ($hasDiscount): ?>
+                            <span class="pdp-related-price-original"><?= /* @noEscape */ ($viewModel ? $viewModel->formatPrice((float)$originalPrice) : '') ?></span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php endif; ?>

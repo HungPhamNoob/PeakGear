@@ -1,0 +1,48 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+if (PHP_SAPI !== 'cli') {
+    echo 'bin/magento must be run as a CLI application';
+    exit(1);
+}
+
+// Keep generated classes when running setup:upgrade.
+// This prevents critical interceptors (for example App\\Http\\Interceptor)
+// from disappearing between CLI upgrade runs and web requests.
+if (isset($argv[1]) && $argv[1] === 'setup:upgrade' && !in_array('--keep-generated', $argv, true)) {
+    $argv[] = '--keep-generated';
+    $_SERVER['argv'] = $argv;
+    $_SERVER['argc'] = count($argv);
+}
+
+try {
+    require __DIR__ . '/../app/bootstrap.php';
+} catch (\Exception $e) {
+    echo 'Autoload error: ' . $e->getMessage();
+    exit(1);
+}
+try {
+    $handler = new \Magento\Framework\App\ErrorHandler();
+    set_error_handler([$handler, 'handler']);
+    $application = new Magento\Framework\Console\Cli('Magento CLI');
+    $application->run();
+} catch (\Throwable $e) {
+    while ($e) {
+        if ($e->getFile()) {
+            echo sprintf("\nThere is an error in %s", $e->getFile());
+            if ($e->getLine()) {
+                echo sprintf(" at line: %d", $e->getLine());
+            }
+            echo "\n";
+        }
+        echo $e->getMessage();
+        echo $e->getTraceAsString();
+        echo "\n\n";
+        $e = $e->getPrevious();
+    }
+    exit(Magento\Framework\Console\Cli::RETURN_FAILURE);
+}
