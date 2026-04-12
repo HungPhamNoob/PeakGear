@@ -12,7 +12,9 @@ $product = $block->getProduct();
 $categoryCollection = $product->getCategoryCollection();
 $category = $categoryCollection->getFirstItem();
 $categoryName = ($category && $category->getId()) ? $category->getName() : '';
-$categoryUrl = ($category && $category->getId()) ? $category->getUrl() : '';
+$categoryUrl = ($category && $category->getId())
+    ? $block->getUrl('products', ['_query' => ['category' => $category->getId()]])
+    : '';
 
 // Rating data (use reviews if available, otherwise defaults)
 $reviewCount = 0;

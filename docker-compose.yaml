@@ -51,6 +51,7 @@ services:
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=P@ssw0rd!2024Secure
       #- OPENSEARCH_NODE_MEMORY=1g
+      - cluster.routing.allocation.disk.threshold_enabled=false
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     ports:
@@ -102,7 +103,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     container_name: peakgear_php
-    user: "www-data:www-data"
+    #user: "www-data:www-data"
     restart: unless-stopped
     env_file:
       - .env
@@ -112,6 +113,7 @@ services:
     volumes:
       - ./src:/var/www/html
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+      - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
     depends_on:
       mysql:
         condition: service_healthy

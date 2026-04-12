@@ -1,0 +1,115 @@
+<?php
+/**
+ * PeakGear Climbing Theme – Recent Orders (Dashboard Block)
+ * @var \Magento\Sales\Block\Order\Recent $block
+ * @var \Magento\OrderCancellationUi\ViewModel\Config $viewModel
+ */
+// phpcs:disable Magento2.Templates.ThisInTemplate
+$viewModel = $block->getViewModel();
+$_orders   = $block->getOrders();
+$count     = count($_orders);
+?>
+
+<div class="edit-container" style="margin-top:1.5rem;">
+    <div class="edit-form-card">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.375rem;">
+            <h2 style="margin:0;display:flex;align-items:center;gap:.5rem;font-size:1rem;font-weight:600;color:#fff;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2" style="width:1.25rem;height:1.25rem;flex-shrink:0;">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                    <path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                Đơn hàng gần đây
+            </h2>
+            <?php if ($count > 0): ?>
+                <a href="<?= $block->escapeUrl($block->getUrl('sales/order/history')) ?>" class="pg-action-btn" style="font-size:.8rem;padding:.35rem .875rem;">
+                    Xem tất cả →
+                </a>
+            <?php endif; ?>
+        </div>
+
+        <?= $block->getChildHtml() ?>
+
+        <?php if ($count > 0): ?>
+            <div class="pg-table-scroll">
+                <table class="pg-table" id="my-orders-table">
+                    <thead>
+                        <tr>
+                            <th><?= $block->escapeHtml(__('Mã đơn')) ?></th>
+                            <th><?= $block->escapeHtml(__('Ngày đặt')) ?></th>
+                            <th><?= $block->escapeHtml(__('Giao cho')) ?></th>
+                            <th><?= $block->escapeHtml(__('Tổng tiền')) ?></th>
+                            <th><?= $block->escapeHtml(__('Trạng thái')) ?></th>
+                            <th><?= $block->escapeHtml(__('Thao tác')) ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($_orders as $_order):
+                            $status = strtolower(str_replace([' ', '/'], '_', $_order->getStatus()));
+                        ?>
+                        <tr>
+                            <td class="pg-table__id">#<?= $block->escapeHtml($_order->getRealOrderId()) ?></td>
+                            <td class="pg-table__muted"><?= $block->escapeHtml($block->formatDate($_order->getCreatedAt())) ?></td>
+                            <td><?= $_order->getShippingAddress() ? $block->escapeHtml($_order->getShippingAddress()->getName()) : '&nbsp;' ?></td>
+                            <td class="pg-table__price"><?= /* @noEscape */ $_order->formatPrice($_order->getGrandTotal()) ?></td>
+                            <td>
+                                <span class="pg-badge pg-badge--<?= $block->escapeHtmlAttr($status) ?>">
+                                    <?= $block->escapeHtml($_order->getStatusLabel()) ?>
+                                </span>
+                            </td>
+                            <td class="pg-table__actions">
+                                <?php if ($_order->getStatus() != 'received'): ?>
+                                    <a href="<?= $block->escapeUrl($block->getViewUrl($_order)) ?>" class="pg-action-btn">
+                                        Xem
+                                    </a>
+                                    <?php if ($this->helper(\Magento\Sales\Helper\Reorder::class)->canReorder($_order->getEntityId())): ?>
+                                        <a href="#" data-post='<?= /* @noEscape */ $this->helper(\Magento\Framework\Data\Helper\PostHelper::class)->getPostData($block->getReorderUrl($_order)) ?>' class="pg-action-btn pg-action-btn--ghost">
+                                            Đặt lại
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($viewModel && $viewModel->canCancel($_order->getEntityId())): ?>
+                                        <a href="#" class="pg-action-btn pg-action-btn--danger cancel-order"
+                                           id="cancel-order-<?= /* @noEscape */ $_order->getId() ?>"
+                                           data-mage-init='{"cancelOrderModal":{"url":"<?= /* @noEscape */ $block->getBaseUrl(); ?>","order_id":"<?= $block->escapeHtml($_order->getId()); ?>"}}'>
+                                            Hủy
+                                        </a>
+                                        <?= $this->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
+                                            ->setOrder($_order)
+                                            ->setReasons($viewModel->getCancellationReasons($_order->getEntityId()))
+                                            ->setTemplate('Magento_OrderCancellationUi::cancel-order-modal.phtml')
+                                            ->toHtml()
+                                        ?>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+        <?php else: ?>
+            <div class="pg-empty-notice">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:1.5rem;height:1.5rem;flex-shrink:0;color:rgba(255,255,255,0.25);">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                    <path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <span>Bạn chưa có đơn hàng nào. <a href="<?= $block->escapeUrl($block->getUrl('/')) ?>" style="color:#f5a623;text-decoration:none;">Mua sắm ngay →</a></span>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<style>
+/* Danger variant for cancel button */
+.pg-action-btn--danger {
+    border-color: rgba(255,107,107,0.4) !important;
+    color: #ff6b6b !important;
+}
+.pg-action-btn--danger:hover {
+    background: rgba(255,107,107,0.15) !important;
+    color: #ff6b6b !important;
+}
+/* Hide the old Magento block-dashboard-orders if it somehow appears */
+.block.block-dashboard-orders { display: none !important; }
+</style>

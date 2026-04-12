@@ -26,24 +26,37 @@ class CreateOrderRequestBuilder
         string $callbackUrl,
         string $redirectUrl
     ): array {
-        $appTransId = date('ymd') . '_' . $orderId;
+        $vnNow = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
+        $suffix = strtoupper(substr(hash('sha256', $orderId . '|' . (string)microtime(true)), 0, 6));
+        $appTransId = $vnNow->format('ymd') . '_' . $orderId . '-' . $suffix;
+        $appUser = $this->config->getAppUser();
         $appTime = (int)round(microtime(true) * 1000);
-        $embedData = (string)json_encode(['redirecturl' => $redirectUrl], JSON_UNESCAPED_SLASHES);
+        $embedData = (string)json_encode([
+            'redirecturl' => $redirectUrl,
+        ], JSON_UNESCAPED_SLASHES);
         $items = '[]';
 
         return [
             'app_trans_id' => $appTransId,
             'post_data' => [
-                'app_id' => (int)$this->config->getAppId(),
-                'app_trans_id' => $appTransId,
-                'app_user' => 'PeakGearUser',
-                'app_time' => $appTime,
+                // v001/tpe/createorder canonical field names
+                'appid' => (int)$this->config->getAppId(),
+                'apptransid' => $appTransId,
+                'appuser' => $appUser,
+                'apptime' => $appTime,
                 'amount' => $amount,
                 'item' => $items,
-                'embed_data' => $embedData,
+                'embeddata' => $embedData,
                 'description' => $description,
+                'callbackurl' => $callbackUrl,
+                // Compatibility aliases for integrations using underscore style keys.
+                'app_id' => (int)$this->config->getAppId(),
+                'app_trans_id' => $appTransId,
+                'app_user' => $appUser,
+                'app_time' => $appTime,
+                'embed_data' => $embedData,
                 'callback_url' => $callbackUrl,
-                'mac' => $this->signatureService->buildCreateOrderMac($appTransId, $amount, $appTime, $embedData, $items),
+                'mac' => $this->signatureService->buildCreateOrderMac($appTransId, $appUser, $amount, $appTime, $embedData, $items),
             ],
         ];
     }

@@ -313,6 +313,7 @@
         font-weight: 500;
         padding: 0.375rem;
         outline: none;
+        appearance: textfield;
         -moz-appearance: textfield;
 
         &::-webkit-outer-spin-button,
@@ -634,6 +635,249 @@
     .cart.main.actions {
         text-align: right;
         padding: 1rem 0;
+    }
+
+    // ---- 2026 Cart polish overrides ----
+    font-family: @font-sans;
+
+    .cart-container::before,
+    .cart-totals-title,
+    .cart-empty h2 {
+        font-family: @font-sans;
+        letter-spacing: 0.01em;
+    }
+
+    .cart-form-wrapper,
+    .cart-summary {
+        border: 1px solid fade(@peakgear-text, 10%);
+        border-radius: 1rem;
+        background: linear-gradient(152deg, fade(@peakgear-dark-secondary, 82%) 0%, fade(@peakgear-dark, 72%) 100%);
+        backdrop-filter: blur(12px);
+    }
+
+    .cart-form-wrapper {
+        padding: 1.2rem 1.1rem;
+    }
+
+    .cart-summary {
+        padding: 1.15rem;
+    }
+
+    .cart-item {
+        border: 1px solid fade(@peakgear-text, 11%);
+        border-radius: 0.88rem;
+        background: fade(@peakgear-text, 2.8%);
+        padding: 1rem;
+        margin-bottom: 0.85rem;
+        transition: transform @transition-fast, border-color @transition-fast, box-shadow @transition-fast;
+
+        &:hover {
+            transform: translateY(-1px);
+            border-color: fade(@peakgear-primary, 45%);
+            box-shadow: 0 14px 26px fade(#000, 23%);
+        }
+    }
+
+    .cart-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .cart-item-image img {
+        border: 1px solid fade(@peakgear-text, 12%);
+        box-shadow: 0 8px 18px fade(#000, 20%);
+    }
+
+    .cart-item-name {
+        margin-bottom: 0.42rem;
+        line-height: 1.42;
+
+        a {
+            color: @peakgear-text;
+        }
+    }
+
+    .cart-item-sku {
+        margin-bottom: 0.45rem;
+    }
+
+    .qty-controls {
+        border-color: fade(@peakgear-primary, 32%);
+        box-shadow: inset 0 0 0 1px fade(@peakgear-primary, 12%);
+    }
+
+    .qty-btn {
+        color: fade(@peakgear-text, 78%);
+
+        &:hover {
+            color: @peakgear-primary-light;
+            background: fade(@peakgear-primary, 16%);
+        }
+    }
+
+    .qty-input {
+        width: 3.2rem;
+        font-weight: 700;
+    }
+
+    .cart-item-delete {
+        border-color: fade(@peakgear-red, 44%);
+        background: fade(@peakgear-red, 7%);
+
+        &:hover {
+            box-shadow: 0 8px 18px fade(@peakgear-red, 24%);
+        }
+    }
+
+    .cart-totals-wrapper {
+        border-radius: 0.9rem;
+        border-color: fade(@peakgear-text, 12%);
+        background: fade(@peakgear-text, 2%);
+    }
+
+    .cart-totals-row {
+        padding: 0.86rem 0;
+    }
+
+    .cart-proceed .btn {
+        position: relative;
+        overflow: hidden;
+        font-weight: 700;
+    }
+
+    .cart-proceed .btn::after {
+        content: '';
+        position: absolute;
+        width: 42%;
+        height: 230%;
+        top: -60%;
+        left: -60%;
+        background: linear-gradient(120deg, transparent 0%, fade(#ffffff, 35%) 45%, transparent 100%);
+        transform: rotate(20deg);
+        transition: left @transition-base;
+    }
+
+    .cart-proceed .btn:hover::after {
+        left: 122%;
+    }
+
+    .cart-proceed .btn-primary {
+        box-shadow: 0 14px 22px fade(@peakgear-primary, 22%);
+    }
+
+    .cart-shipping-banner {
+        background: linear-gradient(120deg, fade(@peakgear-green, 20%) 0%, fade(@peakgear-green, 8%) 100%);
+        border-color: fade(@peakgear-green, 38%);
+    }
+
+    .cart-trust-badges {
+        gap: 0.8rem;
+        justify-content: space-between;
+    }
+
+    .cart-trust-badges .trust-badge {
+        font-size: 0.74rem;
+        background: fade(@peakgear-text, 4%);
+        border: 1px solid fade(@peakgear-text, 11%);
+        border-radius: 999px;
+        padding: 0.42rem 0.62rem;
+    }
+
+    .crosssell-products-section {
+        margin-top: 2rem;
+        border: 1px solid fade(@peakgear-text, 10%);
+        border-radius: 1rem;
+        padding: 1.2rem;
+        background: linear-gradient(150deg, fade(@peakgear-dark-secondary, 70%) 0%, fade(@peakgear-dark, 56%) 100%);
+    }
+
+    .crosssell-products-section .section-title {
+        margin: 0 0 1rem;
+        color: @peakgear-text;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .crosssell-products-section .products-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+    }
+
+    .crosssell-products-section .product-card {
+        border: 1px solid fade(@peakgear-text, 10%);
+        border-radius: 0.78rem;
+        overflow: hidden;
+        background: fade(@peakgear-text, 3%);
+        transition: transform @transition-fast, border-color @transition-fast;
+
+        &:hover {
+            transform: translateY(-2px);
+            border-color: fade(@peakgear-primary, 40%);
+        }
+    }
+
+    .crosssell-products-section .product-info {
+        padding: 0.7rem;
+    }
+
+    .crosssell-products-section .product-name {
+        margin: 0 0 0.4rem;
+        font-size: 0.88rem;
+        line-height: 1.4;
+
+        a {
+            color: @peakgear-text;
+            text-decoration: none;
+        }
+    }
+
+    .crosssell-products-section .price {
+        color: @peakgear-primary-light;
+        font-weight: 700;
+    }
+
+    @media (max-width: 1023px) {
+        .cart-form-wrapper,
+        .cart-summary {
+            padding: 1rem;
+        }
+
+        .cart-trust-badges {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .cart-container::before {
+            font-size: 1.9rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .cart-item {
+            grid-template-columns: 4.6rem 1fr;
+            grid-template-rows: auto;
+        }
+
+        .cart-item-image {
+            grid-row: auto;
+        }
+
+        .cart-item-details,
+        .cart-item-price,
+        .cart-item-qty,
+        .cart-item-subtotal,
+        .cart-item-remove {
+            grid-column: 2;
+        }
+
+        .cart-item-remove {
+            justify-self: start;
+        }
+
+        .crosssell-products-section .products-grid {
+            grid-template-columns: 1fr;
+        }
     }
 }
 

@@ -1,25 +1,101 @@
-// PeakGear - Product Detail Page (PDP)
+// =============================================================================
+// PeakGear PDP — Complete rewrite fixing layout conflicts
+// Strategy: NO display:contents. Simple 2-col grid on .column.main
+// DOM structure on this page:
+//   .column.main
+//     .product.media          ← gallery  (left col)
+//     .product-info-main      ← info     (right col, contains breadcrumb + form)
+//     .pdp-tabs-section       ← full-width (row 2)
+//     .block.related / upsell ← full-width (row 3)
+// =============================================================================
 
-// ==================================================
-// PRODUCT DETAIL PAGE (PDP) STYLES
-// Matches React PDP design exactly
-// ==================================================
-
-@keyframes pdp-shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+// Animations
+@keyframes pdpFadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes pdp-tab-fade {
     from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
+// =============================================================================
+// SCOPE: body.page-product-view
+// =============================================================================
 .page-product-view {
 
-    // ---- Hide Magento default PDP elements ----
-    // Since product-info-main uses display:contents, all its children become grid items
-    // Hide the Magento default blocks we don't need
+    // -------------------------------------------------------------------------
+    // 1. PAGE WRAPPER — override _pg-reset !important rules
+    // -------------------------------------------------------------------------
+    .page-main {
+        max-width: @max-width !important; // Sử dụng biến @max-width (80rem/1280px) giống với header
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 6.5rem 1.25rem 4rem !important;
+
+        @media (min-width: 768px) {
+            padding: 7rem 2.25rem 5rem !important;
+        }
+    }
+
+    .columns {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. GRID TWO-COLUMN LAYOUT (Gallery + Tabs on Left, Info on Right)
+    // -------------------------------------------------------------------------
+    .column.main {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        width: 100% !important;
+        padding: 0 !important;
+
+        @media (min-width: 1024px) {
+            grid-template-columns: minmax(0, 56%) minmax(0, 44%);
+            align-items: start;
+        }
+    }
+
+    // Left Column elements (Gallery and Tabs)
+    .product.media {
+        grid-column: 1;
+        order: 1;
+        width: 100% !important;
+    }
+
+    .pdp-tabs-section {
+        grid-column: 1;
+        order: 3;
+        width: 100% !important;
+
+        @media (min-width: 1024px) {
+            order: 2; // Right below Gallery
+            margin-top: 2rem !important;
+        }
+    }
+
+    // Right Column element (Info)
+    .product-info-main {
+        grid-column: 1;
+        order: 2;
+        width: 100% !important;
+
+        @media (min-width: 1024px) {
+            grid-column: 2;
+            order: 2;
+            grid-row: 1 / span 2; // Allow scrolling beside left column
+            position: sticky !important;
+            top: 6.5rem;
+            padding-left: 2rem !important;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. HIDE DEFAULT MAGENTO ELEMENTS
+    // -------------------------------------------------------------------------
     .product-info-main .page-title-wrapper,
     .product-info-stock-sku,
     .product-reviews-summary,
@@ -32,722 +108,503 @@
     .product-info-main > .price-box,
     .product-info-main > .product.attribute.overview,
     .product.info.detailed,
-    // Hide PageBuilder full-width sections (removed via layout XML but add CSS safety net)
     .page-main-details,
     .page-main-description,
     .page-main-pagebuilder-attributes,
     .product-full-width-section,
     .block.review-add,
-    // Hide Magento default gallery (Fotorama)
     .fotorama-item,
     .gallery-placeholder,
-    .fotorama {
-        display: none !important;
-    }
-
-    // ---- Override Magento layout containers ----
-    .page-main {
-        max-width: 75rem;
-        margin: 0 auto;
-        padding: 7rem 1.5rem 4rem;
-
-        @media (min-width: 768px) {
-            padding: 7.5rem 2.5rem 5rem;
-        }
-    }
-
-    .column.main {
-        padding: 0;
-        display: grid !important;
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
-        align-items: start;
-
-        @media (min-width: 1024px) {
-            grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
-            gap: 3.5rem;
-        }
-    }
-
-    @media (max-width: 767px) {
-        .column.main {
-            padding-bottom: 6.5rem;
-        }
-    }
-
-    // product-info-main uses display:contents so its children become grid items
-    .product-info-main {
-        display: contents;
-    }
-
-    // Gallery in left column, row 2 (below breadcrumb)
-    .product.media {
-        grid-column: 1 !important;
-        grid-row: 2 !important;
-        float: none !important;
-        width: 100% !important;
-        padding: 0;
-        display:block !important;
-
-        @media (min-width: 1024px) {
-            position: sticky;
-            top: 7.5rem;
-            align-self: start;
-        }
-
-    }
-
-    // The form wrapper (contains our info) goes in right column, row 2 (same row as gallery on desktop)
-    .product-add-form,
-    .pdp-form-wrapper {
-        grid-column: 1 !important;
-        grid-row: 3 !important;
-        float: none !important;
-        width: 100% !important;
-
-        @media (min-width: 1024px) {
-            grid-column: 2 !important;
-            grid-row: 2 !important;
-        }
-    }
-
-    // Breadcrumb spans full width, row 1 (above everything)
-    .pdp-breadcrumb {
-        grid-column: 1 / -1 !important;
-        grid-row: 1 !important;
-    }
-
-
-    // Tabs span full width, below gallery and info — separate section
-    .pdp-tabs-section {
-        grid-column: 1 / -1 !important;
-        grid-row: 3 !important;
-        margin-top: 2rem;
-        order: 10;
-
-        @media (min-width: 1024px) {
-            grid-row: 3;
-        }
-    }
-
-    // Related/upsell span full width, below tabs
-    .pdp-related-section,
-    .block.upsell,
-    .block.related {
-        grid-column: 1 / -1;
-        margin-top: 3rem;
-        order: 20;
-    }
-
-    // Hide default Magento price block (we render custom price in addtocart.phtml)
+    .fotorama,
     .product-info-price {
         display: none !important;
     }
 
-    // Hide any misc Magento scripts/blocks that leak into the grid
-    .product-info-main > script,
-    .product-info-main > .product-options-wrapper {
-        display: none;
-    }
-
-    // Hide form_key and authentication popup from grid
     .column.main > input[name="form_key"],
-    .column.main > #authenticationPopup {
-        display: none;
+    .column.main > #authenticationPopup,
+    .product-info-main > script {
+        display: none !important;
     }
 
-    // ---- PDP Breadcrumb ----
+    // -------------------------------------------------------------------------
+    // 4. RESET CONTAINERS TO BLOCK (Override Magento styles)
+    // -------------------------------------------------------------------------
+    .product.media,
+    .product-add-form,
+    .pdp-form-wrapper,
+    .pdp-tabs-section {
+        display: block !important;
+        width: 100% !important;
+        float: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: static !important;
+        max-width: none !important;
+    }
+
+    .product-info-main {
+        display: block !important;
+        width: 100% !important;
+        float: none !important;
+        margin: 0 !important;
+        max-width: none !important;
+    }
+
     .pdp-breadcrumb {
-        padding-top: 0;
-        padding-bottom: 0.75rem;
-        padding-left: 0.25rem;
+        width: 100%;
+        display: block;
+        margin-bottom: 2rem;
+    }
+
+    // Related / upsell — full width at bottom
+    .pdp-related-section,
+    .block.related,
+    .block.upsell {
+        width: 100% !important;
+        margin-top: 5rem !important;
+        display: block !important;
+        clear: both;
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. BREADCRUMB
+    // -------------------------------------------------------------------------
+    .pdp-breadcrumb {
+        padding: 0;
+        display: block;
 
         .pdp-breadcrumb-nav {
             display: flex;
             align-items: center;
+            flex-wrap: nowrap;
+            white-space: nowrap;
             gap: 0.5rem;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             color: fade(@peakgear-text, 60%);
-            justify-content: flex-start;
         }
 
         .pdp-breadcrumb-link {
             color: fade(@peakgear-text, 60%);
             text-decoration: none;
             transition: color @transition-fast;
-
-            &:hover {
-                color: @peakgear-primary-light;
-            }
+            &:hover { color: @peakgear-primary-light; }
         }
 
         .pdp-breadcrumb-separator {
-            width: 1rem;
-            height: 1rem;
-            color: fade(@peakgear-text, 40%);
+            width: 1.08rem; height: 1.08rem;
+            color: fade(@peakgear-text, 35%);
             flex-shrink: 0;
         }
 
         .pdp-breadcrumb-current {
             color: @peakgear-primary-light;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
         }
     }
 
-    // ---- PDP Gallery (Main image on top, horizontal thumbnails BELOW) ----
+    // -------------------------------------------------------------------------
+    // 6. PRODUCT FORM WRAPPER (direct child of product-info-main)
+    // -------------------------------------------------------------------------
+    .product-add-form,
+    .pdp-form-wrapper {
+        display: block !important;
+        width: 100% !important;
+        float: none !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 7. GALLERY
+    // -------------------------------------------------------------------------
     .pdp-gallery {
         display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: flex-start;
+        width: 100% !important;
+        animation: pdpFadeIn 0.5s ease 0.05s both;
 
-        // ---- Main Image Area ----
+        // Thumbnail strip (left)
+        .pdp-gallery-thumbs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 5.5rem;
+            flex-shrink: 0;
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: fade(@peakgear-text, 20%) transparent;
+
+            .pdp-gallery-thumb {
+                width: 100%;
+                height: 5rem;
+                flex-shrink: 0;
+                background: fade(@peakgear-dark-secondary, 80%);
+                border-radius: 0.5rem;
+                overflow: hidden;
+                cursor: pointer;
+                border: 2px solid fade(@peakgear-text, 15%);
+                transition: border-color @transition-fast;
+                padding: 0;
+
+                &:hover { border-color: fade(@peakgear-text, 45%); }
+                &.active {
+                    border-color: @peakgear-primary;
+                    box-shadow: 0 0 0 1px @peakgear-primary;
+                }
+
+                img {
+                    width: 100%; height: 100%;
+                    object-fit: contain;
+                    object-position: center;
+                    display: block;
+                    background: #ffffff;
+                    padding: 2px;
+                }
+            }
+
+            @media (max-width: 767px) {
+                flex-direction: row;
+                width: 100%;
+                max-height: none;
+                overflow-x: auto;
+                overflow-y: hidden;
+                order: 2;
+
+                .pdp-gallery-thumb { width: 4rem; height: 4rem; }
+            }
+        }
+
+        // Main image (flex:1 fills remaining width)
         .pdp-gallery-main {
             position: relative;
-            width: 100%;
-            background: linear-gradient(135deg, fade(@peakgear-dark-secondary, 90%), fade(@peakgear-dark, 95%));
-            border-radius: 1.25rem;
-            border: 1px solid fade(@peakgear-text, 10%);
+            flex: 1;
+            min-width: 0;
+            background: #ffffff;
+            border-radius: 0.875rem;
+            border: 1px solid fade(@peakgear-text, 12%);
             overflow: hidden;
-            box-shadow: 0 24px 60px fade(#000, 35%), inset 0 0 0 1px fade(@peakgear-primary, 8%);
+            aspect-ratio: 1 / 1;
 
             .pdp-sale-badge {
-                position: absolute;
-                top: 1.5rem;
-                left: 1.5rem;
-                z-index: 10;
-                background: #ef4444;
-                color: @peakgear-text;
-                font-size: 0.875rem;
-                font-weight: 700;
-                padding: 0.5rem 1rem;
-                border-radius: 9999px;
+                position: absolute; top: 1rem; left: 1rem; z-index: 10;
+                background: #ef4444; color: #fff;
+                font-size: 0.8rem; font-weight: 700;
+                padding: 0.3rem 0.75rem; border-radius: 9999px;
+            }
+
+            .pdp-gallery-zoom-wrap {
+                width: 100%; height: 100%;
+                display: flex; align-items: center; justify-content: center;
             }
 
             .pdp-gallery-image {
-                width: 100%;
-                height: auto;
-                display: block;
+                width: 100%; height: 100%; display: block;
                 object-fit: contain;
-                max-height: 560px;
-                margin: 0 auto;
-                padding: 1.25rem;
+                object-position: center;
+                padding: 1rem;
+                // Không dùng transition scale để tránh ảnh bị mờ khi phóng
             }
 
             .pdp-gallery-placeholder {
-                aspect-ratio: 1 / 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                position: relative;
-                background: linear-gradient(135deg, fade(@peakgear-text, 4%), fade(@peakgear-dark, 20%));
-                overflow: hidden;
-
-                &::before {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(110deg,
-                        transparent 0%,
-                        fade(@peakgear-text, 6%) 35%,
-                        fade(@peakgear-text, 12%) 50%,
-                        fade(@peakgear-text, 6%) 65%,
-                        transparent 100%);
-                    transform: translateX(-100%);
-                    animation: pdp-shimmer 1.8s infinite;
-                }
+                width: 100%; height: 100%;
+                display: flex; align-items: center; justify-content: center;
+                background: fade(@peakgear-text, 4%);
 
                 .pdp-gallery-placeholder-circle {
-                    width: 12rem;
-                    height: 12rem;
-                    border-radius: 50%;
+                    width: 9rem; height: 9rem; border-radius: 50%;
                     background: fade(@peakgear-text, 5%);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    display: flex; align-items: center; justify-content: center;
                 }
 
                 .pdp-gallery-placeholder-letter {
-                    font-size: 4rem;
-                    color: fade(@peakgear-text, 20%);
+                    font-size: 3rem; color: fade(@peakgear-text, 20%);
                 }
             }
 
-            // Slide navigation arrows
             .pdp-gallery-arrow {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                z-index: 10;
-                background: fade(#000, 40%);
-                backdrop-filter: blur(4px);
-                border: 1px solid fade(@peakgear-text, 15%);
-                border-radius: 50%;
-                color: @peakgear-text;
-                width: 2.5rem;
-                height: 2.5rem;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all @transition-fast;
-                opacity: 0;
-                padding: 0;
+                position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+                background: fade(#000, 45%); backdrop-filter: blur(4px);
+                border: 1px solid fade(@peakgear-text, 20%); border-radius: 50%;
+                color: @peakgear-text; width: 2.5rem; height: 2.5rem;
+                cursor: pointer; display: flex; align-items: center; justify-content: center;
+                transition: opacity @transition-fast, background @transition-fast;
+                opacity: 0; padding: 0; line-height: 1;
 
-                svg {
-                    width: 1.25rem;
-                    height: 1.25rem;
-                }
-
-                &:hover {
-                    background: fade(#000, 60%);
-                    border-color: fade(@peakgear-text, 30%);
-                }
+                svg { width: 1.1rem; height: 1.1rem; }
+                &:hover { background: fade(#000, 65%); opacity: 1; }
             }
+
+            &:hover .pdp-gallery-arrow { opacity: 1; }
+            @media (max-width: 767px) { .pdp-gallery-arrow { opacity: 1; } }
 
             .pdp-gallery-prev { left: 0.75rem; }
             .pdp-gallery-next { right: 0.75rem; }
 
-            // Show arrows on gallery hover
-            &:hover .pdp-gallery-arrow {
-                opacity: 1;
-            }
-
-            // Image counter badge
             .pdp-gallery-counter {
-                position: absolute;
-                bottom: 1rem;
-                right: 1rem;
-                z-index: 10;
-                background: fade(#000, 50%);
-                backdrop-filter: blur(4px);
-                color: fade(@peakgear-text, 80%);
-                font-size: 0.75rem;
-                padding: 0.25rem 0.75rem;
-                border-radius: 9999px;
-                border: 1px solid fade(@peakgear-text, 10%);
+                position: absolute; bottom: 0.75rem; right: 0.75rem; z-index: 10;
+                background: fade(#000, 55%); backdrop-filter: blur(4px);
+                color: fade(@peakgear-text, 85%); font-size: 0.7rem;
+                padding: 0.2rem 0.6rem; border-radius: 9999px;
+                border: 1px solid fade(@peakgear-text, 12%);
             }
         }
 
-        // ---- Horizontal Thumbnail Grid (BELOW main image) ----
-        .pdp-gallery-thumbs {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-
-            .pdp-gallery-thumb {
-                aspect-ratio: 1 / 1;
-                background: linear-gradient(135deg, fade(@peakgear-dark-secondary, 80%), fade(@peakgear-dark, 90%));
-                border-radius: 0.75rem;
-                overflow: hidden;
-                cursor: pointer;
-                border: 2px solid transparent;
-                transition: all @transition-fast;
-                padding: 0;
-
-                &:hover {
-                    border-color: fade(@peakgear-text, 30%);
-                }
-
-                &.active {
-                    border-color: @peakgear-primary-light;
-                    box-shadow: 0 0 0 1px @peakgear-primary-light;
-                }
-
-                img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    display: block;
-                }
-            }
-        }
-
-        // On mobile: always show nav arrows (no hover)
-        @media (max-width: 767px) {
-            .pdp-gallery-main {
-                .pdp-gallery-arrow {
-                    opacity: 1;
-                }
-            }
-        }
+        @media (max-width: 767px) { flex-direction: column; }
     }
 
-    // ---- PDP Info (Right Column) ----
+    // -------------------------------------------------------------------------
+    // 8. INFO WRAPPER (right column content)
+    // -------------------------------------------------------------------------
     .pdp-info-wrapper {
-        background: linear-gradient(160deg, fade(@peakgear-dark-secondary, 85%), fade(@peakgear-dark, 95%));
-        border: 1px solid fade(@peakgear-text, 10%);
-        border-radius: 1.25rem;
-        padding: 2rem;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        box-shadow: 0 24px 60px fade(#000, 35%);
-
-        @media (min-width: 768px) {
-            padding: 2.5rem;
-        }
+        animation: pdpFadeIn 0.5s ease 0.18s both;
 
         .pdp-category-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.35rem 0.75rem;
-            color: @peakgear-primary-light;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            font-weight: 600;
-            background: fade(@peakgear-primary, 12%);
-            border: 1px solid fade(@peakgear-primary, 28%);
-            border-radius: 999px;
+            display: inline-block; color: @peakgear-primary-light;
+            font-size: 0.8rem; font-weight: 600; text-decoration: none;
+            margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;
+            &:hover { text-decoration: underline; }
         }
 
         .pdp-product-name {
-            font-family: @font-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: @peakgear-text;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-            line-height: 1.3;
+            font-family: @font-sans;
+            font-size: 1.6rem; font-weight: 700;
+            color: @peakgear-text; margin: 0 0 1rem; line-height: 1.35;
 
-            @media (min-width: 768px) {
-                font-size: 2.4rem;
+            @media (min-width: 768px) { font-size: 1.6rem !important; }
+        }
+
+        .pdp-meta-row {
+            display: flex; align-items: center; flex-wrap: wrap;
+            gap: 0.4rem 0.6rem; margin-bottom: 1.25rem;
+
+            .pdp-rating-stars { display: flex; align-items: center; gap: 1px; }
+            .pdp-star { width: 1.05rem; height: 1.05rem; }
+            .pdp-star-filled { color: @peakgear-primary; }
+            .pdp-star-empty  { color: fade(@peakgear-text, 28%); }
+            .pdp-meta-sep { color: fade(@peakgear-text, 28%); font-size: 0.8rem; }
+            .pdp-meta-text {
+                color: fade(@peakgear-text, 65%); font-size: 0.975rem;
+                strong { color: @peakgear-primary-light; font-weight: 700; }
             }
         }
 
-        // ---- Rating ----
-        .pdp-rating {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+        .pdp-rating { display: none; }
 
-            .pdp-rating-stars {
-                display: flex;
-                align-items: center;
-                gap: 0;
-            }
-
-            .pdp-star {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
-
-            .pdp-star-filled {
-                color: @peakgear-primary-light;
-            }
-
-            .pdp-star-empty {
-                color: #6b7280;
-            }
-
-            .pdp-rating-text {
-                color: fade(@peakgear-text, 60%);
-                font-size: 0.875rem;
-            }
-        }
-
-        // ---- Price ----
-        .pdp-price {
-            display: flex;
-            align-items: baseline;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-
-            .pdp-price-final {
-                font-size: 2rem;
-                font-weight: 800;
-                color: @peakgear-text;
-            }
-
-            .pdp-price-original {
-                font-size: 1.1rem;
-                color: fade(@peakgear-text, 40%);
-                text-decoration: line-through;
-            }
-
-            .pdp-discount-badge {
-                font-size: 0.75rem;
-                font-weight: 700;
-                color: #111827;
-                background: linear-gradient(135deg, @peakgear-primary-light, @peakgear-primary);
-                padding: 0.25rem 0.5rem;
-                border-radius: 999px;
-            }
-        }
-
-        // ---- Description ----
         .pdp-description {
-            color: fade(@peakgear-text, 70%);
-            line-height: 1.75;
-            margin-bottom: 2rem;
-            font-size: 0.9375rem;
+            color: fade(@peakgear-text, 80%); line-height: 1.75;
+            margin-bottom: 1.25rem; font-size: 1rem;
+            p { margin-bottom: 0.5rem; }
         }
 
-        // ---- Stock Status ----
-        .pdp-stock-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .pdp-divider {
+            height: 1px; background: fade(@peakgear-text, 10%); margin: 1.25rem 0;
+        }
+
+        // Price
+        .pdp-price-block { margin-bottom: 1.25rem; }
+
+        .pdp-price-row {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem;
+        }
+
+        .pdp-price-label  { color: fade(@peakgear-text, 60%); font-size: 1rem; }
+        // .finalpdp-price-final  { font-size: 2.25rem !important; font-weight: 800; color: @peakgear-primary; line-height: 1; }
+        // .pdp-price-original {
+        //     font-size: 0.95rem; color: fade(@peakgear-text, 40%); text-decoration: line-through;
+        // }
+        // .pdp-discount-badge {
+        //     font-size: 0.75rem; font-weight: 700;
+        //     color: #111827; background: @peakgear-primary;
+        //     padding: 0.2rem 0.5rem; border-radius: 999px;
+        // }
+        .pdp-magento-price-wrapper {
+            .price-box { margin: 0; }
+            .price { font-size: 1.1rem !important; font-weight: 800; color: @peakgear-primary; line-height: 1; }
+            .old-price .price { font-size: 0.95rem !important; font-weight: 400; color: fade(@peakgear-text, 40%); text-decoration: line-through; }
+            .special-price, .old-price { display: inline-block; margin-bottom: 0; }
+            .special-price { margin-right: 0.75rem; }
+            .price-label { display: none; }
+        }
+
+        // Trust strip
+        .pdp-trust-strip {
+            display: flex; align-items: stretch;
+            border: 1px solid fade(@peakgear-text, 12%);
+            border-radius: 0.75rem; overflow: hidden;
             margin-bottom: 1.5rem;
+            background: fade(@peakgear-dark-secondary, 40%);
+        }
+
+        .pdp-trust-strip-item {
+            flex: 1; display: flex; align-items: center;
+            gap: 0.8rem; padding: 0.65rem 0.7rem;
+            transition: background @transition-fast;
+            min-width: 0;
+
+            &:hover { background: fade(@peakgear-text, 5%); }
+
+            svg {
+                width: 1.1rem; height: 1.1rem;
+                color: @peakgear-primary; flex-shrink: 0;
+            }
+
+            span {
+                font-size: 0.7rem; line-height: 1.1;
+                color: fade(@peakgear-text, 80%); min-width: 0;
+                display: flex; flex-direction: column; justify-content: center;
+
+                br { display: none; } 
+
+                strong {
+                    display: block; font-size: 0.75rem;
+                    font-weight: 700; color: @peakgear-text;
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        .pdp-trust-strip-sep {
+            width: 1px; background: fade(@peakgear-text, 10%);
+            align-self: stretch; flex-shrink: 0;
+        }
+
+        // Stock
+        .pdp-stock-status {
+            display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem;
 
             .pdp-stock-dot {
-                width: 0.75rem;
-                height: 0.75rem;
-                border-radius: 50%;
-
-                &.pdp-stock-in {
-                    background: @peakgear-green;
-                }
-
-                &.pdp-stock-out {
-                    background: @peakgear-red;
-                }
+                width: 0.5rem; height: 0.5rem; border-radius: 50%; flex-shrink: 0;
+                &.pdp-stock-in  { background: #22c55e; }
+                &.pdp-stock-out { background: @peakgear-red; }
             }
 
-            .pdp-stock-in-text {
-                color: #4ade80; // green-400
-            }
-
-            .pdp-stock-out-text {
-                color: #f87171; // red-400
-            }
+            .pdp-stock-in-text  { color: #4ade80; font-size: 1rem; font-weight: 600; }
+            .pdp-stock-out-text { color: #f87171; font-size: 1rem; font-weight: 600; }
         }
 
-        // ---- Actions (Qty + Cart + Buy Now + Wishlist) ----
-        .pdp-actions {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-
-            .pdp-addtocart-btn,
-            .pdp-buynow-btn {
-                min-width: 0;
-            }
+        // Qty
+        .pdp-qty-row {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;
         }
 
-        .pdp-cta-group {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            width: 100%;
-        }
+        .pdp-qty-label { color: fade(@peakgear-text, 70%); font-size: 1rem; }
 
         .pdp-qty-selector {
-            display: inline-flex;
-            align-items: center;
+            display: inline-flex; align-items: center;
             background: fade(@peakgear-text, 6%);
             border: 1px solid fade(@peakgear-text, 18%);
-            border-radius: 999px;
-            padding: 0.25rem;
-            overflow: hidden;
+            border-radius: 0.5rem; padding: 0.15rem; height: 2.6rem;
 
             .pdp-qty-btn {
-                background: transparent;
-                border: none;
+                background: transparent; border: none;
                 color: fade(@peakgear-text, 60%);
-                padding: 0.65rem;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: color @transition-fast;
-
-                &:hover {
-                    color: @peakgear-text;
-                }
-
-                svg {
-                    width: 1rem;
-                    height: 1rem;
-                }
+                width: 2.1rem; height: 100%; cursor: pointer; padding: 0;
+                display: flex; align-items: center; justify-content: center;
+                transition: color @transition-fast, background @transition-fast;
+                border-radius: 0.3rem;
+                &:hover { color: @peakgear-text; background: fade(@peakgear-text, 8%); }
+                svg { width: 0.85rem; height: 0.85rem; }
             }
 
             .pdp-qty-input {
-                width: 3.25rem;
-                text-align: center;
-                background: transparent;
-                border: none;
-                color: @peakgear-text;
-                font-size: 1rem;
-                font-weight: 600;
-                -moz-appearance: textfield;
-
+                width: 2.5rem; height: 100%;
+                padding: 0; text-align: center;
+                background: transparent; border: none;
+                color: @peakgear-text; font-size: 1rem; font-weight: 600;
+                font-family: @font-sans; outline: none;
+                -moz-appearance: textfield; appearance: textfield;
                 &::-webkit-outer-spin-button,
-                &::-webkit-inner-spin-button {
-                    -webkit-appearance: none;
-                    margin: 0;
-                }
+                &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
             }
         }
 
-        .pdp-addtocart-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, @peakgear-primary, @peakgear-primary-light);
-            color: #111827; // gray-900
-            font-weight: 700;
-            font-size: 1rem;
-            padding: 0.95rem 1.5rem;
-            border: none;
-            border-radius: 0.85rem;
-            cursor: pointer;
-            transition: transform @transition-fast, box-shadow @transition-fast;
-            box-shadow: 0 16px 30px fade(@peakgear-primary, 25%);
-
-            &:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 18px 36px fade(@peakgear-primary, 35%);
-            }
-
-            svg {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
+        // CTA buttons
+        .pdp-actions {
+            display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;
         }
 
         .pdp-buynow-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            background: transparent;
-            color: @peakgear-primary-light;
-            font-weight: 600;
-            font-size: 1rem;
-            padding: 0.95rem 1.5rem;
-            border: 2px solid @peakgear-primary;
-            border-radius: 0.85rem;
-            cursor: pointer;
-            transition: all @transition-fast;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 3.1rem;
+            background: @peakgear-primary; color: #111827;
+            font-weight: 700; font-size: 1.05rem; letter-spacing: 0.05em;
+            font-family: @font-sans; border: none; border-radius: 0.5rem;
+            cursor: pointer; padding: 0;
+            transition: filter @transition-fast, transform @transition-fast;
+
+            &:hover { filter: brightness(1.1); transform: translateY(-1px); }
+            &:active { transform: translateY(0); filter: brightness(0.95); }
+        }
+
+        .pdp-addtocart-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 3.1rem;
+            background: transparent; color: @peakgear-text;
+            font-weight: 600; font-size: 1.05rem; letter-spacing: 0.04em;
+            font-family: @font-sans;
+            border: 1px solid fade(@peakgear-text, 30%);
+            border-radius: 0.5rem; cursor: pointer; padding: 0;
+            transition: border-color @transition-fast, color @transition-fast, background @transition-fast;
 
             &:hover {
-                background: fade(@peakgear-primary, 15%);
-                border-color: @peakgear-primary-light;
-            }
-
-            svg {
-                width: 1.25rem;
-                height: 1.25rem;
+                border-color: @peakgear-primary;
+                color: @peakgear-primary-light;
+                background: fade(@peakgear-primary, 8%);
             }
         }
 
+        .pdp-wishlist-row { display: flex; justify-content: center; }
+
         .pdp-wishlist-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: fade(@peakgear-text, 6%);
-            border: 1px solid fade(@peakgear-text, 18%);
-            color: @peakgear-text;
-            width: 3.25rem;
-            height: 3.25rem;
-            border-radius: 0.85rem;
-            cursor: pointer;
-            transition: background @transition-fast, border-color @transition-fast;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: transparent; border: none;
+            color: fade(@peakgear-text, 55%); font-size: 0.875rem;
+            font-family: @font-sans; padding: 0.5rem 0; cursor: pointer;
+            transition: color @transition-fast;
+            &:hover:not(:disabled) { color: @peakgear-primary-light; }
+            svg { width: 1rem; height: 1rem; transition: fill @transition-fast; }
 
-            &:hover {
-                background: fade(@peakgear-text, 10%);
-                border-color: fade(@peakgear-text, 35%);
+            // Trạng thái đã thêm vào yêu thích
+            &.is-wishlisted,
+            &:disabled {
+                color: @peakgear-primary;
+                cursor: default;
+                opacity: 1;
             }
-
-            svg {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
+            &.is-wishlisted svg { fill: currentColor; }
         }
 
         .pdp-unavailable {
-            padding: 1rem;
-            background: fade(@peakgear-red, 10%);
-            border: 1px solid fade(@peakgear-red, 30%);
-            border-radius: 0.5rem;
-            margin-bottom: 2rem;
-
-            p {
-                color: @peakgear-red;
-                font-weight: 500;
-            }
+            padding: 1rem; background: fade(@peakgear-red, 10%);
+            border: 1px solid fade(@peakgear-red, 30%); border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            p { color: @peakgear-red; font-weight: 500; margin: 0; }
         }
 
-        // ---- Trust Features ----
-        .pdp-trust-features {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-            padding: 1.5rem 0 0;
-            border-top: 1px solid fade(@peakgear-text, 10%);
-
-            @media (min-width: 640px) {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .pdp-trust-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.85rem 0.75rem;
-            background: fade(@peakgear-text, 5%);
-            border: 1px solid fade(@peakgear-text, 12%);
-            border-radius: 0.85rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .pdp-trust-icon {
-            width: 1.5rem;
-            height: 1.5rem;
-            color: @peakgear-primary-light;
-            flex-shrink: 0;
-        }
-
-        .pdp-trust-text {
-            .pdp-trust-title {
-                color: @peakgear-text;
-                font-size: 0.875rem;
-                font-weight: 500;
-                margin: 0;
-            }
-
-            .pdp-trust-desc {
-                color: fade(@peakgear-text, 50%);
-                font-size: 0.75rem;
-                margin: 0;
-            }
-        }
-
+        // Mobile sticky CTA
         @media (max-width: 767px) {
             .pdp-actions {
-                grid-template-columns: 1fr auto;
-                row-gap: 0.75rem;
-            }
+                position: fixed; bottom: 0; left: 0; right: 0;
+                padding: 0.75rem 1rem;
+                background: fade(@peakgear-dark, 95%);
+                border-top: 1px solid fade(@peakgear-text, 10%);
+                backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+                z-index: 60; flex-direction: row; gap: 0.65rem; margin-bottom: 0;
 
-            .pdp-cta-group {
-                position: fixed;
-                left: 0.75rem;
-                right: 0.75rem;
-                bottom: 0.75rem;
-                padding: 0.75rem;
-                background: fade(@peakgear-dark, 90%);
-                border: 1px solid fade(@peakgear-text, 12%);
-                border-radius: 1rem;
-                backdrop-filter: blur(16px);
-                z-index: 60;
-                box-shadow: 0 18px 40px fade(#000, 45%);
-            }
-
-            .pdp-cta-group .pdp-addtocart-btn,
-            .pdp-cta-group .pdp-buynow-btn {
-                flex: 1;
+                .pdp-buynow-btn, .pdp-addtocart-btn { flex: 1; }
             }
         }
     }
 
-    // ---- Configurable Product Options / Swatches (dark theme override) ----
+    // -------------------------------------------------------------------------
+    // 9. SWATCHES / CONFIGURABLE OPTIONS
+    // -------------------------------------------------------------------------
     .swatch-opt {
         margin-bottom: 1.5rem;
 
@@ -755,651 +612,325 @@
             margin-bottom: 1rem;
 
             .swatch-attribute-label {
-                color: @peakgear-text;
-                font-size: 0.875rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-bottom: 0.5rem;
-
-                &.required {
-                    &::after {
-                        content: ' *';
-                        color: @peakgear-red;
-                    }
-                }
+                display: block; color: @peakgear-text;
+                font-size: 0.85rem; font-weight: 600;
+                text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;
+                &.required::after { content: ' *'; color: @peakgear-red; }
             }
 
             .swatch-attribute-selected-option {
-                color: @peakgear-primary-light;
-                font-weight: 500;
-                margin-left: 0.5rem;
+                color: @peakgear-primary-light; font-weight: 500; margin-left: 0.5rem;
             }
 
             .swatch-attribute-options {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.5rem;
-                margin-top: 0.5rem;
+                display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;
             }
         }
 
-        // Color swatches
         .swatch-option.color,
         .swatch-option.image {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
+            width: 2.5rem; height: 2.5rem; border-radius: 50%;
             border: 2px solid fade(@peakgear-text, 20%);
-            cursor: pointer;
-            transition: all @transition-fast;
-            outline: none;
-            padding: 0;
+            cursor: pointer; outline: none; padding: 0;
+            transition: border-color @transition-fast, transform @transition-fast;
 
-            &:hover {
-                border-color: fade(@peakgear-text, 50%);
-                transform: scale(1.1);
-            }
-
-            &.selected {
-                border-color: @peakgear-primary-light;
-                box-shadow: 0 0 0 2px @peakgear-primary-light;
-            }
-
+            &:hover { border-color: fade(@peakgear-text, 50%); transform: scale(1.1); }
+            &.selected { border-color: @peakgear-primary-light; box-shadow: 0 0 0 2px @peakgear-primary-light; }
             &.disabled {
-                opacity: 0.3;
-                cursor: not-allowed;
-                position: relative;
-
+                opacity: 0.3; cursor: not-allowed; position: relative;
                 &::after {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
+                    content: ''; position: absolute; inset: 0; border-radius: 50%;
                     background: linear-gradient(135deg, transparent 45%, @peakgear-red 45%, @peakgear-red 55%, transparent 55%);
-                    border-radius: 50%;
                 }
             }
         }
 
-        // Text swatches (size, etc.)
         .swatch-option.text {
-            min-width: 3rem;
-            height: 2.5rem;
-            padding: 0 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-width: 2.75rem; height: 2.4rem; padding: 0 0.65rem;
+            display: flex; align-items: center; justify-content: center;
             background: fade(@peakgear-text, 5%);
             border: 1px solid fade(@peakgear-text, 20%);
-            border-radius: 0.375rem;
-            color: @peakgear-text;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all @transition-fast;
+            border-radius: 0.375rem; color: @peakgear-text;
+            font-size: 0.85rem; font-weight: 500; cursor: pointer;
+            transition: border-color @transition-fast, background @transition-fast, color @transition-fast;
 
-            &:hover {
-                border-color: @peakgear-primary-light;
-                background: fade(@peakgear-primary, 10%);
-            }
-
+            &:hover { border-color: @peakgear-primary-light; background: fade(@peakgear-primary, 10%); }
             &.selected {
                 border-color: @peakgear-primary-light;
                 background: fade(@peakgear-primary, 15%);
-                color: @peakgear-primary-light;
-                font-weight: 600;
+                color: @peakgear-primary-light; font-weight: 600;
             }
-
-            &.disabled {
-                opacity: 0.3;
-                cursor: not-allowed;
-                text-decoration: line-through;
-            }
+            &.disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
         }
 
-        // Dropdown select (fallback)
         .super-attribute-select {
             background: @peakgear-dark-secondary;
             border: 1px solid fade(@peakgear-text, 20%);
-            border-radius: 0.375rem;
-            color: @peakgear-text;
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            width: 100%;
-            max-width: 20rem;
-            cursor: pointer;
+            border-radius: 0.375rem; color: @peakgear-text;
+            padding: 0.75rem 1rem; font-size: 0.875rem; width: 100%;
+            max-width: 18rem; cursor: pointer;
             transition: border-color @transition-fast;
-
-            &:focus {
-                border-color: @peakgear-primary-light;
-                outline: none;
-            }
-
-            option {
-                background: @peakgear-dark-secondary;
-                color: @peakgear-text;
-            }
+            &:focus { border-color: @peakgear-primary-light; outline: none; }
+            option { background: @peakgear-dark-secondary; color: @peakgear-text; }
         }
 
-        // Configurable dropdown field label
         .field.configurable {
             margin-bottom: 1rem;
-
-            .label {
-                display: block;
-                margin-bottom: 0.5rem;
-
-                span {
-                    color: @peakgear-text;
-                    font-size: 0.875rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                }
+            .label { display: block; margin-bottom: 0.5rem;
+                span { color: @peakgear-text; font-size: 0.85rem; font-weight: 600;
+                    text-transform: uppercase; letter-spacing: 0.05em; }
             }
         }
     }
 
-    // Swatch tooltip styling
+    .product-options-wrapper .fieldset { border: none; padding: 0; margin: 0; }
+
     .swatch-option-tooltip {
         background: @peakgear-dark-secondary !important;
         border: 1px solid fade(@peakgear-text, 20%) !important;
-        border-radius: 0.5rem !important;
-        padding: 0.5rem !important;
+        border-radius: 0.5rem !important; padding: 0.5rem !important;
         box-shadow: 0 4px 12px fade(#000, 40%) !important;
-
-        .corner {
-            border-color: @peakgear-dark-secondary transparent transparent transparent !important;
-        }
-
-        .image {
-            border-radius: 0.25rem;
-        }
-
-        .title {
-            color: @peakgear-text !important;
-            font-size: 0.75rem;
-        }
+        .corner { border-color: @peakgear-dark-secondary transparent transparent transparent !important; }
+        .image { border-radius: 0.25rem; }
+        .title { color: @peakgear-text !important; font-size: 0.75rem; }
     }
 
-    // Options wrapper container (holds swatches/configurable options)
-    .product-options-wrapper {
-        margin-bottom: 0;
-
-        .fieldset {
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
-    }
-
-    // ---- Tabs Section ----
+    // -------------------------------------------------------------------------
+    // 10. TABS SECTION
+    // -------------------------------------------------------------------------
     .pdp-tabs-section {
-        margin-top: 3.5rem;
+        width: 100% !important;
+        max-width: 100% !important;
 
         .pdp-tabs-nav {
-            display: flex;
-            gap: 0.5rem;
-            position: sticky;
-            top: 6.25rem;
-            z-index: 5;
-            padding: 0.5rem;
-            background: fade(@peakgear-dark, 92%);
-            border: 1px solid fade(@peakgear-text, 10%);
-            border-radius: 0.85rem;
-            backdrop-filter: blur(12px);
+            display: flex; gap: 1rem;
+            position: relative; top: auto; z-index: 3;
+            border-bottom: 1px solid fade(@peakgear-text, 15%);
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.125rem;
+            width: 100% !important;
         }
 
         .pdp-tab-btn {
-            background: transparent;
-            border: none;
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: fade(@peakgear-text, 60%);
-            cursor: pointer;
-            position: relative;
-            transition: color @transition-fast;
+            background: transparent; border: none;
+            padding: 1.05rem 1.45rem !important; font-size: 1.1rem !important; font-weight: 600;
+            color: fade(@peakgear-text, 60%); cursor: pointer;
+            position: relative; white-space: nowrap;
             font-family: @font-sans;
-            border-radius: 0.65rem;
+            transition: color @transition-fast;
 
-            &:hover {
-                color: @peakgear-text;
+            &::after {
+                content: ''; position: absolute; bottom: -1px; left: 0;
+                width: 100%; height: 3px; background: @peakgear-primary;
+                transform: scaleX(0); transition: transform 0.3s ease;
             }
 
-            &.active {
-                color: #111827;
-                background: linear-gradient(135deg, @peakgear-primary-light, @peakgear-primary);
-                box-shadow: 0 10px 20px fade(@peakgear-primary, 20%);
-            }
+            &:hover { color: @peakgear-text; }
+            &.active { color: @peakgear-primary-light; &::after { transform: scaleX(1); } }
         }
 
         .pdp-tabs-content {
-            margin-top: 1.5rem;
-            padding: 2rem;
-            background: fade(@peakgear-dark-secondary, 70%);
+            margin-top: 1.1rem; padding: 1.9rem 2rem;
+            background: fade(@peakgear-dark-secondary, 65%);
             border: 1px solid fade(@peakgear-text, 10%);
-            border-radius: 1rem;
-        }
-
-        .pdp-tab-panel {
-            display: none;
-
-            &.active {
-                display: block;
-                animation: pdp-tab-fade 0.35s ease;
-            }
-        }
-
-        .pdp-tab-empty {
-            color: fade(@peakgear-text, 60%);
-            font-size: 0.9375rem;
-        }
-
-        // ---- Specs Tab ----
-        .pdp-specs-list {
+            border-radius: 0.875rem;
             width: 100%;
+            min-height: 13.5rem;
+            box-sizing: border-box;
+            max-width: 100% !important;
         }
 
+        .pdp-tab-panel { display: none;
+            width: 100%;
+            &.active { display: block; animation: pdp-tab-fade 0.3s ease; }
+        }
+
+        .pdp-tab-empty { color: fade(@peakgear-text, 55%); font-size: 0.9375rem; }
+
+        .pdp-specs-list { width: 100%; }
         .pdp-spec-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid fade(@peakgear-text, 10%);
-
-            .pdp-spec-label {
-                color: fade(@peakgear-text, 60%);
-            }
-
-            .pdp-spec-value {
-                color: @peakgear-text;
-                font-weight: 500;
-            }
+            display: flex; justify-content: space-between;
+            padding: 0.7rem 0; border-bottom: 1px solid fade(@peakgear-text, 8%);
+            gap: 1rem;
+            &:last-child { border-bottom: none; }
+            .pdp-spec-label { color: fade(@peakgear-text, 55%); }
+            .pdp-spec-value { color: @peakgear-text; font-weight: 500; text-align: right; }
         }
 
-        // ---- Description Tab ----
         .pdp-description-content {
-            max-width: 48rem;
-            font-size: 0.975rem;
-            line-height: 1.8;
-
-            p {
-                color: fade(@peakgear-text, 75%);
-                margin-bottom: 1rem;
-            }
-
-            ul,
-            ol {
-                padding-left: 1.25rem;
-                margin: 0 0 1rem;
-                color: fade(@peakgear-text, 70%);
-            }
-
-            li {
-                margin-bottom: 0.5rem;
-            }
+            max-width: 48rem; font-size: 0.975rem; line-height: 1.8;
+            p { color: fade(@peakgear-text, 75%); margin-bottom: 1rem; }
+            ul, ol { padding-left: 1.25rem; margin: 0 0 1rem; color: fade(@peakgear-text, 70%); }
+            li { margin-bottom: 0.5rem; }
         }
 
-        // ---- Reviews Tab ----
-        .pdp-reviews-summary {
-            margin-bottom: 2rem;
+        .pdp-reviews-empty {
+            text-align: center; padding: 2.5rem 1rem;
+            .pdp-reviews-empty-icon { width: 3rem; height: 3rem; color: fade(@peakgear-text, 30%); margin: 0 auto 1rem; }
+            .pdp-reviews-empty-title { color: fade(@peakgear-text, 70%); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+            .pdp-reviews-empty-desc { color: fade(@peakgear-text, 50%); font-size: 0.9375rem; }
         }
 
         .pdp-reviews-score {
-            text-align: center;
-            display: inline-block;
-
-            .pdp-reviews-number {
-                font-size: 3rem;
-                font-weight: 700;
-                color: @peakgear-text;
-                line-height: 1;
-            }
-
-            .pdp-reviews-stars {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-top: 0.5rem;
-            }
-
-            .pdp-star-sm {
-                width: 1rem;
-                height: 1rem;
-            }
-
-            .pdp-reviews-count {
-                color: fade(@peakgear-text, 50%);
-                font-size: 0.875rem;
-                margin-top: 0.25rem;
-            }
+            text-align: center; display: inline-block;
+            .pdp-reviews-number { font-size: 3rem; font-weight: 700; color: @peakgear-text; line-height: 1; }
+            .pdp-reviews-stars { display: flex; align-items: center; justify-content: center; margin-top: 0.5rem; }
+            .pdp-star-sm { width: 1rem; height: 1rem; }
+            .pdp-reviews-count { color: fade(@peakgear-text, 50%); font-size: 0.875rem; margin-top: 0.25rem; }
         }
 
-        // ---- Reviews Empty State ----
-        .pdp-reviews-empty {
-            text-align: center;
-            padding: 3rem 1rem;
-
-            .pdp-reviews-empty-icon {
-                width: 3rem;
-                height: 3rem;
-                color: fade(@peakgear-text, 30%);
-                margin: 0 auto 1rem;
-            }
-
-            .pdp-reviews-empty-title {
-                color: fade(@peakgear-text, 70%);
-                font-size: 1.125rem;
-                font-weight: 600;
-                margin-bottom: 0.5rem;
-            }
-
-            .pdp-reviews-empty-desc {
-                color: fade(@peakgear-text, 50%);
-                font-size: 0.9375rem;
-            }
-        }
-
-        // ---- Write Review Toggle ----
-        .pdp-review-write-toggle {
-            margin-top: 1.5rem;
-            text-align: center;
-        }
+        .pdp-review-write-toggle { margin-top: 1.5rem; text-align: center; }
 
         .pdp-review-write-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.7rem 1.4rem;
             background: fade(@peakgear-primary-light, 10%);
             border: 1px solid fade(@peakgear-primary-light, 30%);
-            color: @peakgear-primary-light;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 0.9375rem;
-            font-family: @font-sans;
-            transition: all @transition-fast;
-
-            &:hover {
-                background: fade(@peakgear-primary-light, 20%);
-                border-color: @peakgear-primary-light;
-            }
+            color: @peakgear-primary-light; border-radius: 0.5rem;
+            cursor: pointer; font-size: 0.9375rem; font-family: @font-sans;
+            transition: background @transition-fast;
+            &:hover { background: fade(@peakgear-primary-light, 20%); }
         }
 
-        // ---- Review Form ----
         .pdp-review-form-wrapper {
-            margin-top: 2rem;
-            padding: 2rem;
+            margin-top: 1.75rem; padding: 1.75rem;
             background: fade(@peakgear-dark-secondary, 50%);
-            border: 1px solid fade(@peakgear-text, 10%);
-            border-radius: 0.75rem;
+            border: 1px solid fade(@peakgear-text, 10%); border-radius: 0.75rem;
         }
 
-        .pdp-review-form {
-            max-width: 36rem;
-        }
+        .pdp-review-form { max-width: 36rem; }
 
         .pdp-review-field {
-            margin-bottom: 1.5rem;
-
-            label {
-                display: block;
-                color: fade(@peakgear-text, 70%);
-                font-size: 0.875rem;
-                font-weight: 500;
-                margin-bottom: 0.5rem;
-            }
+            margin-bottom: 1.25rem;
+            label { display: block; color: fade(@peakgear-text, 70%); font-size: 0.875rem; font-weight: 500; margin-bottom: 0.4rem; }
         }
 
         .pdp-review-input,
         .pdp-review-textarea {
-            width: 100%;
-            background: fade(@peakgear-text, 5%);
-            border: 1px solid fade(@peakgear-text, 15%);
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            color: @peakgear-text;
-            font-size: 0.9375rem;
-            font-family: @font-sans;
+            width: 100%; background: fade(@peakgear-text, 5%);
+            border: 1px solid fade(@peakgear-text, 15%); border-radius: 0.5rem;
+            padding: 0.7rem 0.9rem; color: @peakgear-text;
+            font-size: 0.9375rem; font-family: @font-sans; outline: none; box-sizing: border-box;
             transition: border-color @transition-fast;
-            outline: none;
-
-            &::placeholder {
-                color: fade(@peakgear-text, 40%);
-            }
-
-            &:focus {
-                border-color: @peakgear-primary-light;
-            }
+            &::placeholder { color: fade(@peakgear-text, 40%); }
+            &:focus { border-color: @peakgear-primary-light; }
         }
 
-        .pdp-review-textarea {
-            resize: vertical;
-            min-height: 6rem;
-        }
+        .pdp-review-textarea { resize: vertical; min-height: 5.5rem; }
 
-        .pdp-review-rating-select {
-            display: flex;
-            gap: 0.25rem;
-        }
+        .pdp-review-rating-select { display: flex; gap: 0.25rem; }
 
         .pdp-review-star-btn {
-            background: transparent;
-            border: none;
-            padding: 0.25rem;
-            cursor: pointer;
+            background: transparent; border: none; padding: 0.25rem; cursor: pointer;
             color: fade(@peakgear-primary-light, 50%);
             transition: color @transition-fast, transform @transition-fast;
-
-            svg {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-
-            &:hover,
-            &.active {
-                color: @peakgear-primary-light;
-                transform: scale(1.15);
-            }
+            svg { width: 1.5rem; height: 1.5rem; }
+            &:hover, &.active { color: @peakgear-primary-light; transform: scale(1.15); }
         }
 
-        .pdp-review-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
+        .pdp-review-actions { display: flex; gap: 1rem; justify-content: flex-end; }
 
         .pdp-review-cancel-btn {
-            padding: 0.75rem 1.25rem;
-            background: transparent;
-            border: 1px solid fade(@peakgear-text, 20%);
-            color: fade(@peakgear-text, 70%);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 0.9375rem;
-            font-family: @font-sans;
-            transition: all @transition-fast;
-
-            &:hover {
-                background: fade(@peakgear-text, 10%);
-                color: @peakgear-text;
-            }
+            padding: 0.7rem 1.2rem; background: transparent;
+            border: 1px solid fade(@peakgear-text, 20%); color: fade(@peakgear-text, 70%);
+            border-radius: 0.5rem; cursor: pointer; font-size: 0.9375rem; font-family: @font-sans;
+            transition: background @transition-fast, color @transition-fast;
+            &:hover { background: fade(@peakgear-text, 10%); color: @peakgear-text; }
         }
 
         .pdp-review-submit-btn {
-            padding: 0.75rem 1.5rem;
-            background: @peakgear-primary;
-            border: none;
-            color: @peakgear-dark;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 0.9375rem;
-            font-weight: 600;
-            font-family: @font-sans;
+            padding: 0.7rem 1.4rem; background: @peakgear-primary; border: none;
+            color: @peakgear-dark; border-radius: 0.5rem; cursor: pointer;
+            font-size: 0.9375rem; font-weight: 600; font-family: @font-sans;
             transition: background @transition-fast;
-
-            &:hover {
-                background: @peakgear-primary-hover;
-            }
-        }
-
-        .pdp-no-reviews {
-            color: fade(@peakgear-text, 50%);
-            font-style: italic;
+            &:hover { background: @peakgear-primary-hover; }
         }
     }
 
-    // ---- Related / Upsell Products ----
-    .pdp-related-section {
-        margin-top: 4rem;
-        padding-bottom: 4rem;
-
-        .pdp-related-title {
-            font-family: @font-serif;
-            font-size: 1.5rem;
-            color: @peakgear-text;
-            margin-bottom: 2rem;
+    @media (max-width: 767px) {
+        .pdp-breadcrumb {
+            margin-bottom: 0.8rem;
+            .pdp-breadcrumb-nav { font-size: 0.875rem; }
         }
+
+        .pdp-tabs-section {
+            margin-top: 1.6rem;
+
+            .pdp-tabs-nav {
+                gap: 0.6rem;
+            }
+
+            .pdp-tab-btn {
+                padding: 0.85rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .pdp-tabs-content {
+                padding: 1.2rem;
+                min-height: 0;
+            }
+        }
+
+        .pdp-info-wrapper {
+            .pdp-product-name { font-size: 1.6rem; }
+            .pdp-price-final { font-size: 1.75rem; }
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .pdp-gallery .pdp-gallery-main {
+            min-height: 38rem;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // 11. RELATED / UPSELL
+    // -------------------------------------------------------------------------
+    .pdp-related-section {
+        margin-top: 4rem; padding-bottom: 3rem;
+        .pdp-related-title { font-family: @font-serif; font-size: 1.5rem; color: @peakgear-text; margin-bottom: 1.75rem; }
     }
 
     .pdp-related-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-
-        @media (min-width: 640px) {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media (min-width: 1024px) {
-            grid-template-columns: repeat(4, 1fr);
-        }
+        display: grid; grid-template-columns: 1fr; gap: 1.25rem;
+        @media (min-width: 640px)  { grid-template-columns: repeat(2, 1fr); }
+        @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
     }
 
     .pdp-related-card {
-        display: block;
-        text-decoration: none;
+        display: block; text-decoration: none;
         background: linear-gradient(135deg, fade(#475569, 50%), fade(#0f172a, 50%));
-        border-radius: 0.75rem;
-        overflow: hidden;
+        border-radius: 0.75rem; overflow: hidden;
         border: 1px solid fade(@peakgear-text, 10%);
-        transition: all @transition-base;
-
-        &:hover {
-            border-color: fade(@peakgear-text, 20%);
-            transform: translateY(-4px);
-        }
+        transition: border-color @transition-base, transform @transition-base;
+        &:hover { border-color: fade(@peakgear-text, 22%); transform: translateY(-4px); }
 
         .pdp-related-card-image {
-            position: relative;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
+            position: relative; aspect-ratio: 1/1; overflow: hidden;
             background: linear-gradient(135deg, fade(#475569, 30%), fade(#0f172a, 30%));
-
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform @transition-slow;
-            }
-
-            &:hover img {
-                transform: scale(1.05);
-            }
-
+            img { width: 100%; height: 100%; object-fit: cover; transition: transform @transition-slow; }
+            &:hover img { transform: scale(1.05); }
             .pdp-related-badge {
-                position: absolute;
-                top: 0.75rem;
-                left: 0.75rem;
-                background: @peakgear-red;
-                color: @peakgear-text;
-                font-size: 0.75rem;
-                font-weight: 700;
-                padding: 0.25rem 0.625rem;
-                border-radius: 9999px;
+                position: absolute; top: 0.75rem; left: 0.75rem;
+                background: @peakgear-red; color: @peakgear-text;
+                font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.625rem; border-radius: 9999px;
             }
         }
 
-        .pdp-related-card-info {
-            padding: 1rem;
-        }
-
+        .pdp-related-card-info { padding: 1rem; }
         .pdp-related-card-category {
-            display: block;
-            color: @peakgear-primary-light;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
+            display: block; color: @peakgear-primary-light; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;
         }
-
         .pdp-related-card-name {
-            color: @peakgear-text;
-            font-size: 0.9375rem;
-            font-weight: 500;
-            margin: 0 0 0.5rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            color: @peakgear-text; font-size: 0.9rem; font-weight: 500;
+            margin: 0 0 0.5rem; line-height: 1.4;
+            display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
+            -webkit-box-orient: vertical; overflow: hidden;
         }
-
-        .pdp-related-card-price {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .pdp-related-price-final {
-            color: @peakgear-text;
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .pdp-related-price-original {
-            color: fade(@peakgear-text, 40%);
-            text-decoration: line-through;
-            font-size: 0.875rem;
-        }
+        .pdp-related-card-price { display: flex; align-items: center; gap: 0.5rem; }
+        .pdp-related-price-final { color: @peakgear-text; font-weight: 700; font-size: 1rem; }
+        .pdp-related-price-original { color: fade(@peakgear-text, 40%); text-decoration: line-through; font-size: 0.875rem; }
     }
 
-    // ---- Animations ----
-    .pdp-gallery,
-    .pdp-info-wrapper {
-        animation: pdpFadeIn 0.6s ease forwards;
-    }
-
-    .pdp-info-wrapper {
-        animation-delay: 0.15s;
-        opacity: 0;
-    }
-
-    .pdp-gallery {
-        opacity: 0;
-    }
-
-    // ---- Hide Magento default gallery widget ----
-    .fotorama-item,
-    .gallery-placeholder {
-        display: none !important;
-    }
-
-    // Ensure product-add-form fills width
-    .product-add-form {
-        width: 100%;
-    }
-}
-
-@keyframes pdpFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
+} // end .page-product-view

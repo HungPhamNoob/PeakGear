@@ -53,13 +53,14 @@ class Callback implements HttpPostActionInterface, CsrfAwareActionInterface
                 throw new \RuntimeException('Missing callback data payload.');
             }
 
-            $appTransId = $cbData['app_trans_id'] ?? '';
+            $appTransId = (string)($cbData['apptransid'] ?? $cbData['app_trans_id'] ?? '');
             if ($appTransId === '') {
                 throw new \RuntimeException('Missing app_trans_id in callback.');
             }
 
             $parts   = explode('_', $appTransId, 2);
-            $orderId = $parts[1] ?? '';
+            $orderPart = $parts[1] ?? '';
+            $orderId = explode('-', $orderPart, 2)[0] ?? '';
             if ($orderId === '') {
                 throw new \RuntimeException('Unable to extract order increment id.');
             }

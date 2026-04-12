@@ -14,7 +14,12 @@
                 </field>
                 <field id="app_id" translate="label" type="text" sortOrder="30" showInDefault="1">
                     <label>App ID</label>
-                    <comment>Sandbox App ID: 2553</comment>
+                    <comment>Sandbox App ID: 2554</comment>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="app_user" translate="label" type="text" sortOrder="35" showInDefault="1">
+                    <label>App User</label>
+                    <comment>Ví dụ: user_test hoặc mã khách</comment>
                     <validate>required-entry</validate>
                 </field>
                 <field id="key1" translate="label" type="obscure" sortOrder="40" showInDefault="1">
@@ -34,6 +39,11 @@
                 <field id="api_url" translate="label" type="text" sortOrder="70" showInDefault="1">
                     <label>API URL</label>
                     <comment>Default sandbox URL: https://sb-openapi.zalopay.vn/v2/create</comment>
+                    <validate>required-entry validate-url</validate>
+                </field>
+                <field id="query_url" translate="label" type="text" sortOrder="75" showInDefault="1">
+                    <label>Query URL</label>
+                    <comment>Default sandbox URL: https://sb-openapi.zalopay.vn/v2/query</comment>
                     <validate>required-entry validate-url</validate>
                 </field>
                 <field id="instructions" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1">

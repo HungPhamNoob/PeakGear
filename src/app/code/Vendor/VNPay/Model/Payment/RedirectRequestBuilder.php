@@ -24,6 +24,9 @@ class RedirectRequestBuilder
         string $ipAddr,
         string $locale = 'vn'
     ): string {
+        $timezone = new \DateTimeZone('Asia/Ho_Chi_Minh');
+        $now = new \DateTimeImmutable('now', $timezone);
+
         $params = [
             'vnp_Version' => '2.1.0',
             'vnp_Command' => 'pay',
@@ -36,8 +39,8 @@ class RedirectRequestBuilder
             'vnp_Amount' => $amount * 100,
             'vnp_ReturnUrl' => $returnUrl,
             'vnp_IpAddr' => $ipAddr,
-            'vnp_CreateDate' => date('YmdHis'),
-            'vnp_ExpireDate' => date('YmdHis', strtotime('+15 minutes')),
+            'vnp_CreateDate' => $now->format('YmdHis'),
+            'vnp_ExpireDate' => $now->modify('+30 minutes')->format('YmdHis'),
         ];
 
         $bankCode = $this->config->getBankCode();

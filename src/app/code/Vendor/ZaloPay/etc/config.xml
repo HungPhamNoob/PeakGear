@@ -4,13 +4,15 @@
     <default>
         <payment>
             <zalopay>
-                <active>0</active>
-                <title>Thanh toán ZaloPay</title>
+                <active>1</active>
+                <title>ZaloPay</title>
                 <model>Vendor\ZaloPay\Model\Payment\ZaloPay</model>
-                <app_id>2553</app_id>
+                <app_id>554</app_id>
+                <app_user>user_test</app_user>
                 <key1></key1>
                 <key2></key2>
-                <api_url>https://sb-openapi.zalopay.vn/v2/create</api_url>
+                <api_url>https://sandbox.zalopay.com.vn/v001/tpe/createorder</api_url>
+                <query_url>https://sandbox.zalopay.com.vn/v001/tpe/getstatusbyapptransid</query_url>
                 <callback_path>zalopay/payment/callback</callback_path>
                 <order_status>pending</order_status>
                 <instructions>Bạn sẽ được chuyển đến ZaloPay để hoàn tất thanh toán bằng ví ZaloPay.</instructions>
