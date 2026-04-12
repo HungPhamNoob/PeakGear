@@ -12,7 +12,7 @@ cache-flush:
 clean-static:
 	$(DOCKER_COMPOSE) php sh -lc "rm -rf $(STATIC_DIR) $(VIEW_PREPROCESS_DIR)"
 
-# Lệnh deploy static content
+# Lệnh deploy static contet
 deploy-static:
 	$(DOCKER_COMPOSE) php php -d memory_limit=2G $(MAGENTO_BIN) setup:static-content:deploy -f vi_VN en_US
 
