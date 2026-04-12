@@ -20,8 +20,8 @@
     right: 1rem;
     left: auto;
     width: auto;
-    max-width: 26rem;
-    min-width: 18rem;
+    max-width: 22rem;
+    min-width: 15rem;
     z-index: 40;
     pointer-events: none;
 
@@ -34,10 +34,10 @@
     .message {
         pointer-events: auto;
         position: relative;
-        padding: 0.875rem 2.5rem 0.875rem 1rem;
+        padding: 0.625rem 2.2rem 0.625rem 0.875rem;
         border-radius: 0.5rem;
-        font-size: 0.875rem;
-        line-height: 1.5;
+        font-size: 0.8125rem;
+        line-height: 1.4;
         font-family: @font-sans;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
                     0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -51,6 +51,11 @@
 
         > div {
             color: @peakgear-text;
+            padding-left: 0 !important;
+
+            &::before {
+                display: none !important;
+            }
 
             a {
                 color: @peakgear-primary-light;
@@ -69,9 +74,9 @@
         &::after {
             content: '\00d7';
             position: absolute;
-            top: 0.5rem;
+            top: 0.375rem;
             right: 0.75rem;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             line-height: 1;
             color: fade(@peakgear-text, 60%);
             cursor: pointer;
@@ -117,6 +122,19 @@
         right: 0.75rem;
         max-width: calc(100vw - 1.5rem);
         min-width: 0;
+    }
+}
+
+.pg-checkout .page.messages {
+    top: 104px;
+    right: max(16px, calc((100vw - 1440px) / 2 + 16px));
+    left: auto;
+    z-index: 80;
+
+    @media (max-width: 767px) {
+        top: 92px;
+        right: 16px;
+        max-width: calc(100vw - 32px);
     }
 }
 

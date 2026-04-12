@@ -102,4 +102,11 @@ class VNPay extends AbstractMethod
     {
         return $this->config->getReturnUrlPath();
     }
+
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        // Keep method visible in checkout even when gateway keys are missing.
+        // Frontend action button handles disabled state via checkoutConfig.
+        return parent::isAvailable($quote);
+    }
 }

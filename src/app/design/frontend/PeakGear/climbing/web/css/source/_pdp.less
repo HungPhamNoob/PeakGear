@@ -781,52 +781,6 @@
 
         .pdp-review-write-toggle { margin-top: 1.5rem; text-align: center; }
 
-        // Danh sách từng đánh giá
-        .pdp-review-list {
-            margin-top: 1.5rem;
-            display: flex; flex-direction: column; gap: 1rem;
-        }
-
-        .pdp-review-item {
-            padding: 1.1rem 1.25rem;
-            background: fade(@peakgear-dark-secondary, 50%);
-            border: 1px solid fade(@peakgear-text, 10%);
-            border-radius: 0.75rem;
-
-            .pdp-review-item-header {
-                display: flex; justify-content: space-between; align-items: center;
-                margin-bottom: 0.5rem; gap: 1rem;
-            }
-
-            .pdp-review-item-meta {
-                display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
-            }
-
-            .pdp-review-item-author {
-                font-weight: 600; color: @peakgear-text; font-size: 0.9rem;
-            }
-
-            .pdp-review-item-date {
-                color: fade(@peakgear-text, 45%); font-size: 0.8rem;
-            }
-
-            .pdp-review-item-stars {
-                display: flex; align-items: center; gap: 2px; flex-shrink: 0;
-                .pdp-star-filled { color: @peakgear-primary; }
-                .pdp-star-empty  { color: fade(@peakgear-text, 25%); }
-            }
-
-            .pdp-review-item-title {
-                font-weight: 600; color: @peakgear-text;
-                font-size: 0.95rem; margin-bottom: 0.35rem;
-            }
-
-            .pdp-review-item-body {
-                color: fade(@peakgear-text, 72%); font-size: 0.9rem; line-height: 1.6;
-            }
-        }
-
-
         .pdp-review-write-btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
             padding: 0.7rem 1.4rem;
@@ -842,33 +796,6 @@
             margin-top: 1.75rem; padding: 1.75rem;
             background: fade(@peakgear-dark-secondary, 50%);
             border: 1px solid fade(@peakgear-text, 10%); border-radius: 0.75rem;
-        }
-
-        // Tag tên user hiện trên form
-        .pdp-review-user-tag {
-            display: flex; align-items: center; gap: 0.5rem;
-            color: fade(@peakgear-text, 60%); font-size: 0.875rem;
-            margin-bottom: 1.25rem;
-            strong { color: @peakgear-text; font-weight: 600; }
-            svg { flex-shrink: 0; color: @peakgear-primary; }
-        }
-
-        // CTA đăng nhập cho guest
-        .pdp-review-login-cta {
-            display: flex; align-items: center; gap: 0.6rem;
-            margin-top: 1.5rem;
-            padding: 0.9rem 1.2rem;
-            background: fade(@peakgear-dark-secondary, 40%);
-            border: 1px solid fade(@peakgear-text, 10%);
-            border-radius: 0.6rem;
-            color: fade(@peakgear-text, 65%); font-size: 0.9rem;
-            svg { color: @peakgear-primary; flex-shrink: 0; }
-        }
-        .pdp-review-login-link {
-            color: @peakgear-primary;
-            font-weight: 600;
-            text-decoration: underline;
-            &:hover { color: @peakgear-primary-light; }
         }
 
         .pdp-review-form { max-width: 36rem; }

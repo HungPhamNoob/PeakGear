@@ -17,6 +17,7 @@ class SignatureService
 
     public function buildCreateOrderMac(
         string $appTransId,
+        string $appUser,
         int $amount,
         int $appTime,
         string $embedData,
@@ -25,11 +26,22 @@ class SignatureService
         $payload = implode('|', [
             $this->config->getAppId(),
             $appTransId,
-            'PeakGearUser',
+            $appUser,
             (string)$amount,
             (string)$appTime,
             $embedData,
             $items,
+        ]);
+
+        return hash_hmac('sha256', $payload, $this->config->getKey1());
+    }
+
+    public function buildQueryMac(string $appTransId): string
+    {
+        $payload = implode('|', [
+            $this->config->getAppId(),
+            $appTransId,
+            $this->config->getKey1(),
         ]);
 
         return hash_hmac('sha256', $payload, $this->config->getKey1());

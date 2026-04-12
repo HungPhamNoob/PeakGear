@@ -5,5 +5,8 @@
         <route id="vnpay" frontName="vnpay">
             <module name="Vendor_VNPay"/>
         </route>
+        <route id="checkout" frontName="checkout">
+            <module name="Vendor_VNPay" before="Magento_Checkout"/>
+        </route>
     </router>
 </config>

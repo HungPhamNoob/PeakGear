@@ -1,0 +1,48 @@
+<!--
+/**
+ * PeakGear shipping address list with global action toolbar.
+ */
+-->
+<!-- ko if: (visible) -->
+<div class="field addresses pg-addresses">
+    <div class="control">
+        <div class="shipping-address-items">
+            <!-- ko foreach: { data: elems, as: 'element' } -->
+            <!-- ko template: element.getTemplate() --><!-- /ko -->
+            <!-- /ko -->
+        </div>
+
+        <div class="pg-address-toolbar">
+            <button type="button"
+                    class="action action-show-popup pg-address-toolbar__btn pg-address-toolbar__btn--primary"
+                    click="openAddAddressPopup"
+                    enable="canAddAddress()"
+                    css="{'is-disabled': !canAddAddress()}">
+                <span if="canAddAddress()" translate="'Thêm địa chỉ'"></span>
+                <span if="!canAddAddress()" translate="'Đã đạt giới hạn địa chỉ (2/2)'"></span>
+            </button>
+
+            <button type="button"
+                    class="action pg-address-toolbar__btn"
+                    click="shipHereFromToolbar"
+                    enable="canShipHere()">
+                <span translate="'Giao đến địa chỉ này'"></span>
+            </button>
+
+            <button type="button"
+                    class="action pg-address-toolbar__btn"
+                    click="editAddressFromToolbar"
+                    enable="canEditAddress()">
+                <span translate="'Chỉnh sửa'"></span>
+            </button>
+
+            <button type="button"
+                    class="action pg-address-toolbar__btn pg-address-toolbar__btn--danger"
+                    click="deleteAddressFromToolbar"
+                    enable="canDeleteAddress()">
+                <span translate="'Xóa'"></span>
+            </button>
+        </div>
+    </div>
+</div>
+<!-- /ko -->
