@@ -80,10 +80,21 @@
     // Right Column element (Info)
     .product-info-main {
         grid-column: 1;
-        order: 2;
         width: 100% !important;
 
+        @media (max-width: 1023px) {
+            display: contents !important;
+            & > * {
+                order: 2;
+            }
+            & > .pdp-breadcrumb {
+                order: 0 !important;
+                margin-bottom: 1.5rem !important;
+            }
+        }
+
         @media (min-width: 1024px) {
+            display: block !important;
             grid-column: 2;
             order: 2;
             grid-row: 1 / span 2; // Allow scrolling beside left column
@@ -143,7 +154,6 @@
     }
 
     .product-info-main {
-        display: block !important;
         width: 100% !important;
         float: none !important;
         margin: 0 !important;
@@ -587,15 +597,10 @@
             p { color: @peakgear-red; font-weight: 500; margin: 0; }
         }
 
-        // Mobile sticky CTA
+        // Mobile CTA
         @media (max-width: 767px) {
             .pdp-actions {
-                position: fixed; bottom: 0; left: 0; right: 0;
-                padding: 0.75rem 1rem;
-                background: fade(@peakgear-dark, 95%);
-                border-top: 1px solid fade(@peakgear-text, 10%);
-                backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-                z-index: 60; flex-direction: row; gap: 0.65rem; margin-bottom: 0;
+                flex-direction: row; gap: 0.65rem; margin-top: 1rem; margin-bottom: 1.5rem;
 
                 .pdp-buynow-btn, .pdp-addtocart-btn { flex: 1; }
             }
