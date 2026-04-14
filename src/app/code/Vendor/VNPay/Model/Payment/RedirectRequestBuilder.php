@@ -48,9 +48,12 @@ class RedirectRequestBuilder
             $params['vnp_BankCode'] = $bankCode;
         }
 
-        $query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        $query = http_build_query($params, '', '&', PHP_QUERY_RFC1738);
         $secureHash = $this->signatureService->sign($params);
 
-        return $this->config->getGatewayUrl() . '?' . $query . '&vnp_SecureHash=' . $secureHash;
+        return $this->config->getGatewayUrl()
+            . '?' . $query
+            . '&vnp_SecureHashType=SHA512'
+            . '&vnp_SecureHash=' . $secureHash;
     }
 }

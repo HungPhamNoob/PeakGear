@@ -8,7 +8,6 @@ use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Quote\Api\CartRepositoryInterface;
 use Vendor\ZaloPay\Model\Payment\ZaloPay as ZaloPayModel;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -25,7 +24,6 @@ class Create implements HttpGetActionInterface
         private ZaloPayModel     $zaloPayModel,
         private UrlInterface     $url,
         private OrderRepositoryInterface $orderRepository,
-        private CartRepositoryInterface $quoteRepository,
         private ManagerInterface $messageManager,
         private LoggerInterface  $logger
     ) {}
@@ -50,7 +48,6 @@ class Create implements HttpGetActionInterface
                 && ($cached['url'] ?? '') !== ''
                 && ((int)($cached['created_at'] ?? 0)) >= (time() - 1800)) {
                 $this->checkoutSession->setData(self::GATEWAY_STARTED_KEY, true);
-                $this->reactivateQuoteForOrder((int)$order->getQuoteId(), $incrementId);
 
                 return $resultRedirect->setUrl((string)$cached['url']);
             }
@@ -80,7 +77,6 @@ class Create implements HttpGetActionInterface
                 'created_at' => time(),
             ]);
             $this->checkoutSession->setData(self::GATEWAY_STARTED_KEY, true);
-            $this->reactivateQuoteForOrder((int)$order->getQuoteId(), $incrementId);
 
             return $resultRedirect->setUrl($result['order_url']);
         } catch (\Exception $e) {
@@ -93,29 +89,6 @@ class Create implements HttpGetActionInterface
             $this->messageManager->addErrorMessage(__('Không thể kết nối đến cổng ZaloPay. Vui lòng thử lại.'));
 
             return $resultRedirect->setPath('checkout', ['_fragment' => 'payment']);
-        }
-    }
-
-    private function reactivateQuoteForOrder(int $quoteId, string $incrementId): void
-    {
-        if ($quoteId <= 0) {
-            return;
-        }
-
-        try {
-            $quote = $this->quoteRepository->get($quoteId);
-            $quote->setIsActive(true);
-            $quote->setReservedOrderId(null);
-            $this->quoteRepository->save($quote);
-
-            $this->checkoutSession->replaceQuote($quote);
-            $this->checkoutSession->setLastRealOrderId($incrementId);
-        } catch (\Exception $exception) {
-            $this->logger->warning('ZaloPay quote reactivation failed.', [
-                'quote_id' => $quoteId,
-                'order_increment_id' => $incrementId,
-                'exception' => $exception,
-            ]);
         }
     }
 }

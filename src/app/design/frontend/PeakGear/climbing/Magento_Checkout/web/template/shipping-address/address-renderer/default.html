@@ -23,7 +23,7 @@
     </if>
 
     <text args="_.values(_.compact(address().street)).join(', ')"></text><br>
-    <text args="address().city"></text>, <span text="address().region"></span> <text args="address().postcode"></text><br>
+    <text args="address().city"></text> <text args="address().postcode"></text><br>
     <span>Việt Nam</span><br>
 
     <a if="address().telephone" attr="'href': 'tel:' + address().telephone" text="address().telephone"></a><br>

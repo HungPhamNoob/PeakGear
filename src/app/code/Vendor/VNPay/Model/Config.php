@@ -11,6 +11,8 @@ use Magento\Store\Model\ScopeInterface;
  */
 class Config
 {
+    private const DEFAULT_GATEWAY_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
+
     private const XML_PATH_ACTIVE = 'payment/vnpay/active';
     private const XML_PATH_TMN_CODE = 'payment/vnpay/tmn_code';
     private const XML_PATH_HASH_SECRET = 'payment/vnpay/hash_secret';
@@ -28,6 +30,25 @@ class Config
         $value = getenv($name);
 
         return is_string($value) ? trim($value) : '';
+    }
+
+    private function normalizeGatewayUrl(string $url): string
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return '';
+        }
+
+        $parts = parse_url($url);
+        if (!is_array($parts) || empty($parts['scheme'])) {
+            return '';
+        }
+
+        if (!in_array(strtolower((string)$parts['scheme']), ['http', 'https'], true)) {
+            return '';
+        }
+
+        return $url;
     }
 
     public function isActive(): bool
@@ -57,14 +78,14 @@ class Config
 
     public function getGatewayUrl(): string
     {
-        $envValue = $this->getEnvValue('VNPAY_PAYMENT_URL');
+        $envValue = $this->normalizeGatewayUrl($this->getEnvValue('VNPAY_PAYMENT_URL'));
         if ($envValue !== '') {
             return $envValue;
         }
 
-        $url = (string)$this->scopeConfig->getValue(self::XML_PATH_GATEWAY_URL, ScopeInterface::SCOPE_STORE);
+        $url = $this->normalizeGatewayUrl((string)$this->scopeConfig->getValue(self::XML_PATH_GATEWAY_URL, ScopeInterface::SCOPE_STORE));
 
-        return $url !== '' ? $url : 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
+        return $url !== '' ? $url : self::DEFAULT_GATEWAY_URL;
     }
 
     public function getReturnUrlPath(): string

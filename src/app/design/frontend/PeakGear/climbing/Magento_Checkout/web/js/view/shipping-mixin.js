@@ -1,8 +1,9 @@
 define([
     'ko',
     'uiRegistry',
-    'Magento_Checkout/js/model/quote'
-], function (ko, registry, quote) {
+    'Magento_Checkout/js/model/quote',
+    'mage/translate'
+], function (ko, registry, quote, $t) {
     'use strict';
 
     var STORE_MODE_CLASS = 'pg-delivery-store',
@@ -176,6 +177,23 @@ define([
                 this.ensureQuoteRegionConsistency();
 
                 return this;
+            },
+
+            validateShippingInformation: function () {
+                var isValid;
+
+                if (!quote.shippingAddress()) {
+                    this.errorValidationMessage($t('Vui lòng nhập địa chỉ giao hàng.'));
+                    return false;
+                }
+
+                isValid = this._super();
+
+                if (!isValid && this.isFormInline && this.source && this.source.get && this.source.get('params.invalid')) {
+                    this.errorValidationMessage($t('Vui lòng nhập địa chỉ giao hàng.'));
+                }
+
+                return isValid;
             },
 
             initializeCheckoutStateClasses: function () {
