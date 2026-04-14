@@ -280,7 +280,7 @@ define([
                     lines.push(street.join(', '));
                 }
 
-                locality = [address.city, address.region, address.postcode].filter(Boolean).join(', ').trim();
+                locality = [address.city || address.region, address.postcode].filter(Boolean).join(', ').trim();
                 if (locality) {
                     lines.push(locality);
                 }

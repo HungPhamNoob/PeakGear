@@ -20,8 +20,13 @@ class SignatureService
      */
     public function sign(array $params): string
     {
+        $params = array_filter($params, static function ($value): bool {
+            return $value !== null && $value !== '';
+        });
+
         ksort($params);
-        $query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        // VNPay sample integration uses urlencode (RFC1738), not RFC3986.
+        $query = http_build_query($params, '', '&', PHP_QUERY_RFC1738);
 
         return hash_hmac('sha512', $query, $this->config->getHashSecret());
     }
@@ -31,9 +36,9 @@ class SignatureService
      */
     public function verify(array $params): bool
     {
-        $providedHash = (string)($params['vnp_SecureHash'] ?? '');
+        $providedHash = strtolower((string)($params['vnp_SecureHash'] ?? ''));
         unset($params['vnp_SecureHash'], $params['vnp_SecureHashType']);
 
-        return hash_equals($this->sign($params), $providedHash);
+        return hash_equals(strtolower($this->sign($params)), $providedHash);
     }
 }
