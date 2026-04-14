@@ -192,6 +192,19 @@ class AllProducts extends AbstractProduct
             return $this->_productCollectionCache;
         }
 
+        $this->_productCollectionCache = $this->buildProductCollection($this->request->getParams(), true);
+        return $this->_productCollectionCache;
+    }
+
+    /**
+     * Build a product collection from request-like params.
+     *
+     * @param array $params
+     * @param bool $applyPagination
+     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
+    private function buildProductCollection(array $params, bool $applyPagination)
+    {
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect([
             'name', 'price', 'special_price', 'special_from_date', 'special_to_date',
@@ -204,8 +217,7 @@ class AllProducts extends AbstractProduct
         $collection->setVisibility($this->productVisibility->getVisibleInCatalogIds());
         $collection->addStoreFilter($this->storeManager->getStore()->getId());
 
-        // Apply category filter
-        $categoryId = $this->request->getParam('category');
+        $categoryId = $params['category'] ?? null;
         if ($categoryId) {
             $category = $this->getCategoryById((int)$categoryId);
             if ($category !== null) {
@@ -213,20 +225,17 @@ class AllProducts extends AbstractProduct
             }
         }
 
-        // Apply brand (manufacturer) filter
-        $brandId = $this->request->getParam('brand');
+        $brandId = $params['brand'] ?? null;
         if ($brandId) {
             $collection->addAttributeToFilter('manufacturer', $brandId);
         }
 
-        // Apply color filter
-        $colorId = $this->request->getParam('color');
+        $colorId = $params['color'] ?? null;
         if ($colorId) {
             $collection->addAttributeToFilter('color', $colorId);
         }
 
-        // Apply keyword search (name, sku, short_description)
-        $keyword = trim((string)$this->request->getParam('q'));
+        $keyword = trim((string)($params['q'] ?? ''));
         if ($keyword !== '') {
             $like = '%' . $keyword . '%';
             $collection->addAttributeToFilter([
@@ -236,9 +245,7 @@ class AllProducts extends AbstractProduct
             ]);
         }
 
-        // Apply generic attribute filters (attr_{attribute_code}=value)
-        $allParams = $this->request->getParams();
-        foreach ($allParams as $key => $value) {
+        foreach ($params as $key => $value) {
             if (strpos($key, 'attr_') === 0 && $value !== '') {
                 $attrCode = substr($key, 5);
                 try {
@@ -249,8 +256,24 @@ class AllProducts extends AbstractProduct
             }
         }
 
-        // Apply sorting
-        $sort = $this->request->getParam('sort', 'newest');
+        $priceMin = $params['price_min'] ?? null;
+        $priceMax = $params['price_max'] ?? null;
+        if (($priceMin !== null && $priceMin !== '') || ($priceMax !== null && $priceMax !== '')) {
+            if ($priceMin !== null && $priceMin !== '' && $priceMax !== null && $priceMax !== '' && (float)$priceMin > (float)$priceMax) {
+                $tmp = $priceMin;
+                $priceMin = $priceMax;
+                $priceMax = $tmp;
+            }
+            $collection->addPriceData();
+            if ($priceMin !== null && $priceMin !== '') {
+                $collection->getSelect()->where('price_index.final_price >= ?', (float)$priceMin);
+            }
+            if ($priceMax !== null && $priceMax !== '') {
+                $collection->getSelect()->where('price_index.final_price <= ?', (float)$priceMax);
+            }
+        }
+
+        $sort = $params['sort'] ?? 'newest';
         switch ($sort) {
             case 'price_asc':
                 $collection->setOrder('price', 'ASC');
@@ -261,18 +284,98 @@ class AllProducts extends AbstractProduct
             case 'name':
                 $collection->setOrder('name', 'ASC');
                 break;
-            default: // newest
+            default:
                 $collection->setOrder('created_at', 'DESC');
                 break;
         }
 
-        // Apply pagination
-        $page = (int)$this->request->getParam('p', 1);
-        $collection->setPageSize(9);
-        $collection->setCurPage($page);
+        if ($applyPagination) {
+            $page = (int)($params['p'] ?? 1);
+            $collection->setPageSize(9);
+            $collection->setCurPage($page);
+        }
 
-        $this->_productCollectionCache = $collection;
-        return $this->_productCollectionCache;
+        return $collection;
+    }
+
+    /**
+     * Return the active price range filter from the request.
+     *
+     * @return array{min: float|null, max: float|null}
+     */
+    public function getCurrentPriceFilter(): array
+    {
+        $min = $this->request->getParam('price_min');
+        $max = $this->request->getParam('price_max');
+
+        return [
+            'min' => ($min !== null && $min !== '') ? (float)$min : null,
+            'max' => ($max !== null && $max !== '') ? (float)$max : null,
+        ];
+    }
+
+    /**
+     * Get price range presets based on the current non-price filters.
+     * Buckets are derived from actual products so we do not render empty ranges.
+     *
+     * @return array<int, array{min: float, max: float, label: string}>
+     */
+    public function getPriceRangeOptions(): array
+    {
+        $params = $this->request->getParams();
+        unset($params['price_min'], $params['price_max'], $params['p']);
+
+        $collection = $this->buildProductCollection($params, false);
+        $items = $collection->getItems();
+        if (empty($items)) {
+            return [];
+        }
+
+        $prices = [];
+        foreach ($items as $item) {
+            $price = (float)$item->getFinalPrice();
+            $prices[] = $price;
+        }
+
+        $prices = array_values(array_unique($prices));
+        sort($prices, SORT_NUMERIC);
+
+        if (count($prices) < 2) {
+            return [];
+        }
+
+        $bucketCount = min(3, count($prices));
+        $chunkSize = (int)ceil(count($prices) / $bucketCount);
+        $chunks = array_chunk($prices, $chunkSize);
+
+        $ranges = [];
+        $totalChunks = count($chunks);
+        foreach ($chunks as $index => $chunk) {
+            if (empty($chunk)) {
+                continue;
+            }
+
+            $rangeMin = floor((float)reset($chunk));
+            $rangeMax = ceil((float)end($chunk));
+
+            if ($totalChunks === 1) {
+                $label = $this->formatPrice($rangeMin) . ' - ' . $this->formatPrice($rangeMax);
+            } elseif ($index === 0) {
+                $label = 'Dưới ' . $this->formatPrice($rangeMax);
+            } elseif ($index === $totalChunks - 1) {
+                $label = 'Trên ' . $this->formatPrice($rangeMin);
+            } else {
+                $label = $this->formatPrice($rangeMin) . ' - ' . $this->formatPrice($rangeMax);
+            }
+
+            $ranges[] = [
+                'min' => $rangeMin,
+                'max' => $rangeMax,
+                'label' => $label,
+            ];
+        }
+
+        return $ranges;
     }
 
     protected function _prepareLayout()
@@ -297,6 +400,10 @@ class AllProducts extends AbstractProduct
 
     public function getPagerHtml()
     {
+        $collection = $this->getProductCollection();
+        if (!$collection || (int)$collection->getLastPageNumber() <= 1) {
+            return '';
+        }
         return $this->getChildHtml('pager');
     }
 
@@ -475,6 +582,7 @@ class AllProducts extends AbstractProduct
      */
     public function getCacheKeyInfo()
     {
+        $priceFilter = $this->getCurrentPriceFilter();
         return [
             'PEAKGEAR_ALL_PRODUCTS',
             $this->storeManager->getStore()->getId(),
@@ -482,6 +590,8 @@ class AllProducts extends AbstractProduct
             $this->request->getParam('sort', 'newest'),
             $this->request->getParam('brand', ''),
             $this->request->getParam('color', ''),
+            $priceFilter['min'] ?? '',
+            $priceFilter['max'] ?? '',
             http_build_query($this->request->getParams()),
         ];
     }
@@ -501,38 +611,28 @@ class AllProducts extends AbstractProduct
      */
     public function getPriceRange(): array
     {
-        $collection = clone $this->getProductCollection();
-        $collection->clear();
-        $collection->setPageSize(null);
-        
-        $minPrice = 0;
-        $maxPrice = 0;
-        
-        // We use loaded items to correctly reflect special price, tier price etc if present
+        $params = $this->request->getParams();
+        unset($params['price_min'], $params['price_max'], $params['p']);
+
+        $collection = $this->buildProductCollection($params, false);
         $items = $collection->getItems();
-        
+
         if (empty($items)) {
-             return ['min' => 0, 'max' => 1000000];
+            return ['min' => 0, 'max' => 1000000];
         }
 
         $prices = [];
         foreach ($items as $item) {
-            $prices[] = (float) $item->getFinalPrice();
+            $prices[] = (float)$item->getFinalPrice();
         }
 
-        if (!empty($prices)) {
-            $minPrice = min($prices);
-            $maxPrice = max($prices);
-        }
-
-        // Just to be safe, if max is still 0, default it
-        if ($maxPrice == 0) {
-            $maxPrice = 1000000;
+        if (empty($prices)) {
+            return ['min' => 0, 'max' => 1000000];
         }
 
         return [
-            'min' => floor($minPrice),
-            'max' => ceil($maxPrice)
+            'min' => floor(min($prices)),
+            'max' => ceil(max($prices)),
         ];
     }
     //new
