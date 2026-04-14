@@ -34,7 +34,7 @@
     .message {
         pointer-events: auto;
         position: relative;
-        padding: 0.875rem 2.5rem 0.875rem 1rem;
+        padding: 0.875rem 1rem;
         border-radius: 0.5rem;
         font-size: 0.875rem;
         line-height: 1.5;
@@ -47,6 +47,14 @@
 
         &::before {
             display: none; // Remove default Magento icon
+        }
+
+        // Magento sometimes injects icon pseudo-elements on inner wrappers
+        // (including the green check). Hide all of them.
+        > *::before,
+        > *::after {
+            display: none !important;
+            content: none !important;
         }
 
         > div {
@@ -63,22 +71,6 @@
                     color: @peakgear-primary;
                 }
             }
-        }
-
-        // Close button
-        &::after {
-            content: '\00d7';
-            position: absolute;
-            top: 0.5rem;
-            right: 0.75rem;
-            font-size: 1.25rem;
-            line-height: 1;
-            color: fade(@peakgear-text, 60%);
-            cursor: pointer;
-        }
-
-        &:hover::after {
-            color: @peakgear-text;
         }
     }
 
@@ -119,4 +111,3 @@
         min-width: 0;
     }
 }
-

@@ -7,26 +7,8 @@
  */
 $product = $block->getProduct();
 
-// ── Kiểm tra sản phẩm đã trong wishlist chưa (PHP phía server) ──────────────
+// ── Cập nhật trạng thái Wishlist hoàn toàn xử lý bằng JavaScript (CustomerData) ──
 $isInWishlist = false;
-try {
-    $objectManager   = \Magento\Framework\App\ObjectManager::getInstance();
-    $customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
-    if ($customerSession->isLoggedIn()) {
-        $wishlistHelper = $objectManager->get(\Magento\Wishlist\Helper\Data::class);
-        $wishlist       = $wishlistHelper->getWishlist();
-        if ($wishlist) {
-            foreach ($wishlist->getItemCollection() as $item) {
-                if ((int)$item->getProductId() === (int)$product->getId()) {
-                    $isInWishlist = true;
-                    break;
-                }
-            }
-        }
-    }
-} catch (\Exception $e) {
-    $isInWishlist = false;
-}
 ?>
 
 <?php if ($product->isSaleable()): ?>
@@ -60,8 +42,8 @@ try {
                 id="pdp-wishlist-btn"
                 data-product-id="<?= (int)$product->getId() ?>"
                 data-wishlist-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/add')) ?>"
+                data-wishlist-remove-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/remove')) ?>"
                 data-login-url="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>"
-                data-in-wishlist="<?= $isInWishlist ? '1' : '0' ?>"
                 <?= $isInWishlist ? 'disabled' : '' ?>
                 aria-label="Yêu thích">
             <svg class="pdp-wishlist-icon"
@@ -72,7 +54,7 @@ try {
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
             <span class="pdp-wishlist-label">
-                <?= $isInWishlist ? 'Đã thêm vào yêu thích ✓' : 'Thêm vào danh sách yêu thích' ?>
+                <?= $isInWishlist ? 'Đã thêm vào yêu thích' : 'Thêm vào danh sách yêu thích' ?>
             </span>
         </button>
     </div>
@@ -84,7 +66,7 @@ try {
 <?php endif; ?>
 
 <script>
-require(['jquery'], function($) {
+require(['jquery', 'Magento_Customer/js/customer-data'], function($, customerData) {
     'use strict';
 
     // ── Qty ──────────────────────────────────────────────────────────────────
@@ -117,31 +99,132 @@ require(['jquery'], function($) {
         }
     });
 
-    // ── Wishlist ──────────────────────────────────────────────────────────────
+    // ── Add To Cart Notification ──────────────────────────────────────────────
+    var isAdding = false;
+    $('.pdp-addtocart-btn').on('click', function() {
+        isAdding = true;
+    });
+
+    $(document).on('ajax:addToCart', function(event, data) {
+        if (data.response && !data.response.error) {
+            var productName = '<?= $block->escapeJs($product->getName()) ?>';
+            showTopMessage('Đã thêm ' + productName + ' vào giỏ hàng.');
+            isAdding = false;
+        }
+    });
+
+    customerData.get('cart').subscribe(function (cartInfo) {
+        if (isAdding) {
+            var productName = '<?= $block->escapeJs($product->getName()) ?>';
+            showTopMessage('Đã thêm ' + productName + ' vào giỏ hàng.');
+            isAdding = false;
+        }
+    });
+
+    function showTopMessage(messageHtml) {
+        var $placeholder = $('[data-placeholder="messages"]').first();
+        if (!$placeholder.length) {
+            return;
+        }
+
+        var $messages = $placeholder.children('.messages');
+        if (!$messages.length) {
+            $messages = $('<div class="messages"></div>');
+            $placeholder.append($messages);
+        }
+
+        var $message = $('<div class="message message-success success"><div>' + messageHtml + '</div></div>');
+        $messages.append($message);
+
+        setTimeout(function() {
+            $message.addClass('toast-dismiss');
+            setTimeout(function() {
+                $message.remove();
+            }, 450);
+        }, 3500);
+    }
+
+    // ── Wishlist (Frontend customerData) ──────────────────────────────────────
     var $wishlistBtn   = $('#pdp-wishlist-btn');
-    // Trạng thái ban đầu do PHP server trả về
-    var alreadyInWishlist = ($wishlistBtn.data('in-wishlist') === 1 ||
-                             $wishlistBtn.data('in-wishlist') === '1');
+    var productId      = $wishlistBtn.data('product-id');
+    var alreadyInWishlist = false;
+
+    var wishlistData = customerData.get('wishlist');
+    
+    function updateWishlistState(wishlist) {
+        var isInWishlist = false;
+        var removeUrl = '';
+        var wishlistItemId = null;
+
+        if (wishlist && wishlist.items && wishlist.items.length) {
+            wishlist.items.forEach(function(item) {
+                // Ensure correct parsing
+                if (parseInt(item.product_id, 10) === parseInt(productId, 10)) {
+                    isInWishlist = true;
+                    // M2 contains delete_item_params as a JSON string
+                    if (item.delete_item_params) {
+                        try {
+                            var params = JSON.parse(item.delete_item_params);
+                            removeUrl = params.action || '';
+                            if (params.data && params.data.item) {
+                                wishlistItemId = params.data.item;
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                }
+            });
+        }
+        
+        if (isInWishlist) {
+            alreadyInWishlist = true;
+            $wishlistBtn.data('wishlist-dynamic-remove-url', removeUrl);
+            $wishlistBtn.data('wishlist-dynamic-item', wishlistItemId);
+            $wishlistBtn.find('.pdp-wishlist-icon').attr('fill', 'currentColor');
+            $wishlistBtn.find('.pdp-wishlist-label').text('Đã thêm vào yêu thích');
+            $wishlistBtn.addClass('is-wishlisted');
+        } else {
+            alreadyInWishlist = false;
+            $wishlistBtn.data('wishlist-dynamic-remove-url', '');
+            $wishlistBtn.data('wishlist-dynamic-item', '');
+            $wishlistBtn.find('.pdp-wishlist-icon').attr('fill', 'none');
+            $wishlistBtn.find('.pdp-wishlist-label').text('Thêm vào danh sách yêu thích');
+            $wishlistBtn.removeClass('is-wishlisted');
+        }
+        $wishlistBtn.prop('disabled', false); // Always ensure it is clickable
+    }
+    
+    // Check local storage immediately
+    updateWishlistState(wishlistData());
+    // Auto update when ajax fetches section
+    wishlistData.subscribe(updateWishlistState);
 
     $wishlistBtn.on('click', function () {
-        if (alreadyInWishlist) return;
-
-        var wishlistUrl = $wishlistBtn.data('wishlist-url');
-        var productId   = $wishlistBtn.data('product-id');
-        var loginUrl    = $wishlistBtn.data('login-url');
-        var formKey     = $('input[name="form_key"]').first().val();
-
-        // Loading state
-        $wishlistBtn.prop('disabled', true);
-        $wishlistBtn.find('.pdp-wishlist-label').text('Đang thêm...');
-
-        // Dùng fetch để đọc được response.url sau các redirect của Magento
+        var formKey = $('input[name="form_key"]').first().val();
+        var loginUrl = $wishlistBtn.data('login-url');
         var formData = new FormData();
-        formData.append('product',  productId);
-        formData.append('form_key', formKey);
-        formData.append('uenc',     btoa(window.location.href));
+        var endpoint = '';
 
-        fetch(wishlistUrl, {
+        if (alreadyInWishlist) {
+            endpoint = $wishlistBtn.data('wishlist-dynamic-remove-url') || $wishlistBtn.data('wishlist-remove-url');
+            var itemId = $wishlistBtn.data('wishlist-dynamic-item');
+            if (itemId) {
+                formData.append('item', itemId);
+            }
+            $wishlistBtn.find('.pdp-wishlist-label').text('Đang xoá...');
+        } else {
+            endpoint = $wishlistBtn.data('wishlist-url');
+            formData.append('product', productId);
+            $wishlistBtn.find('.pdp-wishlist-label').text('Đang thêm...');
+        }
+        
+        formData.append('form_key', formKey);
+        formData.append('uenc', btoa(window.location.href));
+        
+        $wishlistBtn.prop('disabled', true);
+
+        fetch(endpoint, {
             method: 'POST',
             body: formData,
             redirect: 'follow',
@@ -150,22 +233,28 @@ require(['jquery'], function($) {
         .then(function(response) {
             var finalUrl = response.url || '';
             if (finalUrl.indexOf('customer/account/login') !== -1) {
-                // Chưa đăng nhập → chuyển sang trang login
                 window.location.href = loginUrl;
                 return;
             }
-            // Thành công
-            alreadyInWishlist = true;
-            $wishlistBtn.find('.pdp-wishlist-icon').attr('fill', 'currentColor');
-            $wishlistBtn.find('.pdp-wishlist-label').text('Đã thêm vào yêu thích');
-            $wishlistBtn.addClass('is-wishlisted');
-            // Giữ disabled — không cho bấm thêm lần nữa
+            
+            // Xóa cache và force reload state, which will automatically fix UI
+            customerData.invalidate(['wishlist']);
+            customerData.reload(['wishlist'], true);
         })
         .catch(function() {
-            // Lỗi mạng
             $wishlistBtn.find('.pdp-wishlist-label').text('Có lỗi xảy ra, thử lại!');
             $wishlistBtn.prop('disabled', false);
         });
     });
 });
+</script>
+
+<script type="text/x-magento-init">
+    {
+        "#product_addtocart_form": {
+            "Magento_Catalog/js/catalog-add-to-cart": {
+                "bindSubmit": false
+            }
+        }
+    }
 </script>

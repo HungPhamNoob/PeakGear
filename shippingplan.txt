@@ -1,0 +1,25 @@
+Phương án triển khai Module Giao Hàng (Shipping Carrier - GHTK)
+Module này sẽ tích hợp API của Giao Hàng Tiết Kiệm (hoặc các bên thứ 3 tương tự) vào hệ thống Shipping mặc định của Magento. Khi khách hàng nhập địa chỉ ở bước Checkout, Module sẽ trích xuất Tỉnh/Thành/Huyện, gửi thông tin lên API và trả về mức phí vận chuyển hiển thị trực tiếp.
+
+1. Cấu trúc Module (Vendor_GhtkShipping)
+Đường dẫn: src/app/code/Vendor/GhtkShipping
+Các phần code cần có:
+1.1 Khai báo Module
+registration.php & etc/module.xml: Khai báo module với Magento 2.
+1.2 Cấu hình Backend (Admin Panel)
+etc/adminhtml/system.xml: Tạo các trường nhập liệu trong Admin (tại Store > Configuration > Sales > Delivery Methods > Giao Hàng GHTK). Các trường này cho phép quản trị viên tự cấu hình mà không cần sửa code:
+Bật/Tắt module
+Tiêu đề (VD: "Giao Hàng Tiết Kiệm")
+API Token và API Endpoint URL
+Mức phí an toàn (hiển thị mặc định nếu gọi API lỗi mạng)
+etc/config.xml: Lưu lại các giá trị mặc định của cấu hình trên.
+1.3 Model Tính phí Cốt lõi (Carrier Model)
+Model/Carrier/Ghtk.php: Đây là trung tâm của module. Nó sẽ kế thừa class AbstractCarrier của Magento.
+Quy trình hoạt động trong hàm collectRates:
+Magento truyền xuống biến $request chứa địa chỉ đích (Dest Region, Dest City) và Khối lượng gói hàng.
+Model sử dụng thư viện cURL hoặc GuzzleHttp để gọi lệnh POST sang hệ thống GHTK kèm theo thông tin trên và API Token.
+Khi có giá tiền trả về (JSON), Model sẽ tạo một đối tượng kết quả (Rate Method), bọc giá tiền đó lại và ném trả về cho Magento.
+Giao diện Checkout sẽ lập tức hiển thị dòng chữ "Giao Hàng Tiết Kiệm - 30,000 VND".
+2. Các điểm cần giải quyết & Thách thức
+Dữ liệu Tỉnh/Thành: Form Checkout của Magento mặc định dùng danh sách bang của US. Cần cài đặt hệ thống địa giới hành chính Việt Nam (có Module có sẵn hoặc bạn đã thêm vào) và cần Map chuẩn xác Tên tỉnh -> ID tỉnh của GHTK yêu cầu.
+Tốc độ gọi API (Latency): API gọi từ xa có thể làm chậm quá trình load form Checkout. Cần áp dụng giải pháp lưu bộ nhớ tạm (Cache) giá tiền cho cùng 1 Tỉnh/Quận để tránh gọi API trùng lặp liên tục.
