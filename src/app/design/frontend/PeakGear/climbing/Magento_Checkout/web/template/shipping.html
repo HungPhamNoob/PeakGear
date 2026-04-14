@@ -50,9 +50,8 @@
                 <div id="onepage-checkout-shipping-method-additional-load">
                     <each args="getRegion('shippingAdditional')" render=""></each>
                 </div>
-                <div role="alert"
-                     if="errorValidationMessage().length"
-                     class="message error">
+                <div if="errorValidationMessage().length"
+                     class="pg-shipping-validation-message">
                     <span text="errorValidationMessage()"></span>
                 </div>
                 <div class="actions-toolbar" id="shipping-method-buttons-container">
