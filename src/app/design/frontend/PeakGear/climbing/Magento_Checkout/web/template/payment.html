@@ -1,0 +1,70 @@
+<!--
+/**
+ * Copyright (c) Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<li id="payment" role="presentation" class="checkout-payment-method" data-bind="fadeVisible: isVisible">
+    <div id="checkout-step-payment"
+         class="step-content"
+         data-role="content"
+         role="tabpanel"
+         aria-hidden="false">
+        <!-- ko if: (quoteIsVirtual) -->
+            <!-- ko foreach: getRegion('customer-email') -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        <!--/ko-->
+
+        <form id="co-payment-form" class="form payments" novalidate="novalidate">
+            <input data-bind="attr: {value: getFormKey()}" type="hidden" name="form_key">
+
+            <fieldset class="fieldset pg-payment-fieldset">
+                <legend class="legend">
+                    <span data-bind="i18n: 'Payment Information'"></span>
+                </legend>
+
+                <div class="pg-payment-row pg-payment-row--methods">
+                    <div class="pg-payment-row__title" data-bind="i18n: 'Phương thức thanh toán'"></div>
+
+                    <!-- ko foreach: getRegion('place-order-captcha') -->
+                        <!-- ko template: getTemplate() --><!-- /ko -->
+                    <!-- /ko -->
+
+                    <!-- ko foreach: getRegion('beforeMethods') -->
+                        <!-- ko template: getTemplate() --><!-- /ko -->
+                    <!-- /ko -->
+
+                    <div id="checkout-payment-method-load" class="opc-payment" data-bind="visible: isPaymentMethodsAvailable">
+                        <!-- ko foreach: getRegion('payment-methods-list') -->
+                            <!-- ko template: getTemplate() --><!-- /ko -->
+                        <!-- /ko -->
+                    </div>
+
+                    <div class="no-quotes-block" data-bind="visible: isPaymentMethodsAvailable() == false">
+                        <!-- ko i18n: 'No Payment method available.'--><!-- /ko -->
+                    </div>
+                </div>
+
+                <div class="pg-payment-row pg-payment-row--address">
+                    <div class="pg-payment-row__title" data-bind="i18n: 'Địa chỉ giao hàng'"></div>
+                    <div class="pg-shipping-readonly" data-bind="if: shippingAddressLines().length">
+                        <!-- ko foreach: shippingAddressLines() -->
+                        <div class="pg-shipping-readonly__line" data-bind="text: $data"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="pg-shipping-readonly pg-shipping-readonly--empty" data-bind="ifnot: shippingAddressLines().length">
+                        <span data-bind="i18n: 'Địa chỉ được lấy từ bước Giao hàng. Quay lại bước Giao hàng nếu bạn cần chỉnh sửa.'"></span>
+                    </div>
+                </div>
+
+                <div class="pg-payment-row pg-payment-row--discount">
+                    <div class="pg-payment-row__title" data-bind="i18n: 'Áp dụng mã giảm giá'"></div>
+                    <!-- ko foreach: getRegion('afterMethods') -->
+                        <!-- ko template: getTemplate() --><!-- /ko -->
+                    <!-- /ko -->
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</li>

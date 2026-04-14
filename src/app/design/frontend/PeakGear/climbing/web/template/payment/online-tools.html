@@ -1,0 +1,32 @@
+<section class="peakgear-online-payment-tools" data-bind="visible: options().length || paymentGateways().length">
+    <div class="online-tools-head">
+        <h4 class="online-tools-title">Chỉ hỗ trợ thanh toán trực tuyến</h4>
+        <p class="online-tools-subtitle">Chọn cổng thanh toán phù hợp để hoàn tất đơn hàng nhanh và an toàn.</p>
+    </div>
+
+    <div class="online-payment-brands" aria-label="Cổng thanh toán hỗ trợ">
+        <span class="brand-chip brand-chip-zalo" data-bind="visible: hasGateway('zalopay')">
+            <span class="brand-chip-logo" aria-hidden="true">Z</span>
+            <span>ZaloPay</span>
+        </span>
+        <span class="brand-chip brand-chip-vnpay" data-bind="visible: hasGateway('vnpay')">
+            <span class="brand-chip-logo" aria-hidden="true">VNP</span>
+            <span>VNPay</span>
+        </span>
+        <span class="brand-chip brand-chip-qr" data-bind="visible: hasGateway('qr')">
+            <span class="brand-chip-logo" aria-hidden="true">QR</span>
+            <span>Mã QR ngân hàng</span>
+        </span>
+    </div>
+
+    <div class="online-currency-converter">
+        <label class="converter-label" for="peakgear-currency-select">Chọn mệnh giá quy đổi</label>
+        <select id="peakgear-currency-select"
+                class="converter-select"
+                data-bind="options: options, optionsText: 'label', optionsValue: 'code', value: selectedCode"></select>
+
+        <p class="converter-rate" data-bind="text: rateText"></p>
+        <p class="converter-result" data-bind="text: conversionText"></p>
+        <p class="converter-error" data-bind="visible: errorText, text: errorText"></p>
+    </div>
+</section>

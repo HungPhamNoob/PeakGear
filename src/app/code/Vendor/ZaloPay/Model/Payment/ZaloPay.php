@@ -65,17 +65,58 @@ class ZaloPay extends AbstractMethod
         $payload = $this->requestBuilder->build($orderId, $amount, $description, $callbackUrl, $redirectUrl);
         $result = $this->apiClient->createOrder($payload['post_data']);
 
-        if (($result['return_code'] ?? 0) !== 1) {
+        $returnCode = (int)($result['returncode'] ?? $result['return_code'] ?? 0);
+        $orderUrl = (string)($result['orderurl'] ?? $result['order_url'] ?? '');
+        $qrCode = (string)($result['zptranstoken'] ?? $result['zp_trans_token'] ?? $result['qr_code'] ?? '');
+
+        if ($returnCode !== 1 || $orderUrl === '') {
             throw new LocalizedException(__(
                 'ZaloPay: %1',
-                $result['return_message'] ?? 'Lỗi không xác định'
+                $result['returnmessage'] ?? $result['return_message'] ?? 'Lỗi không xác định'
             ));
         }
 
         return [
-            'order_url' => (string)$result['order_url'],
+            'order_url' => $orderUrl,
+            'qr_code' => $qrCode,
             'app_trans_id' => $payload['app_trans_id'],
         ];
+    }
+
+    /**
+     * Query transaction status by app_trans_id.
+     *
+     * @return array<string, mixed>
+     */
+    public function queryOrder(string $appTransId): array
+    {
+        if ($appTransId === '') {
+            throw new LocalizedException(__('Missing app_trans_id for query.'));
+        }
+
+        if (!$this->config->isActive() || $this->config->getKey1() === '') {
+            throw new LocalizedException(__('ZaloPay query is not fully configured.'));
+        }
+
+        $payload = [
+            // v001/tpe/getstatusbyapptransid canonical field names
+            'appid' => (int)$this->config->getAppId(),
+            'apptransid' => $appTransId,
+            // Compatibility aliases for underscore-style integrations
+            'app_id' => (int)$this->config->getAppId(),
+            'app_trans_id' => $appTransId,
+            'mac' => $this->signatureService->buildQueryMac($appTransId),
+        ];
+
+        return $this->apiClient->queryOrder($payload);
+    }
+
+    /**
+     * A successful query should have return_code = 1.
+     */
+    public function isQueryPaid(array $result): bool
+    {
+        return (int)($result['returncode'] ?? $result['return_code'] ?? 0) === 1;
     }
 
     /**
@@ -84,5 +125,12 @@ class ZaloPay extends AbstractMethod
     public function verifyCallback(array $data): bool
     {
         return $this->signatureService->verifyCallback($data);
+    }
+
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        // Keep method visible in checkout even when gateway keys are missing.
+        // Frontend action button handles disabled state via checkoutConfig.
+        return parent::isAvailable($quote);
     }
 }

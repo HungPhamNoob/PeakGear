@@ -24,10 +24,28 @@ class ApiClient
      */
     public function createOrder(array $postData): array
     {
+        return $this->postForm($this->config->getApiUrl(), $postData);
+    }
+
+    /**
+     * @param array<string, int|string> $postData
+     * @return array<string, mixed>
+     */
+    public function queryOrder(array $postData): array
+    {
+        return $this->postForm($this->config->getQueryUrl(), $postData);
+    }
+
+    /**
+     * @param array<string, int|string> $postData
+     * @return array<string, mixed>
+     */
+    private function postForm(string $url, array $postData): array
+    {
         $this->curl->setTimeout(10);
         $this->curl->setOption(CURLOPT_CONNECTTIMEOUT, 5);
         $this->curl->addHeader('Content-Type', 'application/x-www-form-urlencoded');
-        $this->curl->post($this->config->getApiUrl(), $postData);
+        $this->curl->post($url, $postData);
 
         if ($this->curl->getStatus() !== 200) {
             throw new LocalizedException(__('ZaloPay gateway returned HTTP %1.', $this->curl->getStatus()));

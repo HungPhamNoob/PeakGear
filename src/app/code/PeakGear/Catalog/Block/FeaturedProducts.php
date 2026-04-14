@@ -118,9 +118,6 @@ class FeaturedProducts extends AbstractProduct
         $collection->setPageSize($limit);
         $collection->setCurPage(1);
 
-        // Add review summary to collection
-        $this->reviewFactory->create()->appendSummary($collection);
-
         $products = [];
         foreach ($collection as $product) {
             $products[] = $this->prepareProductData($product);
@@ -147,12 +144,6 @@ class FeaturedProducts extends AbstractProduct
         $ratingSummary = $product->getRatingSummary();
         $rating = $ratingSummary ? round($ratingSummary->getRatingSummary() / 20, 1) : 0;
         $reviewCount = $ratingSummary ? (int) $ratingSummary->getReviewsCount() : 0;
-
-        // Get stock status
-        $stockItem = $product->getExtensionAttributes()
-            ? $product->getExtensionAttributes()->getStockItem()
-            : null;
-        $inStock = $stockItem ? $stockItem->getIsInStock() : true;
 
         // Get category name (first category)
         $categoryName = '';
@@ -183,7 +174,7 @@ class FeaturedProducts extends AbstractProduct
             'originalPrice' => $hasSpecialPrice ? $originalPrice : null,
             'rating' => $rating,
             'reviews' => $reviewCount,
-            'inStock' => (bool) $inStock,
+            'inStock' => true,
             'url' => $product->getProductUrl(),
             'imageUrl' => $imageUrl,
             'product' => $product, // Pass full product object for advanced use

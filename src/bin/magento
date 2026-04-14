@@ -10,15 +10,6 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-// Keep generated classes when running setup:upgrade.
-// This prevents critical interceptors (for example App\\Http\\Interceptor)
-// from disappearing between CLI upgrade runs and web requests.
-if (isset($argv[1]) && $argv[1] === 'setup:upgrade' && !in_array('--keep-generated', $argv, true)) {
-    $argv[] = '--keep-generated';
-    $_SERVER['argv'] = $argv;
-    $_SERVER['argc'] = count($argv);
-}
-
 try {
     require __DIR__ . '/../app/bootstrap.php';
 } catch (\Exception $e) {

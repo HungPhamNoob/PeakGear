@@ -1,0 +1,133 @@
+<div class="checkout-wrapper">
+
+  <div class="progress-bar"></div>
+
+  <div class="steps">
+
+    <div class="step completed" onclick="goStep(1)">
+      <div class="circle">✓</div>
+      <p>Shipping</p>
+    </div>
+
+    <div class="step active">
+      <div class="circle">2</div>
+      <p>Review & Payment</p>
+    </div>
+
+    <div class="step">
+      <div class="circle">3</div>
+      <p>Confirmation</p>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="btns">
+  <button onclick="prev()">Back</button>
+  <button onclick="next()">Next</button>
+</div>           body{
+  background:#0f172a;
+  font-family:Arial, Helvetica, sans-serif;
+  color:white;
+}
+
+.checkout-wrapper{
+  width:700px;
+  margin:80px auto;
+  position:relative;
+}
+
+/* Thanh ngang xuyên suốt */
+.progress-bar{
+  position:absolute;
+  top:24px;
+  left:0;
+  right:0;
+  height:4px;
+  background:#1e293b;
+  z-index:1;
+}
+
+/* Thanh progress màu */
+.progress-bar::after{
+  content:"";
+  position:absolute;
+  height:100%;
+  width:50%;
+  background:linear-gradient(90deg,#ff7a00,#ffb347);
+  transition:.4s;
+}
+
+/* Steps container */
+.steps{
+  display:flex;
+  justify-content:space-between;
+  position:relative;
+  z-index:2;
+}
+
+.step{
+  text-align:center;
+  cursor:pointer;
+  transition:.3s;
+}
+
+/* Circle */
+.circle{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#1e293b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  margin:auto;
+  transition:.3s;
+  border:3px solid #1e293b;
+}
+
+/* Hover UX */
+.step:hover .circle{
+  transform:scale(1.1);
+}
+
+/* Completed */
+.step.completed .circle{
+  background:#ff7a00;
+  border-color:#ff7a00;
+}
+
+/* Active */
+.step.active .circle{
+  background:#0f172a;
+  border-color:#ff7a00;
+  box-shadow:0 0 15px #ff7a00;
+}
+
+.step p{
+  margin-top:10px;
+  color:#94a3b8;
+}
+
+.step.active p{
+  color:white;
+  font-weight:bold;
+}
+
+/* Buttons */
+.btns{
+  text-align:center;
+}
+
+button{
+  padding:12px 24px;
+  margin:20px;
+  background:#ff7a00;
+  border:none;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+}         
