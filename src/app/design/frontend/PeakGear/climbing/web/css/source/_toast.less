@@ -34,7 +34,7 @@
     .message {
         pointer-events: auto;
         position: relative;
-        padding: 0.625rem 2.2rem 0.625rem 0.875rem;
+        padding: 0.875rem 1rem;
         border-radius: 0.5rem;
         font-size: 0.8125rem;
         line-height: 1.4;
@@ -47,6 +47,14 @@
 
         &::before {
             display: none; // Remove default Magento icon
+        }
+
+        // Magento sometimes injects icon pseudo-elements on inner wrappers
+        // (including the green check). Hide all of them.
+        > *::before,
+        > *::after {
+            display: none !important;
+            content: none !important;
         }
 
         > div {

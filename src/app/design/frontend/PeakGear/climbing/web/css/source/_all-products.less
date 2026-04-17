@@ -5,6 +5,7 @@
 // ============================================================================
 
 .peakgear-all-products {
+    @allprod-sidebar-top: 6.5rem;
 
     // ---- Hero Banner ----
     .allprod-hero {
@@ -324,6 +325,7 @@
     // ---- Content (sidebar + products) ----
     .allprod-content {
         display: flex;
+        align-items: flex-start;
         gap: 2rem;
     }
 
@@ -335,6 +337,23 @@
             display: block;
             width: 16rem;
             flex-shrink: 0;
+            position: sticky;
+            top: @allprod-sidebar-top;
+            max-height: ~"calc(100vh - 7.5rem)";
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+            padding: 1.25rem 1rem;
+            background: fade(@peakgear-dark-secondary, 72%);
+            backdrop-filter: blur(16px);
+            border: 1px solid fade(@peakgear-text, 8%);
+            border-radius: 1rem;
+            box-shadow: 0 18px 40px fade(#000, 16%);
+            align-self: flex-start;
+        }
+
+        @media (min-width: 1280px) {
+            width: 17rem;
         }
 
         // Mobile fullscreen overlay

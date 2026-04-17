@@ -25,6 +25,18 @@ $pageDescription = $block->getPageDescription();
 $priceRange = $block->getPriceRange();
 $rangeMin = $priceRange['min'];
 $rangeMax = $priceRange['max'];
+$currentPriceFilter = $block->getCurrentPriceFilter();
+$selectedPriceMin = $currentPriceFilter['min'] ?? $rangeMin;
+$selectedPriceMax = $currentPriceFilter['max'] ?? $rangeMax;
+$hasPriceFilter = $currentPriceFilter['min'] !== null || $currentPriceFilter['max'] !== null;
+$priceRangeOptions = $block->getPriceRangeOptions();
+
+if ($selectedPriceMin < $rangeMin) {
+    $selectedPriceMin = $rangeMin;
+}
+if ($selectedPriceMax > $rangeMax) {
+    $selectedPriceMax = $rangeMax;
+}
 
 // Dynamic filterable attributes (color, size, etc.)
 $filterableAttributes = $block->getFilterableAttributes();
@@ -91,6 +103,15 @@ foreach ($filterableAttributes as $attr) {
             ];
         }
     }
+}
+
+// Price filter tag
+if ($hasPriceFilter) {
+    $activeFilters[] = [
+        'label' => 'Khoảng giá: ' . $block->formatPrice((float)$selectedPriceMin) . ' - ' . $block->formatPrice((float)$selectedPriceMax),
+        'param' => 'price',
+        'type' => 'price',
+    ];
 }
 
 // Sort tag (only if not default)
@@ -256,41 +277,38 @@ $hasActiveFilters = !empty($activeFilters);
 
                 <!-- Price Display -->
                 <div class="allprod-price-display">
-                    <span class="allprod-price-val" id="allprodPriceMin">$0</span>
+                    <span class="allprod-price-val" id="allprodPriceMin"><?= $block->escapeHtml($block->formatPrice((float)$selectedPriceMin)) ?></span>
                     <span class="allprod-price-sep">-</span>
-                    <span class="allprod-price-val" id="allprodPriceMax">$10,000</span>
+                    <span class="allprod-price-val" id="allprodPriceMax"><?= $block->escapeHtml($block->formatPrice((float)$selectedPriceMax)) ?></span>
                 </div>
 
                 <!-- Dual Range Slider -->
                 <div class="allprod-range-slider">
                     <div class="allprod-range-track"></div>
                     <div class="allprod-range-fill" id="allprodRangeFill"></div>
-                    <input type="range" min="<?= $rangeMin ?>" max="<?= $rangeMax ?>" step="10" value="<?= $rangeMin ?>"
+                    <input type="range" min="<?= $rangeMin ?>" max="<?= $rangeMax ?>" step="10" value="<?= $selectedPriceMin ?>"
                         class="allprod-range-input" id="allprodRangeMin"
-                        oninput="allprodUpdatePriceRange()" />
-                    <input type="range" min="<?= $rangeMin ?>" max="<?= $rangeMax ?>" step="10" value="<?= $rangeMax ?>"
+                        oninput="allprodUpdatePriceRange()" onchange="allprodCommitPriceRange()" />
+                    <input type="range" min="<?= $rangeMin ?>" max="<?= $rangeMax ?>" step="10" value="<?= $selectedPriceMax ?>"
                         class="allprod-range-input" id="allprodRangeMax"
-                        oninput="allprodUpdatePriceRange()" />
+                        oninput="allprodUpdatePriceRange()" onchange="allprodCommitPriceRange()" />
                 </div>
 
                 <!-- Quick Select Buttons -->
                 <div class="allprod-price-quick">
-                    <button type="button" class="allprod-price-btn active" onclick="allprodSetPriceRange(<?= $rangeMin ?>, <?= $rangeMax ?>)">Tất cả</button>
-                    <?php if ($rangeMax > $rangeMin): ?>
-                        <?php 
-                            $step1 = floor($rangeMin + ($rangeMax - $rangeMin) * 0.25);
-                            $step2 = floor($rangeMin + ($rangeMax - $rangeMin) * 0.60);
+                    <button type="button" class="allprod-price-btn <?= !$hasPriceFilter ? 'active' : '' ?>" onclick="allprodApplyPriceRange(null, null)">Tất cả</button>
+                    <?php foreach ($priceRangeOptions as $option): ?>
+                        <?php
+                            $isActiveRange = $hasPriceFilter
+                                && abs((float)$selectedPriceMin - (float)$option['min']) < 0.01
+                                && abs((float)$selectedPriceMax - (float)$option['max']) < 0.01;
                         ?>
-                        <?php if ($step1 > $rangeMin): ?>
-                            <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(<?= $rangeMin ?>, <?= $step1 ?>)">Dưới $<?= number_format($step1) ?></button>
-                        <?php endif; ?>
-                        <?php if ($step2 > $step1): ?>
-                            <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(<?= $step1 ?>, <?= $step2 ?>)">$<?= number_format($step1) ?> - $<?= number_format($step2) ?></button>
-                        <?php endif; ?>
-                        <?php if ($rangeMax > $step2): ?>
-                            <button type="button" class="allprod-price-btn" onclick="allprodSetPriceRange(<?= $step2 ?>, <?= $rangeMax ?>)">Trên $<?= number_format($step2) ?></button>
-                        <?php endif; ?>
-                    <?php endif; ?>
+                        <button type="button"
+                                class="allprod-price-btn <?= $isActiveRange ? 'active' : '' ?>"
+                                onclick="allprodSetPriceRange(<?= (float)$option['min'] ?>, <?= (float)$option['max'] ?>)">
+                            <?= $block->escapeHtml($option['label']) ?>
+                        </button>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
@@ -404,7 +422,7 @@ $hasActiveFilters = !empty($activeFilters);
                                          class="product-real-image"
                                          loading="lazy"
                                          width="300"
-                                         height="300"/>
+                                          height="300"/>
                                 <?php else: ?>
                                     <div class="product-placeholder">
                                         <div class="product-placeholder-circle">
@@ -426,7 +444,6 @@ $hasActiveFilters = !empty($activeFilters);
                                     </button>
                                 </div>
                             </a>
-
                             <!-- Content -->
                             <div class="product-content">
                                 <!-- Category -->
@@ -542,6 +559,7 @@ function allprodApplyFilters() {
     var sort = document.getElementById('allprodSort').value;
     var params = new URLSearchParams(window.location.search);
     params.set('sort', sort);
+    params.delete('p');
     window.location.href = window.location.pathname + '?' + params.toString();
 }
 
@@ -552,6 +570,7 @@ function allprodFilterCategory(catId) {
     } else {
         params.delete('category');
     }
+    params.delete('p');
     window.location.href = window.location.pathname + '?' + params.toString();
 }
 
@@ -562,6 +581,7 @@ function allprodFilterBrand(brandId) {
     } else {
         params.delete('brand');
     }
+    params.delete('p');
     window.location.href = window.location.pathname + '?' + params.toString();
 }
 
@@ -581,6 +601,7 @@ function allprodFilterAttr(attrCode, value) {
     } else {
         params.delete(paramKey);
     }
+    params.delete('p');
     window.location.href = window.location.pathname + '?' + params.toString();
 }
 
@@ -590,7 +611,13 @@ function allprodFilterAttr(attrCode, value) {
  */
 function allprodRemoveFilter(paramKey) {
     var params = new URLSearchParams(window.location.search);
-    params.delete(paramKey);
+    if (paramKey === 'price') {
+        params.delete('price_min');
+        params.delete('price_max');
+    } else {
+        params.delete(paramKey);
+    }
+    params.delete('p');
     var qs = params.toString();
     window.location.href = window.location.pathname + (qs ? '?' + qs : '');
 }
@@ -611,9 +638,36 @@ function allprodClearFilters() {
     }
 }
 
-/**
- * Price range slider - client-side filtering (hides/shows cards)
- */
+var allprodPricePattern = null;
+
+function allprodGetPricePattern() {
+    if (allprodPricePattern) {
+        return allprodPricePattern;
+    }
+
+    var minDisplay = document.getElementById('allprodPriceMin');
+    var sample = minDisplay ? (minDisplay.textContent || '').trim() : '';
+    var match = sample.match(/^([^0-9.,-]*)([0-9.,]+)([^0-9]*)$/);
+
+    allprodPricePattern = {
+        prefix: match ? match[1] : '',
+        suffix: match ? match[3] : '',
+    };
+
+    return allprodPricePattern;
+}
+
+function allprodFormatPrice(value) {
+    var pattern = allprodGetPricePattern();
+    var number = Number(value || 0);
+    var formatted = number.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+
+    return pattern.prefix + formatted + pattern.suffix;
+}
+
 function allprodUpdatePriceRange() {
     var minInput = document.getElementById('allprodRangeMin');
     var maxInput = document.getElementById('allprodRangeMax');
@@ -634,8 +688,8 @@ function allprodUpdatePriceRange() {
     // Update display
     var minDisplay = document.getElementById('allprodPriceMin');
     var maxDisplay = document.getElementById('allprodPriceMax');
-    if (minDisplay) minDisplay.textContent = '$' + min.toLocaleString();
-    if (maxDisplay) maxDisplay.textContent = '$' + max.toLocaleString();
+    if (minDisplay) minDisplay.textContent = allprodFormatPrice(min);
+    if (maxDisplay) maxDisplay.textContent = allprodFormatPrice(max);
 
     // Update fill bar
     var fill = document.getElementById('allprodRangeFill');
@@ -655,21 +709,6 @@ function allprodUpdatePriceRange() {
         fill.style.left = leftPercent + '%';
         fill.style.right = rightPercent + '%';
     }
-
-    // Filter product cards client-side
-    var cards = document.querySelectorAll('#allprodGrid .product-card');
-    cards.forEach(function(card) {
-        var price = parseFloat(card.getAttribute('data-price'));
-        if (price >= min && price <= max) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    // Update quick-select button active states
-    var quickBtns = document.querySelectorAll('.allprod-price-btn');
-    quickBtns.forEach(function(btn) { btn.classList.remove('active'); });
 }
 
 function allprodSetPriceRange(min, max) {
@@ -678,8 +717,33 @@ function allprodSetPriceRange(min, max) {
     if (minInput) minInput.value = min;
     if (maxInput) maxInput.value = max;
     allprodUpdatePriceRange();
+    allprodApplyPriceRange(min, max);
+}
 
-    // Highlight the clicked quick-select button
-    event.target.classList.add('active');
+function allprodCommitPriceRange() {
+    var minInput = document.getElementById('allprodRangeMin');
+    var maxInput = document.getElementById('allprodRangeMax');
+    if (!minInput || !maxInput) {
+        return;
+    }
+    allprodApplyPriceRange(minInput.value, maxInput.value);
+}
+
+function allprodApplyPriceRange(min, max) {
+    var params = new URLSearchParams(window.location.search);
+    if (min !== null && min !== undefined && min !== '') {
+        params.set('price_min', min);
+    } else {
+        params.delete('price_min');
+    }
+    if (max !== null && max !== undefined && max !== '') {
+        params.set('price_max', max);
+    } else {
+        params.delete('price_max');
+    }
+    params.delete('p');
+
+    var qs = params.toString();
+    window.location.href = window.location.pathname + (qs ? '?' + qs : '');
 }
 </script>
