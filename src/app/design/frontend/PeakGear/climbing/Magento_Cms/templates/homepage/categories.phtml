@@ -7,6 +7,9 @@
  */
 
 $categories = $block->getCategories();
+$cardsPerSlide = 6; // Show 6 categories per slide (3 cols x 2 rows)
+$categorySlides = !empty($categories) ? array_chunk($categories, $cardsPerSlide) : [];
+$totalSlides = count($categorySlides);
 ?>
 
 <section class="categories-section">
@@ -20,67 +23,96 @@ $categories = $block->getCategories();
             </p>
         </div>
 
-        <!-- Categories Grid -->
+        <!-- Categories Slider (each slide keeps the original grid sizing) -->
         <?php if (!empty($categories)): ?>
-        <div class="categories-grid">
-            <?php foreach ($categories as $index => $cat): ?>
-            <a href="<?= $block->escapeUrl($block->getUrl('products') . '?category=' . (int)$cat['id']) ?>"
-               class="category-card hover-lift animate-fade-in-up"
-               style="animation-delay: <?= $block->escapeHtmlAttr(0.1 * ($index + 1)) ?>s">
-                <!-- Background Gradient -->
-                <div class="category-card-bg"></div>
+        <div class="categories-slider<?= $totalSlides <= 1 ? ' is-single' : '' ?>"
+             data-total-slides="<?= (int)$totalSlides ?>"
+             tabindex="0"
+             aria-label="Danh mục sản phẩm">
+            <?php if ($totalSlides > 1): ?>
+            <button type="button" class="categories-nav categories-nav-prev" aria-label="Xem danh mục trước">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <?php endif; ?>
 
-                <!-- Category Image (if available) -->
-                <?php if (!empty($cat['image'])): ?>
-                <div class="category-card-image">
-                    <img src="<?= $block->escapeUrl($cat['image']) ?>" 
-                         alt="<?= $block->escapeHtmlAttr($cat['name']) ?>" 
-                         loading="lazy"/>
-                </div>
-                <?php else: ?>
-                <!-- Decorative Pattern (fallback when no image) -->
-                <div class="category-card-pattern">
-                    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <pattern id="pattern-<?= $block->escapeHtmlAttr($index) ?>" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                            <circle cx="2" cy="2" r="1" fill="white"/>
-                        </pattern>
-                        <rect x="0" y="0" width="100" height="100" fill="url(#pattern-<?= $block->escapeHtmlAttr($index) ?>)"/>
-                    </svg>
-                </div>
-                <?php endif; ?>
+            <div class="categories-slider-viewport">
+                <div class="categories-slider-track">
+                    <?php foreach ($categorySlides as $slideIndex => $slideCategories): ?>
+                    <div class="categories-slide" data-slide-index="<?= (int)$slideIndex ?>">
+                        <div class="categories-grid categories-grid-six-per-slide">
+                            <?php foreach ($slideCategories as $index => $cat): ?>
+                            <a href="<?= $block->escapeUrl($block->getUrl('products') . '?category=' . (int)$cat['id']) ?>"
+                               class="category-card hover-lift animate-fade-in-up"
+                               style="animation-delay: <?= $block->escapeHtmlAttr(0.1 * ($index + 1)) ?>s">
+                                <!-- Background Gradient -->
+                                <div class="category-card-bg"></div>
 
-                <!-- Hover Overlay -->
-                <div class="category-card-hover-overlay"></div>
+                                <!-- Category Image (if available) -->
+                                <?php if (!empty($cat['image'])): ?>
+                                <div class="category-card-image">
+                                    <img src="<?= $block->escapeUrl($cat['image']) ?>"
+                                         alt="<?= $block->escapeHtmlAttr($cat['name']) ?>"
+                                         loading="lazy"/>
+                                </div>
+                                <?php else: ?>
+                                <!-- Decorative Pattern (fallback when no image) -->
+                                <div class="category-card-pattern">
+                                    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                                        <pattern id="pattern-<?= $block->escapeHtmlAttr($slideIndex . '-' . $index) ?>" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                            <circle cx="2" cy="2" r="1" fill="white"/>
+                                        </pattern>
+                                        <rect x="0" y="0" width="100" height="100" fill="url(#pattern-<?= $block->escapeHtmlAttr($slideIndex . '-' . $index) ?>)"/>
+                                    </svg>
+                                </div>
+                                <?php endif; ?>
 
-                <!-- Content -->
-                <div class="category-card-content">
-                    <!-- Product Count Circle -->
-                    <div class="category-card-count">
-                        <span><?= (int)$cat['count'] ?></span>
-                    </div>
+                                <!-- Hover Overlay -->
+                                <div class="category-card-hover-overlay"></div>
 
-                    <div class="category-card-info">
-                        <?php if (!empty($cat['nameEn'])): ?>
-                        <span class="category-card-name-en"><?= $block->escapeHtml($cat['nameEn']) ?></span>
-                        <?php endif; ?>
-                        <h4 class="category-card-name"><?= $block->escapeHtml($cat['name']) ?></h4>
-                        <?php if (!empty($cat['description'])): ?>
-                        <p class="category-card-desc"><?= $block->escapeHtml($cat['description']) ?></p>
-                        <?php endif; ?>
-                        <div class="category-card-link">
-                            <span>Xem sản phẩm</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                                <polyline points="12 5 19 12 12 19"/>
-                            </svg>
+                                <!-- Content -->
+                                <div class="category-card-content">
+                                    <!-- Product Count Circle -->
+                                    <div class="category-card-count">
+                                        <span><?= (int)$cat['count'] ?></span>
+                                    </div>
+
+                                    <div class="category-card-info">
+                                        <?php if (!empty($cat['nameEn'])): ?>
+                                        <span class="category-card-name-en"><?= $block->escapeHtml($cat['nameEn']) ?></span>
+                                        <?php endif; ?>
+                                        <h4 class="category-card-name"><?= $block->escapeHtml($cat['name']) ?></h4>
+                                        <?php if (!empty($cat['description'])): ?>
+                                        <p class="category-card-desc"><?= $block->escapeHtml($cat['description']) ?></p>
+                                        <?php endif; ?>
+                                        <div class="category-card-link">
+                                            <span>Xem sản phẩm</span>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                                <polyline points="12 5 19 12 12 19"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bottom Line Animation -->
+                                <div class="category-card-bottom-line"></div>
+                            </a>
+                            <?php endforeach; ?>
                         </div>
                     </div>
+                    <?php endforeach; ?>
                 </div>
+            </div>
 
-                <!-- Bottom Line Animation -->
-                <div class="category-card-bottom-line"></div>
-            </a>
-            <?php endforeach; ?>
+            <?php if ($totalSlides > 1): ?>
+            <button type="button" class="categories-nav categories-nav-next" aria-label="Xem danh mục tiếp theo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+            <?php endif; ?>
         </div>
         <?php else: ?>
         <div class="categories-empty">
@@ -89,3 +121,51 @@ $categories = $block->getCategories();
         <?php endif; ?>
     </div>
 </section>
+
+<?php if ($totalSlides > 1): ?>
+<script>
+require(['jquery'], function ($) {
+    'use strict';
+
+    $('.categories-slider').each(function () {
+        var $slider = $(this);
+        var $track = $slider.find('.categories-slider-track').first();
+        var $prev = $slider.find('.categories-nav-prev');
+        var $next = $slider.find('.categories-nav-next');
+        var totalSlides = parseInt($slider.data('total-slides'), 10) || 1;
+        var currentSlide = 0;
+
+        function updateSlider() {
+            $track.css('transform', 'translate3d(-' + (currentSlide * 100) + '%, 0, 0)');
+            $prev.prop('disabled', currentSlide === 0);
+            $next.prop('disabled', currentSlide >= totalSlides - 1);
+        }
+
+        $prev.on('click', function () {
+            if (currentSlide > 0) {
+                currentSlide -= 1;
+                updateSlider();
+            }
+        });
+
+        $next.on('click', function () {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide += 1;
+                updateSlider();
+            }
+        });
+
+        $slider.on('keydown', function (event) {
+            if (event.key === 'ArrowLeft') {
+                $prev.trigger('click');
+            }
+            if (event.key === 'ArrowRight') {
+                $next.trigger('click');
+            }
+        });
+
+        updateSlider();
+    });
+});
+</script>
+<?php endif; ?>
