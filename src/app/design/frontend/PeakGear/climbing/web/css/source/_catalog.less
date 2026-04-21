@@ -475,6 +475,10 @@
     padding: 1rem 0;
     border-bottom: 1px solid fade(@peakgear-text, 10%);
     margin-bottom: 2rem;
+
+    .pages {
+        display: none !important;
+    }
 }
 
 .toolbar-view-mode {
@@ -560,35 +564,65 @@
 
 .products-grid {
     display: grid;
-    gap: 1.5rem;
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+
+    &::before, &::after {
+        display: none !important;
+        content: none !important;
+    }
 
     @media (min-width: 640px) {
         grid-template-columns: repeat(2, 1fr);
     }
 
     @media (min-width: 1024px) {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 
-    // List view mode
-    &.mode-list {
+    @media (max-width: 1023px) {
         grid-template-columns: 1fr;
-
         .product-card {
-            display: grid;
-            grid-template-columns: 16rem 1fr;
-            gap: 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
         }
-
-        .product-image-wrapper {
-            height: 100%;
+        .product-image-container {
+            width: 10rem;
+            flex-shrink: 0;
+            height: auto;
+            border-radius: 0.75rem 0 0 0.75rem;
         }
-
-        .product-info {
+        .product-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            padding-left: 1rem;
+        }
+    }
+    
+    // List view mode active on desktop
+    &.mode-list {
+        @media (min-width: 1024px) {
+            grid-template-columns: repeat(2, 1fr);
+            .product-card {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
+            .product-image-container {
+                width: 8rem;
+                flex-shrink: 0;
+                height: auto;
+                border-radius: 0.75rem 0 0 0.75rem;
+            }
+            .product-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
         }
     }
 }
@@ -612,8 +646,9 @@
 
 .product-image-wrapper {
     position: relative;
-    height: 14rem;
-    background: linear-gradient(to bottom right, #334155, #1e293b);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    background: #ffffff;
     overflow: hidden;
 }
 
@@ -626,7 +661,8 @@
 .product-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 1rem;
     transition: transform @transition-slow;
 
     .product-card:hover & {
@@ -921,7 +957,8 @@
 
 // ---- Magento Pager ----
 
-.page-products .pages {
+.page-products .pages,
+.catalogsearch-result-index .pages {
     margin-top: 3rem;
     text-align: center;
 
@@ -997,14 +1034,16 @@
 // ---- Responsive: Mobile sidebar as overlay ----
 
 @media (max-width: 1023px) {
-    .page-products .sidebar.sidebar-main {
+    .page-products .sidebar.sidebar-main,
+    .catalogsearch-result-index .sidebar.sidebar-main {
         display: none;
     }
 }
 
-// ---- Hide duplicate Magento elements on category page ----
+// ---- Hide duplicate Magento elements on category page and search page ----
 
-.page-products {
+.page-products,
+.catalogsearch-result-index {
 
     // Hide Magento's default category image/description (we use our own header)
     .category-image,
@@ -1013,8 +1052,86 @@
         display: none;
     }
 
-    // Hide Magento's default toolbar (we use our custom one)
+    // Hide Magento's default toolbar if not our custom one
     .toolbar-products:not(.product-list-toolbar) {
-        // Only hide if it's not our custom toolbar
+        display: none !important;
     }
+}
+
+// ===== LIST MODE OVERRIDES =====
+// Makes the List mode workable within the grid HTML framework
+.products-grid.mode-list {
+    // We let the media query above handle column structure
+    // But ensure grid gaps
+    gap: 1.5rem;
+}
+
+.products-grid.mode-list .product-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+    text-align: left;
+    padding: 1.5rem;
+}
+
+.products-grid.mode-list .product-image-container {
+    flex: 0 0 8rem;
+    margin-bottom: 0;
+    height: auto;
+    border-radius: 0.75rem 0 0 0.75rem;
+}
+
+.products-grid.mode-list .product-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0;
+}
+
+.products-grid.mode-list .product-card-name {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.products-grid.mode-list .product-price-row {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+.products-grid.mode-list .product-rating-row {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+    .products-grid.mode-list .product-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    .products-grid.mode-list .product-image-container {
+        flex: 1;
+        height: 14rem;
+    }
+}
+
+// ===== BOTTOM TOOLBAR FIX (PAGINATION ONLY) =====
+.toolbar-bottom {
+    justify-content: center !important;
+    gap: 0 !important;
+    margin-top: 2rem;
+}
+
+.toolbar-bottom .toolbar-view-mode,
+.toolbar-bottom .toolbar-sorter,
+.toolbar-bottom .toolbar-limiter {
+    display: none !important;
+}
+
+.toolbar-bottom .product-list-toolbar .pages {
+    display: flex !important;
+    margin: 0 auto;
+    width: 100%;
 }

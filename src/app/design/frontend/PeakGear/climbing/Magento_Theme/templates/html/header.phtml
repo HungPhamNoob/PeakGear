@@ -11,6 +11,34 @@ $baseUrl = $block->getBaseUrl();
 // Dynamic categories from database via CategoryList block
 $categories = $block->getCategories();
 $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCustomerLoggedIn() : false;
+$searchSuggestions = [];
+$searchFeaturedProducts = [];
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+try {
+    /** @var \PeakGear\Catalog\Block\FeaturedProducts $featuredProductsBlock */
+    $featuredProductsBlock = $objectManager->create(\PeakGear\Catalog\Block\FeaturedProducts::class);
+    $searchFeaturedProducts = $featuredProductsBlock->getFeaturedProducts(10);
+} catch (\Throwable $e) {
+    $searchFeaturedProducts = [];
+}
+
+foreach ($categories as $cat) {
+    $categoryUrl = $block->getUrl('products') . '?category=' . (int)$cat['id'];
+    $searchSuggestions[] = [
+        'label' => (string)$cat['name'],
+        'url' => $categoryUrl
+    ];
+
+    foreach ($cat['subcategories'] as $sub) {
+        $searchSuggestions[] = [
+            'label' => (string)$sub['name'],
+            'url' => $block->getUrl('products') . '?category=' . (int)$cat['id'] . '&sub=' . $block->escapeHtmlAttr($sub['slug'])
+        ];
+    }
+}
+
+$searchSuggestions = array_slice($searchSuggestions, 0, 12);
 ?>
 
 <style>
@@ -236,45 +264,13 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
         
         <!-- Header Actions -->
         <div class="header-actions">
-            <!-- Search -->
-            <div class="header-search" id="headerSearch">
-                <button class="action-btn search-toggle" type="button" id="searchToggle">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="width:24px !important;height:24px !important;display:block !important;">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
-                </button>
-                
-                <div class="search-panel" id="searchPanel">
-                    <form action="<?= $block->escapeUrl($block->getUrl('catalogsearch/result')) ?>" method="get">
-                        <input type="text" 
-                               name="q" 
-                               class="search-input" 
-                               placeholder="Tìm kiếm..."
-                               autocomplete="off"
-                               data-mage-init='{"quickSearch":{
-                                    "formSelector":"#headerSearch form",
-                                    "url":"<?= $block->escapeUrl($block->getUrl("catalogsearch/ajax/suggest")) ?>",
-                                    "destinationSelector":"#search_autocomplete",
-                                    "minSearchLength":"3"
-                               }}'/>
-                        <button type="submit" class="search-submit" title="<?= $block->escapeHtmlAttr(__('Search')) ?>">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="display:block;">
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="m21 21-4.35-4.35"/>
-                            </svg>
-                        </button>
-                        <button type="button" class="search-close" id="searchClose">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
-                                <line x1="18" y1="6" x2="6" y2="18"/>
-                                <line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
-                        </button>
-                        <div id="search_autocomplete" class="search-autocomplete"></div>
-                    </form>
-                </div>
-            </div>
-            
+            <button class="header-search-trigger" id="headerSearchTrigger" type="button" aria-label="Tìm kiếm" aria-expanded="false" aria-controls="searchOverlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+            </button>
+
             <!-- Mini Cart -->
             <div class="header-minicart">
                 <a href="<?= $block->escapeUrl($block->getUrl('cart')) ?>" class="action-btn minicart-toggle">
@@ -362,7 +358,80 @@ $isLoggedIn = method_exists($block, 'isCustomerLoggedIn') ? (bool)$block->isCust
             <button class="action-btn mobile-menu-toggle" type="button" id="mobileMenuToggle" style="display:none !important;"></button>
         </div>
     </nav>
-    
+
+    <div class="search-overlay" id="searchOverlay" aria-hidden="true">
+        <div class="search-overlay-backdrop" data-search-close></div>
+        <div class="search-overlay-panel" role="search">
+            <form action="<?= $block->escapeUrl($block->getUrl('catalogsearch/result')) ?>" method="get" class="search-overlay-form" id="searchOverlayForm">
+                <div class="search-overlay-bar">
+                    <input type="text"
+                           name="q"
+                           id="searchOverlayInput"
+                           class="search-overlay-input"
+                           placeholder="Tìm kiếm sản phẩm, danh mục..."
+                           autocomplete="off"
+                           autocapitalize="off"/>
+                    <button type="submit" class="search-overlay-submit" title="<?= $block->escapeHtmlAttr(__('Search')) ?>">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="search-overlay-close" id="searchOverlayClose" aria-label="Đóng tìm kiếm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18"/>
+                            <path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <div class="search-overlay-body">
+                <div class="search-overlay-default" id="searchOverlayDefault">
+                    <section class="search-overlay-section" id="popularKeywordSection">
+                        <div class="search-section-heading">
+                            <h3 class="search-overlay-title">Từ khóa phổ biến</h3>
+                        </div>
+                        <div class="search-chip-list" id="popularKeywordChips">
+                            <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Lều cắm trại') ?>">Lều cắm trại</a>
+                            <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Balo leo núi') ?>">Balo leo núi</a>
+                            <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Giày trekking') ?>">Giày trekking</a>
+                            <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Đèn pin') ?>">Đèn pin</a>
+                        </div>
+                    </section>
+
+                    <section class="search-overlay-section">
+                        <div class="search-section-heading">
+                            <h3 class="search-overlay-title">Gợi ý sản phẩm</h3>
+                            <a href="<?= $block->escapeUrl($block->getUrl('products')) ?>" class="search-view-all">Xem tất cả</a>
+                        </div>
+                        <div class="search-result-grid search-result-grid-suggested" id="searchSuggestionList"></div>
+                    </section>
+                </div>
+
+                <div class="search-overlay-results" id="searchOverlayResults" hidden>
+                    <section class="search-overlay-section" id="searchKeywordSection" hidden>
+                        <div class="search-section-heading">
+                            <h3 class="search-overlay-title">Gợi ý tìm kiếm</h3>
+                        </div>
+                        <div class="search-chip-list search-chip-list-keywords" id="searchKeywordChips"></div>
+                    </section>
+
+                    <section class="search-overlay-section">
+                        <div class="search-section-heading">
+                            <h3 class="search-overlay-title">Kết quả nhanh</h3>
+                            <a href="#" class="search-view-all" id="searchViewAll">Xem tất cả</a>
+                        </div>
+                        <div class="search-result-grid" id="searchResultGrid"></div>
+                        <div class="search-empty-state" id="searchEmptyState" hidden>
+                            Không tìm thấy kết quả phù hợp. Hãy thử từ khóa khác hoặc chọn gợi ý bên trên.
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-content">
@@ -431,15 +500,36 @@ document.addEventListener('DOMContentLoaded', function() {
     var categoryDropdown = document.getElementById('categoryDropdown');
     var categoryPanel = document.getElementById('categoryPanel');
     var subcategoriesPanel = document.getElementById('subcategoriesPanel');
-    var searchToggle = document.getElementById('searchToggle');
-    var searchPanel = document.getElementById('searchPanel');
-    var searchClose = document.getElementById('searchClose');
+    var searchTrigger = document.getElementById('headerSearchTrigger');
+    var searchOverlay = document.getElementById('searchOverlay');
+    var searchOverlayForm = document.getElementById('searchOverlayForm');
+    var searchOverlayInput = document.getElementById('searchOverlayInput');
+    var searchOverlayClose = document.getElementById('searchOverlayClose');
+    var searchOverlayDefault = document.getElementById('searchOverlayDefault');
+    var searchOverlayResults = document.getElementById('searchOverlayResults');
+    var searchKeywordSection = document.getElementById('searchKeywordSection');
+    var searchKeywordChips = document.getElementById('searchKeywordChips');
+    var searchSuggestionList = document.getElementById('searchSuggestionList');
+    var searchResultGrid = document.getElementById('searchResultGrid');
+    var searchViewAll = document.getElementById('searchViewAll');
+    var searchEmptyState = document.getElementById('searchEmptyState');
     var mobileMenuToggle = document.getElementById('mobileMenuToggle');
     var mobileMenu = document.getElementById('mobileMenu');
     var mobileCategoryToggle = document.getElementById('mobileCategoryToggle');
     var mobileCategoryContent = document.getElementById('mobileCategoryContent');
     var accountDropdown = document.getElementById('accountDropdown');
     var accountPanel = document.getElementById('accountPanel');
+    var searchSuggestions = <?= /* @noEscape */ json_encode($searchSuggestions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    var searchProducts = <?= /* @noEscape */ json_encode(array_map(static function (array $product): array {
+        return [
+            'name' => (string)($product['name'] ?? ''),
+            'url' => (string)($product['url'] ?? ''),
+            'imageUrl' => (string)($product['imageUrl'] ?? ''),
+            'price' => isset($product['price']) ? (float)$product['price'] : 0,
+            'category' => (string)($product['category'] ?? '')
+        ];
+    }, $searchFeaturedProducts), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    var searchResultBaseUrl = '<?= $block->escapeJs($block->getUrl("catalogsearch/result")) ?>';
 
     // Sticky header
     var lastScrollTop = 0;
@@ -506,12 +596,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Account dropdown (desktop) - click toggle
     var accountDropdownOpen = false;
     if (accountDropdown && accountPanel) {
-        console.log('Account dropdown found', accountDropdown, accountPanel);
         var accountToggle = accountDropdown.querySelector('.account-toggle');
-        console.log('Account toggle', accountToggle);
         if (accountToggle) {
             accountToggle.addEventListener('click', function(e) {
-                console.log('Click detected');
                 e.preventDefault();
                 e.stopPropagation();
                 accountDropdownOpen = !accountDropdownOpen;
@@ -542,25 +629,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 accountDropdownOpen = false;
                 accountPanel.classList.remove('open');
             }
-        });
-    }
-
-    // Search toggle
-    var searchOpen = false;
-    searchToggle.addEventListener('click', function() {
-        searchOpen = !searchOpen;
-        if (searchOpen) {
-            searchPanel.classList.add('open');
-            var input = searchPanel.querySelector('.search-input');
-            if (input) input.focus();
-        } else {
-            searchPanel.classList.remove('open');
-        }
-    });
-    if (searchClose) {
-        searchClose.addEventListener('click', function() {
-            searchOpen = false;
-            searchPanel.classList.remove('open');
         });
     }
 
@@ -645,6 +713,279 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    var searchOpen = false;
+    var searchDebounceTimer = null;
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function formatPrice(value, currency) {
+        if (typeof value !== 'number' || isNaN(value)) {
+            return '';
+        }
+
+        try {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: currency || 'VND',
+                maximumFractionDigits: 0
+            }).format(value);
+        } catch (error) {
+            return value.toLocaleString('vi-VN') + ' ' + (currency || 'VND');
+        }
+    }
+
+    function buildProductCard(item, fallbackUrl) {
+        var imageUrl = item.imageUrl || '';
+        var amount = typeof item.price === 'number' ? item.price : null;
+        var productUrl = item.url || (fallbackUrl || searchResultBaseUrl);
+
+        return '<a class="search-result-card" href="' + escapeHtml(productUrl) + '">' +
+            '<span class="search-result-image">' +
+                (imageUrl ? '<img src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(item.name) + '" loading="lazy">' : '<span class="search-result-image-fallback">PeakGear</span>') +
+            '</span>' +
+            '<span class="search-result-content">' +
+                '<span class="search-result-name">' + escapeHtml(item.name) + '</span>' +
+                '<span class="search-result-price">' + escapeHtml(formatPrice(amount, 'VND')) + '</span>' +
+            '</span>' +
+        '</a>';
+    }
+
+    function renderDefaultSuggestions(items) {
+        if (!searchSuggestionList) {
+            return;
+        }
+
+        if (items && items.length) {
+            searchSuggestionList.innerHTML = items.map(function (item) {
+                return buildProductCard(item, '<?= $block->escapeJs($block->getUrl('products')) ?>');
+            }).join('');
+            return;
+        }
+
+        searchSuggestionList.innerHTML = searchSuggestions.map(function (item) {
+            return '<a class="search-chip search-chip-keyword" href="' + escapeHtml(item.url) + '">' + escapeHtml(item.label) + '</a>';
+        }).join('');
+    }
+
+    function renderKeywordSuggestions(items) {
+        if (!searchKeywordChips || !searchKeywordSection) {
+            return;
+        }
+
+        if (!items.length) {
+            searchKeywordSection.hidden = true;
+            searchKeywordChips.innerHTML = '';
+            return;
+        }
+
+        searchKeywordSection.hidden = false;
+        searchKeywordChips.innerHTML = items.map(function (item) {
+            var label = item.title || item.label || '';
+            var href = item.url || (searchResultBaseUrl + '?q=' + encodeURIComponent(label));
+            return '<a class="search-chip search-chip-keyword" href="' + escapeHtml(href) + '">' + escapeHtml(label) + '</a>';
+        }).join('');
+    }
+
+    function renderProductResults(items, query) {
+        if (!searchResultGrid || !searchViewAll || !searchEmptyState) {
+            return;
+        }
+
+        searchViewAll.href = searchResultBaseUrl + '?q=' + encodeURIComponent(query);
+
+        if (!items.length) {
+            searchResultGrid.innerHTML = '';
+            searchEmptyState.hidden = false;
+            return;
+        }
+
+        searchEmptyState.hidden = true;
+        searchResultGrid.innerHTML = items.map(function (item) {
+            return buildProductCard(item, searchResultBaseUrl + '?q=' + encodeURIComponent(query));
+        }).join('');
+    }
+
+    function setSearchMode(hasQuery) {
+        if (!searchOverlayDefault || !searchOverlayResults) {
+            return;
+        }
+
+        if (hasQuery) {
+            searchOverlayDefault.hidden = true;
+            searchOverlayResults.hidden = false;
+        } else {
+            searchOverlayDefault.hidden = false;
+            searchOverlayResults.hidden = true;
+        }
+    }
+
+    function closeSearchOverlay() {
+        if (!searchOverlay || !searchTrigger) {
+            return;
+        }
+
+        searchOpen = false;
+        searchOverlay.classList.remove('open');
+        searchOverlay.setAttribute('aria-hidden', 'true');
+        searchTrigger.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('search-overlay-active');
+    }
+
+    function openSearchOverlay() {
+        if (!searchOverlay || !searchTrigger) {
+            return;
+        }
+
+        if (mobileOpen) {
+            mobileOpen = false;
+            mobileMenu.classList.remove('open');
+            if (pgHamburger) {
+                pgHamburger.classList.remove('open');
+                pgHamburger.setAttribute('aria-expanded', 'false');
+            }
+            document.body.classList.remove('mobile-menu-active');
+        }
+
+        searchOpen = true;
+        searchOverlay.classList.add('open');
+        searchOverlay.setAttribute('aria-hidden', 'false');
+        searchTrigger.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('search-overlay-active');
+        setSearchMode(!!(searchOverlayInput && searchOverlayInput.value.trim()));
+
+        if (searchOverlayInput && searchOverlayInput.value.trim()) {
+            handleSearchInput();
+        }
+
+        window.setTimeout(function () {
+            if (searchOverlayInput) {
+                searchOverlayInput.focus();
+                searchOverlayInput.select();
+            }
+        }, 60);
+    }
+
+    function fetchKeywordSuggestions(query) {
+        return fetch('<?= $block->escapeJs($block->getUrl("search/ajax/suggest")) ?>?q=' + encodeURIComponent(query))
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                return data.map(function(item) {
+                    return {
+                        title: item.title,
+                        url: searchResultBaseUrl + '?q=' + encodeURIComponent(item.title)
+                    };
+                });
+            })
+            .catch(function() { return []; });
+    }
+
+    function fetchProductResults(query) {
+        var graphqlQuery = 'query { products(search: "' + query.replace(/"/g, '\\"') + '", pageSize: 10) { items { name url_key url_suffix price_range { minimum_price { final_price { value currency } } } image { url label } } } }';
+
+        return fetch('<?= $block->escapeJs($block->getUrl("graphql")) ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ query: graphqlQuery })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.data && data.data.products && data.data.products.items) {
+                return data.data.products.items.map(function(item) {
+                    var currency = item.price_range && item.price_range.minimum_price && item.price_range.minimum_price.final_price && item.price_range.minimum_price.final_price.currency ? item.price_range.minimum_price.final_price.currency : 'VND';
+                    var value = item.price_range && item.price_range.minimum_price && item.price_range.minimum_price.final_price && item.price_range.minimum_price.final_price.value ? item.price_range.minimum_price.final_price.value : 0;
+                    var suffix = item.url_suffix || '.html';
+                    var url = item.url_key ? ('<?= $block->escapeJs($block->getBaseUrl()) ?>' + item.url_key + suffix) : searchResultBaseUrl + '?q=' + encodeURIComponent(item.name);
+                    
+                    return {
+                        name: item.name || '',
+                        url: url,
+                        imageUrl: (item.image && item.image.url) ? item.image.url : '',
+                        price: value
+                    };
+                });
+            }
+            return [];
+        })
+        .catch(function() { return []; });
+    }
+
+    function handleSearchInput() {
+        var query = searchOverlayInput ? searchOverlayInput.value.trim() : '';
+
+        window.clearTimeout(searchDebounceTimer);
+
+        if (!query) {
+            setSearchMode(false);
+            renderKeywordSuggestions([]);
+            searchResultGrid.innerHTML = '';
+            searchEmptyState.hidden = true;
+            return;
+        }
+
+        setSearchMode(true);
+        searchResultGrid.innerHTML = '<div style="grid-column: 1 / -1; padding: 20px 0; text-align: center; color: #9ca3af;">Đang tìm kiếm...</div>';
+        searchEmptyState.hidden = true;
+
+        searchDebounceTimer = window.setTimeout(function () {
+            if (!searchOverlayInput || searchOverlayInput.value.trim() !== query) {
+                return;
+            }
+
+            Promise.all([
+                fetchKeywordSuggestions(query),
+                fetchProductResults(query)
+            ]).then(function(results) {
+                var keywords = results[0];
+                var products = results[1];
+
+                if (searchOverlayInput && searchOverlayInput.value.trim() !== query) {
+                    return;
+                }
+
+                renderKeywordSuggestions(keywords);
+                renderProductResults(products, query);
+            });
+        }, 300);
+    }
+
+    renderDefaultSuggestions(searchProducts);
+
+    if (searchTrigger && searchOverlay) {
+        searchTrigger.addEventListener('click', function () {
+            if (searchOpen) {
+                closeSearchOverlay();
+            } else {
+                openSearchOverlay();
+            }
+        });
+    }
+
+    if (searchOverlayClose) {
+        searchOverlayClose.addEventListener('click', closeSearchOverlay);
+    }
+
+    if (searchOverlay) {
+        searchOverlay.addEventListener('click', function (event) {
+            if (event.target.hasAttribute('data-search-close')) {
+                closeSearchOverlay();
+            }
+        });
+    }
+
+    if (searchOverlayInput) {
+        searchOverlayInput.addEventListener('input', handleSearchInput);
+    }
+
     // Customer data integration (Magento)
     try {
         require(['Magento_Customer/js/customer-data'], function(customerData) {
@@ -705,5 +1046,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     } catch(e) {}
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && searchOpen) {
+            closeSearchOverlay();
+        }
+    });
 });
 </script>
