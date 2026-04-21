@@ -11,7 +11,7 @@ use Vendor\NewsRss\Block\News as NewsBlock;
 $productList = $block->getProductListHtml();
 
 // Search Query Text — dùng trực tiếp helper để lấy đúng từ khóa (tránh getSearchQueryText() trả về chuỗi tiếng Anh)
-$queryTextRaw = $this->helper('Magento\CatalogSearch\Helper\Data')->getEscapedQueryText();
+$queryTextRaw = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\CatalogSearch\Helper\Data::class)->getEscapedQueryText();
 $queryText = $block->escapeHtml($queryTextRaw);
 
 // News Module Logic
