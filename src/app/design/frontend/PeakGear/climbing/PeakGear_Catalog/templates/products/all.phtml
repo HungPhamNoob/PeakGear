@@ -534,17 +534,42 @@ document.addEventListener('DOMContentLoaded', function() {
     var gridBtn = document.getElementById('allprodGridView');
     var listBtn = document.getElementById('allprodListView');
     var grid = document.getElementById('allprodGrid');
+    var viewModeKey = 'peakgear_all_products_view_mode';
+
+    function getSavedViewMode() {
+        try {
+            return window.localStorage.getItem(viewModeKey) || 'grid';
+        } catch (err) {
+            return 'grid';
+        }
+    }
+
+    function saveViewMode(mode) {
+        try {
+            window.localStorage.setItem(viewModeKey, mode);
+        } catch (err) {
+            // Ignore storage failures and keep the current session state only.
+        }
+    }
+
+    function applyViewMode(mode) {
+        var normalizedMode = mode === 'list' ? 'list' : 'grid';
+
+        grid.classList.toggle('allprod-grid-list', normalizedMode === 'list');
+        gridBtn.classList.toggle('active', normalizedMode === 'grid');
+        listBtn.classList.toggle('active', normalizedMode === 'list');
+
+        saveViewMode(normalizedMode);
+    }
 
     if (gridBtn && listBtn && grid) {
+        applyViewMode(getSavedViewMode());
+
         gridBtn.addEventListener('click', function() {
-            grid.classList.remove('allprod-grid-list');
-            gridBtn.classList.add('active');
-            listBtn.classList.remove('active');
+            applyViewMode('grid');
         });
         listBtn.addEventListener('click', function() {
-            grid.classList.add('allprod-grid-list');
-            listBtn.classList.add('active');
-            gridBtn.classList.remove('active');
+            applyViewMode('list');
         });
     }
 
