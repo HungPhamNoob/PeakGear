@@ -1,0 +1,44 @@
+<?php
+/**
+ * PeakGear Theme - Custom Limiter
+ * @var \Magento\Catalog\Block\Product\ProductList\Toolbar $block
+ * @var \Magento\Framework\Locale\LocaleFormatter $localeFormatter
+ */
+?>
+<div class="toolbar-limiter limiter">
+    <label class="limiter-label" for="limiter">
+        <span>Hiển thị:</span>
+    </label>
+    <div class="pg-select-wrapper control">
+        <select id="limiter" data-role="limiter" class="limiter-options custom-sorter-select">
+            <?php foreach ($block->getAvailableLimit() as $_key => $_limit):?>
+                <option value="<?= $block->escapeHtmlAttr($_key) ?>"
+                    <?php if ($block->isLimitCurrent($_key)):?>
+                        selected="selected"
+                    <?php endif ?>>
+                    <?= $block->escapeHtml(is_numeric($_limit) ? $localeFormatter->formatNumber((int) $_limit) : __($_limit)) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </div>
+</div>
+
+<style>
+.toolbar-limiter {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.limiter-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.toolbar-limiter .custom-sorter-select {
+    min-width: unset;
+    padding: 0.5rem 2rem 0.5rem 1rem;
+}
+</style>

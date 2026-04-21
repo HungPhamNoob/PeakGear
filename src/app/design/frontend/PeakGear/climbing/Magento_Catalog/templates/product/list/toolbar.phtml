@@ -9,12 +9,16 @@ $currentOrder = $block->getCurrentOrder();
 $currentDirection = $block->getCurrentDirection();
 $availableLimit = $block->getAvailableLimit();
 $currentLimit = $block->getLimit();
+$currentMode = $block->getCurrentMode() ?: 'grid';
+
+$widget = $this->helper(\Magento\Framework\Json\Helper\Data::class)->jsonDecode($block->getWidgetOptionsJson());
+$widgetOptions = $this->helper(\Magento\Framework\Json\Helper\Data::class)->jsonEncode($widget['productListToolbarForm']);
 ?>
 
-<div class="product-list-toolbar">
+<div class="product-list-toolbar" data-mage-init='{"productListToolbarForm":<?= /* @noEscape */ $widgetOptions ?>}'>
     <!-- View Mode -->
     <div class="toolbar-view-mode">
-        <button type="button" class="toolbar-view-btn active" data-mode="grid" title="<?= $block->escapeHtmlAttr(__('Lưới')) ?>">
+        <button type="button" class="toolbar-view-btn <?= $currentMode === 'grid' ? 'active' : '' ?>" data-custom-mode="grid" title="<?= $block->escapeHtmlAttr(__('Lưới')) ?>">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"/>
                 <rect x="14" y="3" width="7" height="7"/>
@@ -22,7 +26,8 @@ $currentLimit = $block->getLimit();
                 <rect x="3" y="14" width="7" height="7"/>
             </svg>
         </button>
-        <button type="button" class="toolbar-view-btn" data-mode="list" title="<?= $block->escapeHtmlAttr(__('Danh sách')) ?>">
+
+        <button type="button" class="toolbar-view-btn <?= $currentMode === 'list' ? 'active' : '' ?>" data-custom-mode="list" title="<?= $block->escapeHtmlAttr(__('Danh sách')) ?>">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="8" y1="6" x2="21" y2="6"/>
                 <line x1="8" y1="12" x2="21" y2="12"/>
@@ -37,15 +42,20 @@ $currentLimit = $block->getLimit();
     <!-- Sort By -->
     <div class="toolbar-sorter">
         <label for="sorter" class="toolbar-label">Sắp xếp:</label>
-        <select id="sorter" class="toolbar-select" data-role="sorter"
-                onchange="window.location = this.value;">
+        <select id="sorter" class="toolbar-select" data-role="sorter">
             <?php foreach ($availableOrders as $orderCode => $orderLabel): ?>
-                <?php
-                    $url = $block->getOrderUrl() . 'product_list_order/' . $orderCode . '/';
-                ?>
-                <option value="<?= $block->escapeUrl($url) ?>"
+                <option value="<?= $block->escapeHtmlAttr($orderCode) ?>"
                     <?= $currentOrder == $orderCode ? 'selected' : '' ?>>
-                    <?= $block->escapeHtml($orderLabel) ?>
+                    <?php 
+                    $translations = [
+                        'relevance' => 'Mức độ phù hợp',
+                        'name' => 'Theo tên',
+                        'price' => 'Theo giá',
+                        'position' => 'Mặc định'
+                    ];
+                    $translatedLabel = isset($translations[$orderCode]) ? $translations[$orderCode] : __($orderLabel);
+                    ?>
+                    <?= $block->escapeHtml($translatedLabel) ?>
                 </option>
             <?php endforeach; ?>
         </select>
@@ -54,15 +64,35 @@ $currentLimit = $block->getLimit();
     <!-- Per Page -->
     <div class="toolbar-limiter">
         <label for="limiter" class="toolbar-label">Hiển thị:</label>
-        <select id="limiter" class="toolbar-select" data-role="limiter"
-                onchange="window.location = this.value;">
+        <select id="limiter" class="toolbar-select" data-role="limiter">
             <?php foreach ($availableLimit as $key => $limit): ?>
-                <?php $url = $block->getLimitUrl($key); ?>
-                <option value="<?= $block->escapeUrl($url) ?>"
+                <option value="<?= $block->escapeHtmlAttr($key) ?>"
                     <?= $currentLimit == $key ? 'selected' : '' ?>>
                     <?= $block->escapeHtml($limit) ?>
                 </option>
             <?php endforeach; ?>
         </select>
     </div>
+
+    <!-- Pager (Pagination) -->
+    <?= $block->getPagerHtml() ?>
 </div>
+
+<script>
+require(['jquery'], function($) {
+    $(document).ready(function() {
+        // Toggle view mode without page reload
+        $('.toolbar-view-btn[data-custom-mode]').on('click', function(e) {
+            e.preventDefault();
+            var mode = $(this).data('custom-mode');
+            
+            // Update buttons visually
+            $('.toolbar-view-btn[data-custom-mode]').removeClass('active');
+            $('.toolbar-view-btn[data-custom-mode="' + mode + '"]').addClass('active');
+            
+            // Update grid container class
+            $('.products-grid').removeClass('mode-grid mode-list').addClass('mode-' + mode);
+        });
+    });
+});
+</script>

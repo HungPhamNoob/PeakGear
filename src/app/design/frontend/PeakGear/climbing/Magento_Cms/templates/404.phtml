@@ -1,0 +1,254 @@
+<?php
+/**
+ * PeakGear Theme - Custom 404 Page
+ */
+?>
+<div class="custom-404-wrapper">
+    <div class="cat-404-container">
+        <div class="error-text">
+            <h1 class="error-code">404</h1>
+            <h2 class="error-title">Oops! Trang bạn tìm kiếm không tồn tại</h2>
+            <p class="error-desc">Có vẻ như bé mèo của chúng tôi đã đi lạc vào không gian và làm rơi mất đường link này rồi.</p>
+            <a href="<?= $block->escapeUrl($block->getUrl('')) ?>" class="btn-home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-home">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                Quay lại Trang Chủ
+            </a>
+        </div>
+
+        <div class="cat-illustration">
+            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="cute-cat">
+                <!-- Stars -->
+                <g class="stars">
+                    <circle cx="50" cy="100" r="3" fill="#fcd34d" class="star star-1" />
+                    <circle cx="350" cy="80" r="4" fill="#fcd34d" class="star star-2" />
+                    <circle cx="80" cy="300" r="2" fill="#fcd34d" class="star star-3" />
+                    <circle cx="320" cy="280" r="5" fill="#fcd34d" class="star star-4" />
+                    <circle cx="200" cy="50" r="2" fill="#fcd34d" class="star star-5" />
+                </g>
+
+                <g class="cat-body-group">
+                    <!-- Tail -->
+                    <path class="cat-tail" d="M 240 280 C 320 280, 340 180, 280 140" fill="none" stroke="#f59e0b" stroke-width="24" stroke-linecap="round"/>
+                    
+                    <!-- Body -->
+                    <path d="M 120 280 Q 120 180 200 180 Q 280 180 280 280 Z" fill="#f59e0b" />
+                    <path d="M 140 280 Q 140 210 200 210 Q 260 210 260 280 Z" fill="#fffbeb" />
+
+                    <!-- Head -->
+                    <circle cx="200" cy="150" r="80" fill="#f59e0b" />
+                    
+                    <!-- Ears -->
+                    <g class="cat-ears">
+                        <polygon points="135,100 160,70 185,100" fill="#f59e0b" />
+                        <polygon points="265,100 240,70 215,100" fill="#f59e0b" />
+                        
+                        <!-- Inner Ears -->
+                        <polygon points="145,95 160,78 175,95" fill="#fca5a5" />
+                        <polygon points="255,95 240,78 225,95" fill="#fca5a5" />
+                    </g>
+                    
+                    <!-- Face Details -->
+                    <g class="cat-face">
+                        <!-- Eyes -->
+                        <g class="cat-eyes">
+                            <circle cx="165" cy="140" r="12" fill="#111827" />
+                            <circle cx="235" cy="140" r="12" fill="#111827" />
+                            <!-- Glint -->
+                            <circle cx="160" cy="135" r="4" fill="white" />
+                            <circle cx="230" cy="135" r="4" fill="white" />
+                        </g>
+                        
+                        <!-- Nose -->
+                        <polygon points="195,165 205,165 200,172" fill="#ef4444" />
+                        
+                        <!-- Mouth -->
+                        <path d="M 185 175 Q 200 185 200 172 Q 200 185 215 175" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+                        
+                        <!-- Blush -->
+                        <circle cx="140" cy="160" r="10" fill="#fca5a5" opacity="0.6"/>
+                        <circle cx="260" cy="160" r="10" fill="#fca5a5" opacity="0.6"/>
+                        
+                        <!-- Whiskers -->
+                        <path class="whisker" d="M 130 150 L 80 140" stroke="#111827" stroke-width="2" stroke-linecap="round" />
+                        <path class="whisker" d="M 130 160 L 80 160" stroke="#111827" stroke-width="2" stroke-linecap="round" />
+                        <path class="whisker" d="M 130 170 L 80 180" stroke="#111827" stroke-width="2" stroke-linecap="round" />
+                        
+                        <path class="whisker" d="M 270 150 L 320 140" stroke="#111827" stroke-width="2" stroke-linecap="round" />
+                        <path class="whisker" d="M 270 160 L 320 160" stroke="#111827" stroke-width="2" stroke-linecap="round" />
+                        <path class="whisker" d="M 270 170 L 320 180" stroke="#111827" stroke-width="2" stroke-linecap="round" />
+                    </g>
+
+                    <!-- Paws (Front) -->
+                    <path d="M 170 240 L 170 290" fill="none" stroke="#f59e0b" stroke-width="20" stroke-linecap="round" />
+                    <path d="M 230 240 L 230 290" fill="none" stroke="#f59e0b" stroke-width="20" stroke-linecap="round" />
+                    
+                    <!-- Paws White tips -->
+                    <circle cx="170" cy="290" r="10" fill="#fffbeb" />
+                    <circle cx="230" cy="290" r="10" fill="#fffbeb" />
+                </g>
+            </svg>
+            <div class="shadow"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.custom-404-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.cat-404-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    max-width: 800px;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .cat-404-container {
+        flex-direction: row;
+        text-align: left;
+        justify-content: space-between;
+    }
+}
+
+.error-text {
+    flex: 1;
+}
+
+.error-code {
+    font-size: 6rem;
+    font-weight: 800;
+    color: #f59e0b;
+    margin: 0;
+    line-height: 1;
+    text-shadow: 0 10px 20px rgba(245, 158, 11, 0.2);
+    font-family: monospace;
+}
+
+.error-title {
+    font-size: 2rem;
+    color: #ffffff;
+    margin: 1rem 0;
+    font-weight: 700;
+}
+
+.error-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+.btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 2rem;
+    background: #f59e0b;
+    color: #111827 !important;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.btn-home:hover {
+    background: #fbbf24;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.icon-home {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.cat-illustration {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    flex-shrink: 0;
+}
+
+.cute-cat {
+    width: 100%;
+    height: 100%;
+    animation: float 4s ease-in-out infinite;
+}
+
+.shadow {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    filter: blur(5px);
+    animation: shadowPulse 4s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes shadowPulse {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+    50% { transform: translateX(-50%) scale(0.8); opacity: 0.2; }
+}
+
+.cat-tail {
+    transform-origin: 240px 280px;
+    animation: wagTail 3s ease-in-out infinite;
+}
+
+@keyframes wagTail {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg); }
+}
+
+.cat-eyes {
+    animation: blink 4s infinite;
+}
+
+@keyframes blink {
+    0%, 46%, 48%, 100% { transform: scaleY(1); }
+    47% { transform: scaleY(0.1); }
+}
+
+.star {
+    animation: twinkle 2s infinite ease-in-out;
+}
+
+.star-1 { animation-delay: 0s; }
+.star-2 { animation-delay: 0.4s; }
+.star-3 { animation-delay: 0.8s; }
+.star-4 { animation-delay: 1.2s; }
+.star-5 { animation-delay: 1.6s; }
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Hide default Magento blocks in 404 page */
+.cms-no-route .page-title-wrapper {
+    display: none !important;
+}
+</style>

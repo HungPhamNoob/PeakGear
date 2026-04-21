@@ -85,6 +85,10 @@
         justify-content: flex-end;
     }
 
+    .allprod-toolbar:not(.allprod-toolbar-bottom) .pages {
+        display: none !important;
+    }
+
     .allprod-search-form {
         display: flex;
         align-items: center;
@@ -625,11 +629,10 @@
                 align-items: center; // Canh giữa ảnh và chữ nếu muốn
             }
             .product-image-container {
-                width: 8rem; // Thu nhỏ ảnh trên mobile một chút so với 12rem của bản list PC
+                width: 10rem;
                 flex-shrink: 0;
                 height: auto;
-                aspect-ratio: auto;
-                padding-bottom: 0;
+                border-radius: 0.75rem 0 0 0.75rem;
             }
             .product-content {
                 flex: 1;
@@ -642,17 +645,17 @@
         // Chế độ list do người dùng chủ động chọn (hoạt động trên PC, từ 1024px trở lên)
         &.allprod-grid-list {
             @media (min-width: 1024px) {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
                 .product-card {
                     display: flex;
                     flex-direction: row;
+                    align-items: center;
                 }
                 .product-image-container {
-                    width: 12rem;
+                    width: 8rem;
                     flex-shrink: 0;
                     height: auto;
-                    aspect-ratio: auto;
-                    padding-bottom: 0;
+                    border-radius: 0.75rem 0 0 0.75rem;
                 }
                 .product-content {
                     flex: 1;
