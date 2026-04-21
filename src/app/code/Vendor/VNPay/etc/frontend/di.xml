@@ -20,4 +20,10 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Checkout\Controller\Index\Index">
+        <plugin name="vendor_vnpay_restore_quote_on_checkout"
+                type="Vendor\VNPay\Plugin\Checkout\RestoreQuoteOnCheckoutPlugin"
+                sortOrder="10"/>
+    </type>
 </config>

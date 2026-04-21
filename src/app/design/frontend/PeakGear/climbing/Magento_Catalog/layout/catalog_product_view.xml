@@ -26,6 +26,7 @@
         <referenceBlock name="product.info.social" remove="true"/>
         <referenceBlock name="product.info.mailto" remove="true"/>
         <referenceBlock name="product.info.addtocart.additional" remove="true"/>
+        
 
         <!-- Override the product media/gallery template -->
         <referenceBlock name="product.info.media.image">

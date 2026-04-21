@@ -214,8 +214,9 @@ class CategoryList extends Template
     private function getCategoryAttributeValue(CategoryInterface $category, string $attributeCode): string
     {
         $attribute = $category->getCustomAttribute($attributeCode);
-
-        return $attribute ? (string)$attribute->getValue() : '';
+        $value = $attribute ? (string)$attribute->getValue() : '';
+        // Strip PageBuilder/HTML wrapper tags, keep plain text only
+        return trim(strip_tags($value));
     }
 
     /**
