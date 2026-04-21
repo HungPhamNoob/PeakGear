@@ -371,6 +371,7 @@ return [
         'Utklasad_AdminProductGridCategoryFilter' => 1,
         'Vendor_CurrencyRate' => 1,
         'Vendor_NewsRss' => 1,
+        'Vendor_Shipping' => 1,
         'Vendor_VNPay' => 1,
         'Vendor_Weather' => 1,
         'Vendor_ZaloPay' => 1
