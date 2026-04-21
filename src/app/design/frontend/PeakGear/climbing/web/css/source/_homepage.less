@@ -707,9 +707,22 @@
 
 .product-image-container {
     position: relative;
-    height: 16rem;
-    background: linear-gradient(to bottom right, #334155, #1e293b);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    background: #ffffff;
     overflow: hidden;
+    
+    img.product-real-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 1rem;
+        transition: transform @transition-slow;
+    }
+}
+
+.product-card:hover .product-image-container img.product-real-image {
+    transform: scale(1.05);
 }
 
 .product-placeholder {

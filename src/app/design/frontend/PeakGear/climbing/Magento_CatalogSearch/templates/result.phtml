@@ -1,0 +1,571 @@
+<?php
+/**
+ * PeakGear Theme - Custom Search Results Page
+ */
+// @codingStandardsIgnoreFile
+
+use Magento\CatalogSearch\Block\Result;
+use Vendor\NewsRss\Block\News as NewsBlock;
+
+/** @var $block Result */
+$productList = $block->getProductListHtml();
+
+// Search Query Text — dùng trực tiếp helper để lấy đúng từ khóa (tránh getSearchQueryText() trả về chuỗi tiếng Anh)
+$queryTextRaw = $this->helper('Magento\CatalogSearch\Helper\Data')->getEscapedQueryText();
+$queryText = $block->escapeHtml($queryTextRaw);
+
+// News Module Logic
+$filteredNews = [];
+$newsBlock = null;
+
+try {
+    $newsBlock = $this->getLayout()->createBlock(NewsBlock::class);
+    if ($newsBlock) {
+        $newsItems = $newsBlock->getNewsItems();
+        $queryLower = mb_strtolower((string)$queryTextRaw);
+
+        foreach ($newsItems as $item) {
+            $title = mb_strtolower($item['title'] ?? '');
+            $desc = mb_strtolower($item['description'] ?? '');
+
+            if (empty($queryLower) || mb_strpos($title, $queryLower) !== false || mb_strpos($desc, $queryLower) !== false) {
+                $filteredNews[] = $item;
+            }
+        }
+    }
+} catch (\Exception $e) {
+    // Gracefully handle if module is missing or error happens
+}
+
+$productCount = $block->getResultCount();
+$newsCount = count($filteredNews);
+
+// Encode news for JS pagination
+$newsJson = json_encode(array_map(function($item) use ($block, $newsBlock) {
+    return [
+        'title'       => $item['title'] ?? '',
+        'link'        => $item['link'] ?? '#',
+        'description' => $newsBlock ? $newsBlock->truncateText((string)($item['description'] ?? ''), 160) : ($item['description'] ?? ''),
+        'pub_date'    => $newsBlock ? $newsBlock->formatPubDate((string)($item['pub_date'] ?? '')) : ($item['pub_date'] ?? ''),
+        'image_url'   => $item['image_url'] ?? '',
+    ];
+}, $filteredNews));
+?>
+
+<div class="custom-search-results">
+    <div class="search-header-container">
+        <h1 class="page-title">
+            Kết quả tìm kiếm cho: <span class="search-highlight">"<?= /* @noEscape */ $queryText ?>"</span>
+        </h1>
+        <p class="search-summary">Hiển thị kết quả từ sản phẩm và tin bài.</p>
+    </div>
+
+    <div class="search-tabs-navigation">
+        <button class="search-tab-btn active" data-target="tab-products" id="btn-tab-products">
+            Sản phẩm (<?= (int)$productCount ?>)
+        </button>
+        <button class="search-tab-btn" data-target="tab-news" id="btn-tab-news">
+            Bài viết (<?= (int)$newsCount ?>)
+        </button>
+    </div>
+
+    <!-- TAB 1: PRODUCTS — always rendered, empty state shown when no results -->
+    <div class="search-tab-content active" id="tab-products">
+        <?php if ($productCount) : ?>
+
+            <div class="search results">
+                <?php if ($messages = $block->getNoteMessages()) : ?>
+                    <div class="message notice">
+                        <div>
+                            <?php foreach ($messages as $message) : ?>
+                                <?= /* @noEscape */ $message ?><br />
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?= /* @noEscape */ $productList ?>
+            </div>
+        <?php else : ?>
+            <!-- Empty state for products -->
+            <div class="search-empty-state" id="search-empty-products">
+                <div class="search-empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+                        <circle cx="28" cy="28" r="18" stroke="#f59e0b" stroke-width="3"/>
+                        <line x1="41" y1="41" x2="56" y2="56" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="20" y1="28" x2="36" y2="28" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="28" y1="20" x2="28" y2="36" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3 class="search-empty-title">Không tìm thấy sản phẩm</h3>
+                <p class="search-empty-desc">
+                    Không có sản phẩm nào khớp với từ khóa <strong>"<?= /* @noEscape */ $queryText ?>"</strong>.<br>
+                    Hãy thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc.
+                </p>
+                <?= /* @noEscape */ $block->getAdditionalHtml() ?>
+                <?php if ($messages = $block->getNoteMessages()) : ?>
+                    <?php foreach ($messages as $message) : ?>
+                        <p class="search-empty-hint"><?= /* @noEscape */ $message ?></p>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <a href="<?= $block->escapeUrl($block->getUrl('')) ?>" class="search-back-btn">← Về trang chủ</a>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- TAB 2: NEWS — always rendered, paginated client-side -->
+    <div class="search-tab-content" id="tab-news">
+        <?php if (!empty($filteredNews)): ?>
+            <!-- News grid rendered by JS pagination -->
+            <div class="news-page-grid" id="news-grid-container"></div>
+
+            <!-- Pagination controls -->
+            <div class="news-pagination" id="news-pagination" aria-label="Phân trang bài viết"></div>
+        <?php else: ?>
+            <div class="search-empty-state">
+                <div class="search-empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+                        <rect x="10" y="14" width="44" height="36" rx="4" stroke="#f59e0b" stroke-width="3"/>
+                        <line x1="18" y1="26" x2="46" y2="26" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="18" y1="34" x2="38" y2="34" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3 class="search-empty-title">Không tìm thấy bài viết</h3>
+                <p class="search-empty-desc">
+                    Không có bài viết nào khớp với từ khóa <strong>"<?= /* @noEscape */ $queryText ?>"</strong>.
+                </p>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<style>
+/* ===== Layout ===== */
+.custom-search-results {
+    padding-top: 8rem; /* Đẩy nội dung xuống báo đảm không bị lấp bởi fixed header */
+    margin-bottom: 4rem;
+}
+
+/* ===== Header ===== */
+.search-header-container {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+.search-header-container .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+.search-header-container .search-highlight {
+    color: #f59e0b;
+}
+.search-header-container .search-summary {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+}
+
+/* ===== Tab Navigation ===== */
+.search-tabs-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+}
+.search-tab-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 0.625rem 2rem;
+    border-radius: 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+    font-family: inherit;
+}
+.search-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+.search-tab-btn.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #111827;
+}
+
+/* ===== Tab Content ===== */
+.search-tab-content {
+    display: none;
+    animation: fadeInTab 0.3s ease-out;
+}
+.search-tab-content.active {
+    display: block;
+}
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Empty State ===== */
+.search-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    gap: 1rem;
+}
+.search-empty-icon svg {
+    width: 72px;
+    height: 72px;
+    opacity: 0.85;
+}
+.search-empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+.search-empty-desc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0;
+}
+.search-empty-desc strong {
+    color: #f59e0b;
+}
+.search-empty-hint {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    padding: 1rem 0;
+}
+.search-empty-hint a {
+    color: #f59e0b;
+    text-decoration: underline;
+    font-weight: 500;
+}
+.search-empty-hint a:hover {
+    color: #ffffff;
+}
+
+/* Xoá style mặc định của thẻ message notice chứa "Did you mean" */
+.custom-search-results .message.notice {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.1rem;
+    padding: 1rem 0;
+    box-shadow: none;
+}
+.custom-search-results .message.notice a {
+    color: #f59e0b;
+    text-decoration: underline;
+    font-weight: 500;
+    margin: 0.25rem 0;
+    display: inline-block;
+}
+.custom-search-results .message.notice a:hover {
+    color: #ffffff;
+}
+.search-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1.8rem;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid #f59e0b;
+    color: #f59e0b;
+    border-radius: 2rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.search-back-btn:hover {
+    background: #f59e0b;
+    color: #111827;
+}
+
+/* ===== News Grid ===== */
+.news-page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.75rem;
+}
+.news-page-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+.news-page-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+.news-page-card-image-link {
+    display: block;
+    overflow: hidden;
+    height: 190px;
+}
+.news-page-card-image {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+.news-page-card:hover .news-page-card-image {
+    transform: scale(1.04);
+}
+.news-page-card-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 190px;
+    background: rgba(245, 158, 11, 0.07);
+    color: rgba(255,255,255,0.3);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+.news-page-card-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+}
+.news-page-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.45;
+    margin: 0;
+}
+.news-page-card-title a {
+    color: #ffffff;
+    text-decoration: none;
+}
+.news-page-card-title a:hover {
+    color: #f59e0b;
+}
+.news-page-card-desc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+}
+.news-page-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+.news-page-card-meta a {
+    color: #f59e0b;
+    text-decoration: none;
+    font-weight: 500;
+}
+.news-page-card-meta a:hover {
+    text-decoration: underline;
+}
+
+/* ===== News Pagination ===== */
+.news-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+}
+.news-pagination .pg-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.news-pagination .pg-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+.news-pagination .pg-btn.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #111827;
+    font-weight: 700;
+}
+.news-pagination .pg-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.news-pagination .pg-ellipsis {
+    color: rgba(255,255,255,0.4);
+    padding: 0 0.25rem;
+    line-height: 2.5rem;
+}
+
+@media (max-width: 640px) {
+    .search-tabs-navigation {
+        flex-direction: column;
+        align-items: center;
+    }
+    .search-tab-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    .news-page-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+require(['jquery'], function($) {
+    'use strict';
+
+    /* ---- Tab switching ---- */
+    $(document).ready(function() {
+        $('.search-tab-btn').on('click', function() {
+            var target = $(this).data('target');
+            $('.search-tab-btn').removeClass('active');
+            $(this).addClass('active');
+            $('.search-tab-content').removeClass('active');
+            $('#' + target).addClass('active');
+            $(window).trigger('resize');
+        });
+
+        /* ---- News Client-side Pagination ---- */
+        var newsData   = <?= /* @noEscape */ $newsJson ?>;
+        var perPage    = 6;   // Số bài viết mỗi trang
+        var curPage    = 1;
+        var container  = document.getElementById('news-grid-container');
+        var pagination = document.getElementById('news-pagination');
+
+        if (!container || !newsData || !newsData.length) return;
+
+        function renderPage(page) {
+            var start = (page - 1) * perPage;
+            var end   = Math.min(start + perPage, newsData.length);
+            var html  = '';
+
+            for (var i = start; i < end; i++) {
+                var item = newsData[i];
+                var imgHtml = item.image_url
+                    ? '<img class="news-page-card-image" src="' + escHtml(item.image_url) + '" alt="' + escHtml(item.title) + '" loading="lazy"/>'
+                    : '<div class="news-page-card-image news-page-card-image-placeholder">PeakGear</div>';
+
+                html += '<article class="news-page-card">'
+                    + '<a href="' + escHtml(item.link) + '" target="_blank" rel="noopener noreferrer" class="news-page-card-image-link">'
+                    + imgHtml + '</a>'
+                    + '<div class="news-page-card-content">'
+                    + '<h3 class="news-page-card-title"><a href="' + escHtml(item.link) + '" target="_blank" rel="noopener noreferrer">' + escHtml(item.title) + '</a></h3>'
+                    + (item.description ? '<p class="news-page-card-desc">' + escHtml(item.description) + '</p>' : '')
+                    + '<div class="news-page-card-meta"><span>' + escHtml(item.pub_date) + '</span>'
+                    + '<a href="' + escHtml(item.link) + '" target="_blank" rel="noopener noreferrer">Đọc tiếp</a></div>'
+                    + '</div></article>';
+            }
+            container.innerHTML = html;
+        }
+
+        function renderPagination(page) {
+            var totalPages = Math.ceil(newsData.length / perPage);
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            var html = '';
+            // Prev button
+            html += '<button class="pg-btn" id="pg-prev" ' + (page === 1 ? 'disabled' : '') + ' aria-label="Trang trước">&#8592;</button>';
+
+            // Page numbers with ellipsis
+            var pages = buildPageRange(page, totalPages);
+            for (var j = 0; j < pages.length; j++) {
+                if (pages[j] === '...') {
+                    html += '<span class="pg-ellipsis">…</span>';
+                } else {
+                    html += '<button class="pg-btn' + (pages[j] === page ? ' active' : '') + '" data-p="' + pages[j] + '" aria-label="Trang ' + pages[j] + '">' + pages[j] + '</button>';
+                }
+            }
+
+            // Next button
+            html += '<button class="pg-btn" id="pg-next" ' + (page === totalPages ? 'disabled' : '') + ' aria-label="Trang tiếp">&#8594;</button>';
+
+            pagination.innerHTML = html;
+
+            // Events
+            $('#pg-prev').on('click', function() { goTo(curPage - 1); });
+            $('#pg-next').on('click', function() { goTo(curPage + 1); });
+            pagination.querySelectorAll('.pg-btn[data-p]').forEach(function(btn) {
+                btn.addEventListener('click', function() { goTo(parseInt(this.dataset.p)); });
+            });
+        }
+
+        function buildPageRange(current, total) {
+            var delta = 2, range = [], result = [], last;
+            for (var i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+                range.push(i);
+            }
+            if (current - delta > 2)  range.unshift('...');
+            if (current + delta < total - 1) range.push('...');
+            range.unshift(1);
+            if (total > 1) range.push(total);
+
+            range.forEach(function(val) {
+                if (last) {
+                    if (val === '...' && last !== '...') result.push('...');
+                    else if (val !== '...') result.push(val);
+                } else {
+                    result.push(val);
+                }
+                last = val;
+            });
+            return result;
+        }
+
+        function goTo(page) {
+            var totalPages = Math.ceil(newsData.length / perPage);
+            if (page < 1 || page > totalPages) return;
+            curPage = page;
+            renderPage(curPage);
+            renderPagination(curPage);
+            // Scroll to top of news tab
+            var tabEl = document.getElementById('tab-news');
+            if (tabEl) tabEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function escHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(String(str || '')));
+            return div.innerHTML;
+        }
+
+        // Initial render
+        renderPage(curPage);
+        renderPagination(curPage);
+    });
+});
+</script>

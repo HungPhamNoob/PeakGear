@@ -26,108 +26,121 @@ $_helper = $block->getData('outputHelper');
     <?= $block->getToolbarHtml() ?>
     
     <div class="products-grid mode-<?= $block->getMode() ?>" data-bind="scope: 'productList'">
-        <?php foreach ($_productCollection as $_product): ?>
+        <?php foreach ($_productCollection as $index => $_product): ?>
             <?php
-                $productImage = $block->getImage($_product, 'category_page_grid');
+                $productImageObj = $block->getImage($_product, 'category_page_grid');
                 $productUrl = $_product->getProductUrl();
                 $productName = $_product->getName();
-                $productPrice = $block->getProductPrice($_product);
-                $reviewsHtml = $block->getReviewsSummaryHtml($_product, 'short');
+                
+                // Get Prices 
+                $finalPrice = $_product->getFinalPrice();
+                $regularPrice = $_product->getPrice();
+                $hasSpecialPrice = $finalPrice < $regularPrice;
+                $discount = $hasSpecialPrice ? round((1 - $finalPrice / $regularPrice) * 100) : 0;
+                
                 $productId = $_product->getId();
                 $addToCartParams = $block->getAddToCartPostParams($_product);
+                
+                // Rating
+                $ratingSummary = $_product->getRatingSummary();
+                $reviewCount = $_product->getReviewsCount();
+                $rating = $ratingSummary ? round($ratingSummary / 20, 1) : 0;
+                $fullStars = (int)floor($rating);
+                $emptyStars = 5 - $fullStars;
+                
+                $hasImage = $productImageObj && $productImageObj->getImageUrl() && strpos($productImageObj->getImageUrl(), 'placeholder') === false;
             ?>
-            
-            <div class="product-card animate-fade-in-up" data-product-id="<?= $block->escapeHtmlAttr($productId) ?>">
-                <!-- Product Image -->
-                <div class="product-image-wrapper">
-                    <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-image-link">
-                        <img src="<?= $block->escapeUrl($productImage->getImageUrl()) ?>" 
+            <div class="product-card hover-lift animate-fade-in-up" style="animation-delay: <?= 0.05 * ($index + 1) ?>s" data-price="<?= (float)$finalPrice ?>" data-product-id="<?= $block->escapeHtmlAttr($productId) ?>">
+                <!-- Sale Badge -->
+                <?php if ($discount > 0): ?>
+                    <div class="product-sale-badge">-<?= $discount ?>%</div>
+                <?php endif; ?>
+
+                <!-- Image Container -->
+                <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-image-container">
+                    <?php if ($hasImage): ?>
+                        <img src="<?= $block->escapeUrl($productImageObj->getImageUrl()) ?>"
                              alt="<?= $block->escapeHtmlAttr($productName) ?>"
-                             class="product-image"
-                             loading="lazy"/>
-                    </a>
-                    
-                    <!-- Product Badges -->
-                    <div class="product-badges">
-                        <?php if ($_product->isAvailable()): ?>
-                            <?php if ($_product->getData('is_new')): ?>
-                                <span class="badge badge-new">Mới</span>
-                            <?php endif; ?>
-                            <?php if ($_product->getSpecialPrice()): ?>
-                                <?php $discount = round(100 - ($_product->getSpecialPrice() / $_product->getPrice() * 100)); ?>
-                                <span class="badge badge-sale">-<?= $block->escapeHtml($discount) ?>%</span>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <span class="badge badge-soldout">Hết hàng</span>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <!-- Quick Actions -->
-                    <div class="product-actions">
-                        <button type="button" 
-                                class="action-btn action-wishlist"
-                                title="Thêm vào yêu thích"
-                                data-action="add-to-wishlist"
-                                data-product-id="<?= $block->escapeHtmlAttr($productId) ?>">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.84 4.61C20.33 4.1 19.72 3.7 19.05 3.43C18.38 3.16 17.67 3.02 16.95 3.02C16.23 3.02 15.52 3.16 14.85 3.43C14.18 3.7 13.57 4.1 13.06 4.61L12 5.67L10.94 4.61C9.9 3.57 8.51 2.99 7.05 2.99C5.59 2.99 4.2 3.57 3.16 4.61C2.12 5.65 1.54 7.04 1.54 8.5C1.54 9.96 2.12 11.35 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.35 11.88 21.75 11.27 22.02 10.6C22.29 9.93 22.43 9.22 22.43 8.5C22.43 7.78 22.29 7.07 22.02 6.4C21.75 5.73 21.35 5.12 20.84 4.61Z"/>
-                            </svg>
+                             class="product-real-image"
+                             loading="lazy"
+                             width="300"
+                             height="300"/>
+                    <?php else: ?>
+                        <div class="product-placeholder">
+                            <div class="product-placeholder-circle">
+                                <span class="product-placeholder-initial">P</span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Quick Actions Overlay -->
+                    <div class="product-quick-actions">
+                        <button type="button" class="product-action-btn product-action-wishlist" title="Yêu thích" data-action="add-to-wishlist" data-product-id="<?= $block->escapeHtmlAttr($productId) ?>">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
                         </button>
-                        
-                        <a href="<?= $block->escapeUrl($productUrl) ?>" 
-                           class="action-btn action-quickview"
-                           title="Xem nhanh">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M1 12S5 4 12 4 23 12 23 12 19 20 12 20 1 12 1 12Z"/>
-                                <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                        </a>
+                        <span class="product-action-btn product-action-view" title="Xem chi tiết" onclick="window.location.href='<?= $block->escapeUrl($productUrl) ?>'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </span>
                         
                         <?php if ($_product->isAvailable()): ?>
                             <form data-role="tocart-form" 
                                   data-product-sku="<?= $block->escapeHtmlAttr($_product->getSku()) ?>"
                                   action="<?= $block->escapeUrl($addToCartParams['action']) ?>" 
                                   method="post"
-                                  class="action-cart-form">
+                                  class="action-cart-form" style="display: contents;">
                                 <?= $block->getBlockHtml('formkey') ?>
                                 <input type="hidden" name="product" value="<?= $block->escapeHtmlAttr($productId) ?>">
                                 <input type="hidden" name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>" 
                                        value="<?= /* @noEscape */ $addToCartParams['data'][Action::PARAM_NAME_URL_ENCODED] ?>">
-                                <button type="submit" 
-                                        class="action-btn action-cart"
-                                        title="Thêm vào giỏ">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="9" cy="21" r="1"/>
-                                        <circle cx="20" cy="21" r="1"/>
-                                        <path d="M1 1H5L7.68 14.39C7.77 14.83 8.02 15.23 8.37 15.5C8.73 15.78 9.17 15.92 9.62 15.9H19.55C20 15.92 20.44 15.78 20.79 15.5C21.15 15.23 21.4 14.83 21.49 14.39L23 6H6"/>
-                                    </svg>
+                                <button type="submit" class="product-action-btn product-action-cart" title="Thêm vào giỏ">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                                 </button>
                             </form>
                         <?php endif; ?>
                     </div>
-                </div>
-                
-                <!-- Product Info -->
-                <div class="product-info">
-                    <?php if ($reviewsHtml): ?>
-                        <div class="product-rating">
-                            <?= /* @noEscape */ $reviewsHtml ?>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <h3 class="product-name">
+                </a>
+
+                <!-- Content -->
+                <div class="product-content">
+                    <!-- Name -->
+                    <h4 class="product-card-name">
                         <a href="<?= $block->escapeUrl($productUrl) ?>"><?= $block->escapeHtml($productName) ?></a>
-                    </h3>
-                    
-                    <div class="product-price">
-                        <?= /* @noEscape */ $productPrice ?>
+                    </h4>
+
+                    <!-- Rating -->
+                    <?php if ($rating > 0): ?>
+                    <div class="product-rating-row">
+                        <div class="product-stars">
+                            <?php for ($i = 0; $i < $fullStars; $i++): ?>
+                                <svg class="star star-filled" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <?php endfor; ?>
+                            <?php for ($i = 0; $i < $emptyStars; $i++): ?>
+                                <svg class="star star-empty" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <?php endfor; ?>
+                        </div>
+                        <span class="product-rating-value"><?= number_format($rating, 1) ?></span>
+                        <span class="product-reviews-count">(<?= $reviewCount ?>)</span>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Price -->
+                    <div class="product-price-row">
+                        <?php $priceHelper = $this->helper(\Magento\Framework\Pricing\Helper\Data::class); ?>
+                        <span class="product-current-price"><?= /* @noEscape */ $priceHelper->currency($finalPrice, true, false) ?></span>
+                        <?php if ($hasSpecialPrice): ?>
+                            <span class="product-original-price"><?= /* @noEscape */ $priceHelper->currency($regularPrice, true, false) ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
+
+                <!-- Bottom Accent Line -->
+                <div class="product-accent-line"></div>
             </div>
         <?php endforeach; ?>
     </div>
-    
-    <?= $block->getToolbarHtml() ?>
+    <div class="toolbar-bottom">
+        <?= $block->getToolbarHtml() ?>
+    </div>
 <?php endif; ?>
 
 <script type="text/x-magento-init">
