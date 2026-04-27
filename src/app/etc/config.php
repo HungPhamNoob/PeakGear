@@ -363,7 +363,7 @@ return [
         'PayPal_BraintreeGraphQl' => 1,
         'PayPal_BraintreeReward' => 1,
         'PeakGear_Account' => 1,
-        'PeakGear_Cart' => 0,
+        'PeakGear_Cart' => 1,
         'PeakGear_CartRoute' => 1,
         'PeakGear_Catalog' => 1,
         'PeakGear_Cms' => 1,

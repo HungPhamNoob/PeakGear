@@ -287,31 +287,53 @@
         overflow: hidden;
     }
 
+    .qty-group {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.45rem;
+    }
+
     .qty-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 2.25rem;
-        height: 2.25rem;
+        width: 2.9rem;
+        height: 2.9rem;
         background: transparent;
         border: none;
         color: fade(@peakgear-text, 60%);
         cursor: pointer;
         transition: all @transition-fast;
+        border-radius: 0.6rem;
 
-        svg {
-            width: 0.875rem;
-            height: 0.875rem;
+        span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.45rem;
+            line-height: 1;
+            font-weight: 700;
+            width: 100%;
+            height: 100%;
+            transform: translateY(-0.02em);
         }
 
         &:hover {
             background: fade(@peakgear-text, 10%);
             color: @peakgear-text;
         }
+
+        &:disabled,
+        &.is-disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     }
 
     .qty-input {
-        width: 3rem;
+        width: 4.2rem;
         text-align: center;
         background: transparent;
         border: none;
@@ -330,6 +352,7 @@
             -webkit-appearance: none;
             margin: 0;
         }
+        margin-top: 0px;
     }
 
     // ---- Remove Button ----
@@ -781,6 +804,7 @@
                         font-weight: 500;
                         padding: 0.5rem;
                         outline: none;
+                        margin-top: 0px;
 
                         &:focus {
                             border-color: @peakgear-primary;
@@ -1016,6 +1040,8 @@
         font-size: 2.15rem;
         letter-spacing: -0.02em;
         margin-bottom: 1.5rem;
+        margin-left: 2rem;
+        margin-top: 0.5rem;
     }
 
     #shopping-cart-table {
