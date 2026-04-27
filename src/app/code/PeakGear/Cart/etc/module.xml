@@ -4,5 +4,12 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="PeakGear_Cart" setup_version="1.0.0"/>
+    <module name="PeakGear_Cart" setup_version="1.0.0">
+        <sequence>
+            <module name="Magento_Checkout"/>
+            <module name="Magento_CatalogInventory"/>
+            <module name="Magento_InventorySalesApi"/>
+            <module name="Magento_InventorySales"/>
+        </sequence>
+    </module>
 </config>
