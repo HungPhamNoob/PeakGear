@@ -23,6 +23,11 @@ $minAllowed = isset($quantityConfig['minAllowed']) ? (float) $quantityConfig['mi
 $maxAllowed = array_key_exists('maxAllowed', $quantityConfig) ? $quantityConfig['maxAllowed'] : null;
 $qtyStep = !empty($quantityConfig['qtyIncrements']) ? (float) $quantityConfig['qtyIncrements'] : 1.0;
 
+// Data for JS selection widget
+$itemId      = (int) $_item->getId();
+$rowTotal    = (float) $_item->getRowTotal();           // subtotal excl. tax
+$unitPrice   = $currentQty > 0 ? round($rowTotal / $currentQty, 4) : 0.0;
+
 $validateRule = [
     'required' => true,
     'validate-greater-than-zero' => true,
@@ -44,8 +49,23 @@ if (!empty($quantityConfig['qtyIncrements'])) {
        data-cart-item-id="<?= $block->escapeHtmlAttr((string) $_item->getId()) ?>"
        data-qty-min="<?= $block->escapeHtmlAttr((string) $minAllowed) ?>"
        data-qty-max="<?= $maxAllowed !== null ? $block->escapeHtmlAttr((string) $maxAllowed) : '' ?>"
-       data-qty-step="<?= $block->escapeHtmlAttr((string) $qtyStep) ?>">
+       data-qty-step="<?= $block->escapeHtmlAttr((string) $qtyStep) ?>"
+       data-select-item-id="<?= $block->escapeHtmlAttr((string) $itemId) ?>"
+       data-unit-price="<?= $block->escapeHtmlAttr((string) $unitPrice) ?>"
+       data-row-total="<?= $block->escapeHtmlAttr((string) $rowTotal) ?>">
     <tr class="item-info">
+        <td class="col select" data-th="">
+            <label class="cart-item-select-label" title="<?= $block->escapeHtmlAttr(__('Chọn sản phẩm này')) ?>">
+                <input type="checkbox"
+                       class="cart-item-select"
+                       id="cart-select-item-<?= $block->escapeHtmlAttr((string) $itemId) ?>"
+                       data-role="cart-item-select"
+                       data-item-id="<?= $block->escapeHtmlAttr((string) $itemId) ?>"
+                       checked
+                       aria-label="<?= $block->escapeHtmlAttr(__('Chọn sản phẩm này')) ?>">
+                <span class="cart-item-select-indicator" aria-hidden="true"></span>
+            </label>
+        </td>
         <td data-th="<?= $block->escapeHtml(__('Item')) ?>" class="col item">
             <?php if ($block->hasProductUrl()): ?>
                 <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>"

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+  Layout handle: checkout_cart_index
+  Injects the PeakGear cart-select widget initialisation block at the end of
+  the page content AND adds a "Select all" helper just above the cart table.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!--
+          Append a tiny template block that outputs the <script> tag to boot
+          our cart-select.js widget. We render it after the cart form so that
+          all item rows are already present in the DOM.
+        -->
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="peakgear.cart.select.init"
+                   template="PeakGear_Cart::cart/select-init.phtml"
+                   after="-"/>
+        </referenceContainer>
+    </body>
+</page>

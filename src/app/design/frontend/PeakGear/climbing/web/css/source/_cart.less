@@ -1687,4 +1687,174 @@
             z-index: 2;
         }
     }
+
+    // ============================================================
+    // CART ITEM SELECTION – Checkboxes
+    // ============================================================
+
+    // ── "Select all" wrapper above the table ───────────────────
+    .cart-select-all-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.6rem 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+
+    // ── Custom checkbox base (shared by per-item + select-all) ─
+    .cart-item-select-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        user-select: none;
+        line-height: 1;
+    }
+
+    // Hide the native checkbox but keep it accessible
+    .cart-item-select {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+
+    // Custom visual checkbox box
+    .cart-item-select-indicator {
+        flex-shrink: 0;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 2px solid fade(@peakgear-text, 30%);
+        border-radius: 0.35rem;
+        background: transparent;
+        transition: background @transition-fast, border-color @transition-fast;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        // Checkmark via pseudo-element
+        &::after {
+            content: '';
+            position: absolute;
+            display: block;
+            width: 0.35rem;
+            height: 0.62rem;
+            border-right: 2px solid @peakgear-dark;
+            border-bottom: 2px solid @peakgear-dark;
+            transform: rotate(45deg) translateY(-0.08rem) scale(0);
+            transition: transform 0.12s ease;
+            top: 50%;
+            left: 50%;
+            margin-top: -0.38rem;
+            margin-left: -0.2rem;
+        }
+    }
+
+    // Checked state
+    .cart-item-select:checked + .cart-item-select-indicator {
+        background: @peakgear-primary;
+        border-color: @peakgear-primary;
+
+        &::after {
+            transform: rotate(45deg) translateY(-0.08rem) scale(1);
+        }
+    }
+
+    // Indeterminate state (for "select all" checkbox)
+    .cart-item-select:indeterminate + .cart-item-select-indicator {
+        background: fade(@peakgear-primary, 40%);
+        border-color: @peakgear-primary;
+
+        &::after {
+            // Show a dash instead
+            width: 0.55rem;
+            height: 0;
+            border-right: none;
+            border-bottom: 2px solid @peakgear-dark;
+            transform: translateY(0) scale(1);
+            margin-top: -0.04rem;
+            margin-left: -0.28rem;
+        }
+    }
+
+    // Hover highlight on the indicator
+    .cart-item-select-label:hover .cart-item-select-indicator {
+        border-color: @peakgear-primary;
+    }
+
+    // "Tất cả" text next to select-all checkbox
+    .cart-select-all-text {
+        font-size: 0.85rem;
+        color: fade(@peakgear-text, 60%);
+        font-weight: 500;
+    }
+
+    // ── Column: .col.select inside #shopping-cart-table ────────
+    #shopping-cart-table {
+        .col.select {
+            width: 2.2rem;
+            min-width: 2.2rem;
+            padding: 0;
+            border: none;
+            vertical-align: middle;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    // Extend the grid to include the checkbox column
+    // Desktop: was  "minmax(0,2.6fr) minmax(6rem,.85fr) minmax(7rem,.95fr)"
+    // Now add 2.2rem at the front.
+    #shopping-cart-table tbody.cart.item {
+        tr.item-info {
+            @media (min-width: 768px) {
+                grid-template-columns: 2.2rem minmax(0, 2.4fr) minmax(6rem, 0.85fr) minmax(7rem, 0.95fr);
+            }
+        }
+
+        // On mobile: the checkbox floats to the left of the item row
+        @media (max-width: 767px) {
+            tr.item-info {
+                display: grid;
+                grid-template-columns: 2.2rem 1fr;
+                grid-template-rows: auto auto auto;
+                column-gap: 0.5rem;
+                row-gap: 0.5rem;
+
+                .col.select {
+                    grid-row: 1;
+                    grid-column: 1;
+                    align-self: start;
+                    padding-top: 0.15rem;
+                }
+
+                .col.item {
+                    grid-row: 1;
+                    grid-column: 2;
+                }
+
+                .col.qty {
+                    grid-row: 2;
+                    grid-column: 1 / -1;
+                }
+
+                .col.subtotal {
+                    grid-row: 3;
+                    grid-column: 1 / -1;
+                }
+            }
+        }
+    }
+
+    // ── Count badge in sidebar ─────────────────────────────────
+    #cart-selected-count {
+        font-size: 0.82rem;
+        color: fade(@peakgear-text, 50%);
+        text-align: right;
+        margin: 0 0 0.6rem;
+        display: none; // shown via JS only when not all selected
+    }
 }

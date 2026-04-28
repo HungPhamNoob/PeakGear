@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+  Register frontend event observers for PeakGear_Cart
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!--
+      Fires before the standard checkout/cart/index controller dispatches.
+      We use this to restore any items that were temporarily removed for checkout.
+    -->
+    <event name="controller_action_predispatch_checkout_cart_index">
+        <observer name="peakgear_cart_restore_deselected"
+                  instance="PeakGear\Cart\Observer\RestoreDeselectedItemsOnCart"/>
+    </event>
+</config>
