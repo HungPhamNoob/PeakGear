@@ -363,7 +363,7 @@ return [
         'PayPal_BraintreeGraphQl' => 1,
         'PayPal_BraintreeReward' => 1,
         'PeakGear_Account' => 1,
-        'PeakGear_Cart' => 0,
+        'PeakGear_Cart' => 1,
         'PeakGear_CartRoute' => 1,
         'PeakGear_Catalog' => 1,
         'PeakGear_Cms' => 1,
@@ -371,6 +371,7 @@ return [
         'Utklasad_AdminProductGridCategoryFilter' => 1,
         'Vendor_CurrencyRate' => 1,
         'Vendor_NewsRss' => 1,
+        'Vendor_Shipping' => 1,
         'Vendor_VNPay' => 1,
         'Vendor_Weather' => 1,
         'Vendor_ZaloPay' => 1

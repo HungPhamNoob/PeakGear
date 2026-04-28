@@ -1,0 +1,180 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * PeakGear cart item template with inline qty controls.
+ */
+
+// phpcs:disable Magento2.Templates.ThisInTemplate
+// phpcs:disable Generic.Files.LineLength
+
+/** @var $block \Magento\Checkout\Block\Cart\Item\Renderer */
+
+$_item = $block->getItem();
+$product = $_item->getProduct();
+/** @var \Magento\Msrp\Helper\Data $helper */
+$helper = $this->helper(Magento\Msrp\Helper\Data::class);
+$canApplyMsrp = $helper->isShowBeforeOrderConfirm($product) && $helper->isMinimalPriceLessMsrp($product);
+
+/** @var \PeakGear\Cart\ViewModel\CartItemQuantity|null $quantityViewModel */
+$quantityViewModel = $block->getData('quantity_view_model');
+$quantityConfig = $quantityViewModel ? $quantityViewModel->getConfig($_item) : [];
+$currentQty = isset($quantityConfig['currentQty']) ? (float) $quantityConfig['currentQty'] : (float) $block->getQty();
+$minAllowed = isset($quantityConfig['minAllowed']) ? (float) $quantityConfig['minAllowed'] : 1.0;
+$maxAllowed = array_key_exists('maxAllowed', $quantityConfig) ? $quantityConfig['maxAllowed'] : null;
+$qtyStep = !empty($quantityConfig['qtyIncrements']) ? (float) $quantityConfig['qtyIncrements'] : 1.0;
+
+$validateRule = [
+    'required' => true,
+    'validate-greater-than-zero' => true,
+    'validate-item-quantity' => [
+        'minAllowed' => $minAllowed,
+    ],
+];
+
+if ($maxAllowed !== null) {
+    $validateRule['validate-item-quantity']['maxAllowed'] = $maxAllowed;
+}
+
+if (!empty($quantityConfig['qtyIncrements'])) {
+    $validateRule['validate-item-quantity']['qtyIncrements'] = $qtyStep;
+}
+?>
+<tbody class="cart item"
+       data-mage-init='{"PeakGear_Cart/js/cart-qty":{}}'
+       data-cart-item-id="<?= $block->escapeHtmlAttr((string) $_item->getId()) ?>"
+       data-qty-min="<?= $block->escapeHtmlAttr((string) $minAllowed) ?>"
+       data-qty-max="<?= $maxAllowed !== null ? $block->escapeHtmlAttr((string) $maxAllowed) : '' ?>"
+       data-qty-step="<?= $block->escapeHtmlAttr((string) $qtyStep) ?>">
+    <tr class="item-info">
+        <td data-th="<?= $block->escapeHtml(__('Item')) ?>" class="col item">
+            <?php if ($block->hasProductUrl()): ?>
+                <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>"
+                   title="<?= $block->escapeHtmlAttr($block->getProductName()) ?>"
+                   tabindex="-1"
+                   class="product-item-photo">
+            <?php else: ?>
+                <span class="product-item-photo">
+            <?php endif; ?>
+            <?= $block->getImage($block->getProductForThumbnail(), 'cart_page_product_thumbnail')->toHtml() ?>
+            <?php if ($block->hasProductUrl()): ?>
+                </a>
+            <?php else: ?>
+                </span>
+            <?php endif; ?>
+            <div class="product-item-details">
+                <strong class="product-item-name">
+                    <?php if ($block->hasProductUrl()): ?>
+                        <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>"><?= $block->escapeHtml($block->getProductName()) ?></a>
+                    <?php else: ?>
+                        <?= $block->escapeHtml($block->getProductName()) ?>
+                    <?php endif; ?>
+                </strong>
+                <?php if ($_options = $block->getOptionList()): ?>
+                    <dl class="item-options">
+                        <?php foreach ($_options as $_option): ?>
+                            <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
+                            <dt><?= $block->escapeHtml($_option['label']) ?></dt>
+                            <dd>
+                                <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                                        <?= $block->escapeHtml($_formatedOptionValue['full_view'], ['span', 'a']) ?>
+                                    <?php else: ?>
+                                        <?= $block->escapeHtml($_formatedOptionValue['value'], ['span', 'a']) ?>
+                                <?php endif; ?>
+                            </dd>
+                        <?php endforeach; ?>
+                    </dl>
+                <?php endif; ?>
+                <?php if ($messages = $block->getMessages()): ?>
+                    <?php foreach ($messages as $message): ?>
+                        <div class="cart item message <?= $block->escapeHtmlAttr($message['type']) ?>">
+                            <div><?= $block->escapeHtml($message['text']) ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <?php $addInfoBlock = $block->getProductAdditionalInformationBlock(); ?>
+                <?php if ($addInfoBlock): ?>
+                    <?= $addInfoBlock->setItem($_item)->toHtml() ?>
+                <?php endif; ?>
+            </div>
+        </td>
+
+        <?php if ($canApplyMsrp): ?>
+            <td class="col msrp" data-th="<?= $block->escapeHtml(__('Price')) ?>">
+                <span class="pricing msrp">
+                    <span class="msrp notice"><?= $block->escapeHtml(__('See price before order confirmation.')) ?></span>
+                    <?php $helpLinkId = 'cart-msrp-help-' . $_item->getId(); ?>
+                    <a href="#" class="action help map"
+                       id="<?= ($block->escapeHtmlAttr($helpLinkId)) ?>"
+                       data-mage-init='{"addToCart":{
+                                            "origin": "info",
+                                            "helpLinkId": "#<?= $block->escapeJs($block->escapeHtml($helpLinkId)) ?>",
+                                            "productName": "<?= $block->escapeJs($block->escapeHtml($product->getName())) ?>",
+                                            "showAddToCart": false
+                                            }
+                                        }'
+                    >
+                        <span><?= $block->escapeHtml(__("What's this?")) ?></span>
+                    </a>
+                </span>
+            </td>
+        <?php else: ?>
+            <td class="col price" data-th="<?= $block->escapeHtml(__('Price')) ?>">
+                <?= $block->getUnitPriceHtml($_item) ?>
+            </td>
+        <?php endif; ?>
+        <td class="col qty" data-th="<?= $block->escapeHtml(__('Qty')) ?>">
+            <div class="qty-group">
+                <div class="qty-controls">
+                    <button type="button"
+                            class="qty-btn qty-decrease"
+                            data-role="qty-action"
+                            data-direction="decrease"
+                            aria-label="<?= $block->escapeHtmlAttr(__('Giảm số lượng')) ?>">
+                        <span aria-hidden="true">-</span>
+                    </button>
+                    <input id="cart-<?= $block->escapeHtmlAttr($_item->getId()) ?>-qty"
+                           name="cart[<?= $block->escapeHtmlAttr($_item->getId()) ?>][qty]"
+                           data-cart-item-id="<?= $block->escapeHtmlAttr($_item->getSku()) ?>"
+                           value="<?= $block->escapeHtmlAttr($block->getQty()) ?>"
+                           type="number"
+                           min="<?= $block->escapeHtmlAttr((string) $minAllowed) ?>"
+                           <?= $maxAllowed !== null ? 'max="' . $block->escapeHtmlAttr((string) $maxAllowed) . '"' : '' ?>
+                           size="4"
+                           step="any"
+                           aria-label="<?= $block->escapeHtmlAttr(__('Qty')) ?>"
+                           title="<?= $block->escapeHtmlAttr(__('Qty')) ?>"
+                           class="input-text qty qty-input"
+                           data-validate='<?= $block->escapeHtmlAttr(json_encode($validateRule, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?>'
+                           data-item-qty="<?= $block->escapeHtmlAttr((string) $currentQty) ?>"
+                           data-role="cart-item-qty"
+                           data-qty-step="<?= $block->escapeHtmlAttr((string) $qtyStep) ?>"
+                           data-qty-min="<?= $block->escapeHtmlAttr((string) $minAllowed) ?>"
+                           data-qty-max="<?= $maxAllowed !== null ? $block->escapeHtmlAttr((string) $maxAllowed) : '' ?>"/>
+                    <button type="button"
+                            class="qty-btn qty-increase"
+                            data-role="qty-action"
+                            data-direction="increase"
+                            aria-label="<?= $block->escapeHtmlAttr(__('Tăng số lượng')) ?>"
+                            <?= $maxAllowed !== null && $currentQty >= (float) $maxAllowed ? 'disabled' : '' ?>>
+                        <span aria-hidden="true">+</span>
+                    </button>
+                </div>
+            </div>
+        </td>
+
+        <td class="col subtotal" data-th="<?= $block->escapeHtml(__('Subtotal')) ?>">
+            <?php if ($canApplyMsrp): ?>
+                <span class="cart msrp subtotal">--</span>
+            <?php else: ?>
+                <?= $block->getRowTotalHtml($_item) ?>
+            <?php endif; ?>
+        </td>
+    </tr>
+    <tr class="item-actions">
+        <td colspan="4">
+            <div class="actions-toolbar">
+                <?= /* @noEscape */ $block->getActions($_item) ?>
+            </div>
+        </td>
+    </tr>
+</tbody>
