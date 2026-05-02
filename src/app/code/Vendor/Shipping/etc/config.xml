@@ -9,6 +9,18 @@
                 <title>Giao Hàng (Vendor API)</title>
                 <name>Giao Tiêu Chuẩn</name>
                 <sandbox_mode>1</sandbox_mode>
+                <client_source></client_source>
+                <pick_address_id></pick_address_id>
+                <pick_address></pick_address>
+                <pick_ward></pick_ward>
+                <transport>road</transport>
+                <weight_unit>kg</weight_unit>
+                <default_weight_gram>500</default_weight_gram>
+                <fallback_enabled>1</fallback_enabled>
+                <fallback_price>500000</fallback_price>
+                <cache_ttl>300</cache_ttl>
+                <timeout>10</timeout>
+                <debug>0</debug>
             </vendor_shipping>
         </carriers>
     </default>

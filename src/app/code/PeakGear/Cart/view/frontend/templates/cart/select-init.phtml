@@ -1,0 +1,111 @@
+<?php
+/**
+
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+/** @var \Magento\Framework\Data\Form\FormKey $formKey */
+$formKey = $block->getData('form_key')
+    ?? $block->getLayout()->getBlock('formkey')?->getFormKey()
+    ?? '';
+
+// Resolve the apply URL in PHP so we don't need mage/url JS module here
+$applyUrl = $block->getUrl('cart/select/apply');
+?>
+
+<?php /* ── Hidden intercept form ───────────────────────────────────────── */ ?>
+<form method="post"
+      action="<?= $block->escapeUrl($applyUrl) ?>"
+      id="peakgear-select-form"
+      style="display:none;visibility:hidden;">
+    <input type="hidden" name="deselected_ids" id="peakgear-deselected-ids" value="">
+    <input type="hidden" name="form_key"
+           value="<?= $block->escapeHtmlAttr($block->getFormKey()) ?>">
+</form>
+
+<?php /* ── Capture-phase listener (synchronous, no AMD delay) ─────────── */ ?>
+<script>
+(function () {
+    'use strict';
+
+    var SESSION_KEY = 'peakgear_cart_deselected';
+
+    /**
+     * Walk up the DOM from the clicked element to find a checkout button.
+     * @param {EventTarget} target
+     * @return {Element|null}
+     */
+    function findCheckoutBtn(target) {
+        while (target && target !== document) {
+            if (target.nodeType === 1 /* ELEMENT_NODE */ && target.matches) {
+                if (
+                    target.matches('[data-role="proceed-to-checkout"]') ||
+                    (target.classList.contains('checkout') &&
+                     target.classList.contains('primary'))
+                ) {
+                    return target;
+                }
+            }
+            target = target.parentNode;
+        }
+        return null;
+    }
+
+    /**
+     * Read deselected item IDs from sessionStorage.
+     * @return {string[]}
+     */
+    function getDeselected() {
+        try {
+            var raw = sessionStorage.getItem(SESSION_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    // ── Capture-phase handler: fires before jQuery delegation & mage-init ──
+    document.addEventListener('click', function (e) {
+        var btn = findCheckoutBtn(e.target);
+        if (!btn) {
+            return;
+        }
+
+        var deselected = getDeselected();
+        if (!deselected.length) {
+            // Nothing excluded → let the button proceed normally
+            return;
+        }
+
+        // Prevent the redirectUrl widget / form submit from firing
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        // Fill the hidden form and submit it to cart/select/apply
+        var form  = document.getElementById('peakgear-select-form');
+        var input = document.getElementById('peakgear-deselected-ids');
+
+        if (!form || !input) {
+            // Fallback: just go to checkout if our form is missing
+            window.location.href = '<?= $block->escapeJs($block->escapeUrl($block->getUrl('checkout'))) ?>';
+            return;
+        }
+
+        input.value = deselected.join(',');
+
+        // Clear sessionStorage NOW so if user returns to cart, items restore
+        sessionStorage.removeItem(SESSION_KEY);
+
+        form.submit();
+
+    }, true /* <-- CAPTURE PHASE: runs before any bubble/delegation handlers */);
+
+}());
+</script>
+
+<?php /* ── Boot the visual JS widget (checkboxes + sidebar recalc) ─────── */ ?>
+<script>
+require(['PeakGear_Cart/js/cart-select'], function (initCartSelect) {
+    'use strict';
+    initCartSelect();
+});
+</script>

@@ -26,11 +26,6 @@ $wishlistHelper = $this->helper(\Magento\Wishlist\Helper\Data::class);
 
                 <?php if ($block->hasWishlistItems()): ?>
 
-                    <div class="pg-wishlist-toolbar">
-                        <?= $block->getChildHtml('wishlist_item_pager') ?>
-                        <?= $block->getChildHtml('wishlist.rss.link') ?>
-                    </div>
-
                     <form class="form-wishlist-items" id="wishlist-view-form"
                           data-mage-init='{"wishlist":{
                               "addToCartUrl":<?= /* @noEscape */ $block->getItemAddToCartParams("%item%") ?>,
@@ -49,7 +44,6 @@ $wishlistHelper = $this->helper(\Magento\Wishlist\Helper\Data::class);
                         <?= $block->getChildHtml('bottom') ?>
 
                         <div class="pg-wishlist-actions">
-                            <?= $block->getChildHtml('control_buttons') ?>
                             <a href="<?= $block->escapeUrl($block->getBackUrl()) ?>" class="btn-back">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:1rem;height:1rem;"><polyline points="15 18 9 12 15 6"/></svg>
                                 Quay lại
@@ -77,4 +71,80 @@ $wishlistHelper = $this->helper(\Magento\Wishlist\Helper\Data::class);
         <% if (data.item) { %><input name="item" value="<%- data.item %>"><% } %>
         <% if (data.entity) { %><input name="entity" value="<%- data.entity %>"><% } %>
     </form>
+</script>
+
+<script>
+    require([
+        'jquery',
+        'Magento_Customer/js/customer-data',
+        'mage/translate'
+    ], function ($, customerData, $t) {
+        'use strict';
+        
+        // Đợi DOM render xong để bind event
+        $(document).ready(function() {
+            // Chặn dứt điểm các event mặc định của magento trên nút add to cart trong wishlist
+            $('body').on('click', '.wishlist-index-index .action.ajax-tocart', function (e) {
+                // Ngăn chặn magento dataPost.js chạy submit
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                var $button = $(this);
+                // Cấm bấm liên tục
+                if ($button.hasClass('disabled')) return false;
+
+                var postData = $button.data('post');
+                if (!postData) return false;
+                
+                var url = postData.action;
+                var data = postData.data;
+
+                // Để AJAX hoạt động phải có form_key
+                var formKey = $('input[name="form_key"]').val();
+                if (formKey) {
+                    data.form_key = formKey;
+                }
+
+                $button.addClass('disabled').text($t('Adding...')).css('opacity', '0.6');
+                
+                // Gọi AJAX thông qua endpoint Wishlist AddToCart
+                $.ajax({
+                    url: url,
+                    data: data,
+                    type: 'post',
+                    dataType: 'json',
+                    showLoader: true,
+                    success: function (res) {
+                        try {
+                            // Cập nhật lại số lượng giỏ hàng
+                            customerData.invalidate(['cart']);
+                            customerData.reload(['cart'], true);
+
+                            // Load popup success message (chạy qua UiComponent messageList)
+                            require(['Magento_Ui/js/model/messageList'], function(messageList) {
+                                messageList.addSuccessMessage({
+                                    message: $t('Thêm sản phẩm vào giỏ hàng thành công.')
+                                });
+                            });
+                        } catch (err) {}
+
+                        // Đổi state sang thành công
+                        $button.removeClass('disabled').text($t('Added')).css({
+                            'opacity': '1',
+                            'background-color': '#111',
+                            'border-color': '#111',
+                            'color': '#fff'
+                        });
+                        
+                        setTimeout(function(){
+                            $button.text($t('Add to Cart')).removeAttr('style');
+                        }, 3000);
+                    },
+                    error: function() {
+                        $button.removeClass('disabled').text($t('Add to Cart')).css('opacity', '1');
+                    }
+                });
+            });
+        });
+    });
 </script>

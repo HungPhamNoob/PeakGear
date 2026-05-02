@@ -17,17 +17,57 @@
                 <field id="api_token" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>GHTK API Token</label>
                 </field>
-                <field id="sandbox_mode" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                <field id="client_source" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>X-Client-Source</label>
+                </field>
+                <field id="sandbox_mode" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Sandbox Mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="pick_province" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="pick_address_id" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pick Address ID</label>
+                </field>
+                <field id="pick_address" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pick Address</label>
+                </field>
+                <field id="pick_province" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Pick Province (Tỉnh lấy hàng)</label>
                     <comment>Ví dụ: Hà Nội</comment>
                 </field>
-                <field id="pick_district" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="pick_district" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Pick District (Quận lấy hàng)</label>
                     <comment>Ví dụ: Quận Cầu Giấy</comment>
+                </field>
+                <field id="pick_ward" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pick Ward</label>
+                </field>
+                <field id="transport" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Transport</label>
+                    <source_model>Vendor\Shipping\Model\Config\Source\Transport</source_model>
+                </field>
+                <field id="weight_unit" translate="label" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Catalog Weight Unit</label>
+                    <source_model>Vendor\Shipping\Model\Config\Source\WeightUnit</source_model>
+                </field>
+                <field id="default_weight_gram" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Fallback Weight (gram)</label>
+                </field>
+                <field id="fallback_enabled" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable Fallback Rate</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="fallback_price" translate="label" type="text" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Fallback Price</label>
+                </field>
+                <field id="cache_ttl" translate="label" type="text" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cache TTL (seconds)</label>
+                </field>
+                <field id="timeout" translate="label" type="text" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>HTTP Timeout (seconds)</label>
+                </field>
+                <field id="debug" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Debug Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
