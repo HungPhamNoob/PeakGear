@@ -7,5 +7,8 @@
         <attribute name="class" value="account-page"/>
         <referenceBlock name="sidebar.main" remove="true"/>
         <referenceBlock name="sidebar.extra" remove="true"/>
+        <referenceBlock name="customer.wishlist.item.review" remove="true"/>
+        <referenceBlock name="customer.wishlist.item.comment" remove="true"/>
+        <referenceBlock name="customer.wishlist.item.edit" remove="true"/>
     </body>
 </page>

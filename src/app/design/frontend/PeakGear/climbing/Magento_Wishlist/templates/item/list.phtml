@@ -1,0 +1,60 @@
+<?php
+/**
+ * PeakGear Climbing Theme – Wishlist Items
+ *
+ * @var \Magento\Wishlist\Block\Customer\Wishlist\Items $block
+ */
+$columns = $block->getColumns();
+$items = $block->getItems();
+$layout = $block->getLayout();
+$imageBlock = $layout->getBlock('customer.wishlist.item.image');
+$priceBlock = $layout->getBlock('customer.wishlist.item.price');
+$cartBlock = $layout->getBlock('customer.wishlist.item.cart');
+$removeBlock = $layout->getBlock('customer.wishlist.item.remove');
+$nameBlock = $layout->getBlock('customer.wishlist.item.name');
+?>
+
+<div class="products-grid wishlist pg-wishlist-list">
+    <?php if (count($items)) : ?>
+        <ol class="product-items">
+            <?php foreach ($items as $item) : ?>
+                <?php $product = $item->getProduct(); ?>
+                <li data-row="product-item" class="product-item" id="item_<?= $block->escapeHtmlAttr($item->getId()) ?>">
+                    <div class="product-item-info pg-wishlist-row" data-container="product-grid">
+                        <div class="product-item-media pg-wishlist-thumb">
+                            <?= $imageBlock ? $imageBlock->setItem($item)->toHtml() : '' ?>
+                        </div>
+
+                        <div class="product-item-details pg-wishlist-meta">
+                            <a
+                                href="<?= $block->escapeUrl($nameBlock ? $nameBlock->getProductUrl($item) : $product->getProductUrl()) ?>"
+                                title="<?= $block->escapeHtmlAttr($product->getName()) ?>"
+                                class="pg-wishlist-title"
+                            >
+                                <?= $block->escapeHtml($product->getName()) ?>
+                            </a>
+                            <div class="product-item-pricing pg-wishlist-price">
+                                <?= $priceBlock ? $priceBlock->setItem($item)->toHtml() : '' ?>
+                            </div>
+                        </div>
+
+                        <div class="product-item-cta pg-wishlist-cta">
+                            <div class="pg-wishlist-buttons">
+                                <?= $cartBlock ? $cartBlock->setItem($item)->toHtml() : '' ?>
+                                <?= $removeBlock ? $removeBlock->setItem($item)->toHtml() : '' ?>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ol>
+    <?php else : ?>
+        <div class="message info empty">
+            <span><?= $block->escapeHtml(__('This Wish List has no Items')) ?></span>
+        </div>
+    <?php endif; ?>
+</div>
+
+<?php foreach ($columns as $column) : ?>
+    <?= $column->getAdditionalHtml() ?>
+<?php endforeach; ?>
