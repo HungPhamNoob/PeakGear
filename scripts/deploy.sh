@@ -55,6 +55,13 @@ check_prerequisites() {
     log_info "Prerequisites check passed."
 }
 
+load_env() {
+    log_info "Loading environment from .env..."
+    set -a
+    source "$PROJECT_DIR/.env"
+    set +a
+}
+
 backup_before_deploy() {
     if [ "$BACKUP_ENABLED" != "true" ]; then
         return
@@ -118,16 +125,16 @@ install_magento() {
 
         docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento setup:install \
             --db-host=mysql \
-            --db-name="${MYSQL_DATABASE:-peakgear}" \
-            --db-user="${MYSQL_USER:-peakgear}" \
+            --db-name="${MYSQL_DATABASE:-magento}" \
+            --db-user="${MYSQL_USER:-magento}" \
             --db-password="${MYSQL_PASSWORD}" \
-            --base-url="${BASE_URL:-http://localhost}" \
-            --base-url-secure="${BASE_URL:-https://localhost}" \
-            --admin-firstname="${ADMIN_FIRSTNAME:-Admin}" \
-            --admin-lastname="${ADMIN_LASTNAME:-User}" \
-            --admin-email="${ADMIN_EMAIL:-admin@example.com}" \
-            --admin-user="${ADMIN_USER:-admin}" \
-            --admin-password="${ADMIN_PASSWORD:-Admin123456}" \
+            --base-url="http://${MAGENTO_HOST:-localhost}" \
+            --base-url-secure="https://${MAGENTO_HOST:-localhost}" \
+            --admin-firstname="${MAGENTO_ADMIN_FIRSTNAME:-Admin}" \
+            --admin-lastname="${MAGENTO_ADMIN_LASTNAME:-Admin}" \
+            --admin-email="${MAGENTO_ADMIN_EMAIL:-admin@example.com}" \
+            --admin-user="${MAGENTO_ADMIN_USER:-admin}" \
+            --admin-password="${MAGENTO_ADMIN_PASSWORD:-admin123}" \
             --language="${LANGUAGE:-en_US}" \
             --currency="${CURRENCY:-USD}" \
             --timezone="${TIMEZONE:-Asia/Ho_Chi_Minh}" \
@@ -190,8 +197,8 @@ show_status() {
     echo ""
     docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" ps
     echo ""
-    log_info "Access your site at: ${BASE_URL:-http://localhost}"
-    log_info "Admin panel at: ${BASE_URL:-http://localhost}/admin"
+    log_info "Access your site at: http://${MAGENTO_HOST:-localhost}"
+    log_info "Admin panel at: http://${MAGENTO_HOST:-localhost}/${MAGENTO_ADMIN_USER:-admin}"
     echo ""
 }
 
@@ -221,6 +228,7 @@ main() {
     echo ""
 
     check_prerequisites
+    load_env
     backup_before_deploy
     stop_services
     pull_code
