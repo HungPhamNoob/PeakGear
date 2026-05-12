@@ -31,6 +31,14 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+load_env() {
+    if [ -f "$PROJECT_DIR/.env" ]; then
+        set -a
+        source "$PROJECT_DIR/.env"
+        set +a
+    fi
+}
+
 create_backup_dir() {
     if [ ! -d "$BACKUP_DIR" ]; then
         mkdir -p "$BACKUP_DIR"
@@ -49,7 +57,7 @@ backup_database() {
         --lock-tables=false \
         -u root \
         -p"${MYSQL_ROOT_PASSWORD}" \
-        "${MYSQL_DATABASE:-peakgear}" | gzip > "$db_backup"
+        "${MYSQL_DATABASE:-magento}" | gzip > "$db_backup"
 
     if [ -f "$db_backup" ]; then
         log_info "Database backup created: $db_backup"
@@ -145,6 +153,8 @@ usage() {
 }
 
 main() {
+    load_env
+
     case "${1:-backup}" in
         backup)
             log_info "Starting PeakGear backup..."

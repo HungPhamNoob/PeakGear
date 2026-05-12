@@ -66,10 +66,10 @@ services:
     container_name: peakgear_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-magento}
+      MYSQL_USER: ${MYSQL_USER:-magento}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-magento}
     command: >
       --innodb-buffer-pool-size=512M
       --max-connections=100
