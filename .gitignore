@@ -44,3 +44,9 @@ Thumbs.db
 *.swo
 
 antigravity.config.json
+
+# --- Production ---
+docker/nginx/ssl/*.pem
+docker/nginx/ssl/*.crt
+docker/nginx/ssl/*.key
+/opt/peakgear/backups/
