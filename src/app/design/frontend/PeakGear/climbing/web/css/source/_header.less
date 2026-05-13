@@ -335,6 +335,7 @@
 
     // On mobile: hide auth/account (they live in the mobile menu)
     @media (max-width: 767px) {
+
         .auth-buttons,
         .header-account {
             display: none !important;
@@ -642,11 +643,8 @@ body.search-overlay-active {
     }
 
     @media (max-width: 767px) {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    @media (max-width: 480px) {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.4rem;
     }
 }
 
@@ -662,11 +660,7 @@ body.search-overlay-active {
     }
 
     @media (max-width: 767px) {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    @media (max-width: 480px) {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
@@ -704,6 +698,10 @@ body.search-overlay-active {
         object-fit: contain;
         display: block;
         padding: 0.5rem;
+
+        @media (max-width: 767px) {
+            padding: 0.25rem;
+        }
     }
 }
 
@@ -718,6 +716,11 @@ body.search-overlay-active {
     flex-direction: column;
     gap: 0.25rem;
     padding: 0.75rem 0.8rem 0.85rem;
+
+    @media (max-width: 767px) {
+        padding: 0.4rem;
+        gap: 0.15rem;
+    }
 }
 
 .search-result-name {
@@ -729,12 +732,21 @@ body.search-overlay-active {
     font-size: 0.88rem;
     font-weight: 700;
     line-height: 1.3;
+
+    @media (max-width: 767px) {
+        font-size: 0.75rem;
+        min-height: 2.6em;
+    }
 }
 
 .search-result-price {
     color: @peakgear-primary;
     font-size: 0.82rem;
     font-weight: 800;
+
+    @media (max-width: 767px) {
+        font-size: 0.75rem;
+    }
 }
 
 .search-empty-state {
@@ -904,8 +916,8 @@ body.search-overlay-active {
     }
 }
 
-.account-panel > .account-info,
-.account-panel > .account-links {
+.account-panel>.account-info,
+.account-panel>.account-links {
     background: fade(@peakgear-dark-secondary, 95%);
     backdrop-filter: blur(16px);
     border: 1px solid @peakgear-border;
@@ -1190,8 +1202,8 @@ body.mobile-menu-active {
 
 // Forces action buttons back to square shape (override any transform drift)
 .action-btn.search-toggle,
-.action-btn.minicart-toggle, 
-.action-btn.account-toggle{
+.action-btn.minicart-toggle,
+.action-btn.account-toggle {
     transform: none !important;
     width: 40px !important;
     height: 40px !important;
