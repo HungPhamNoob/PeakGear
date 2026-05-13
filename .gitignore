@@ -50,3 +50,10 @@ docker/nginx/ssl/*.pem
 docker/nginx/ssl/*.crt
 docker/nginx/ssl/*.key
 /opt/peakgear/backups/
+# --- Auto-generated files ---
+backups/
+src/pub/media/.thumbscatalog/
+src/pub/media/catalog/tmp/
+src/pub/media/customer_address/
+src/pub/media/theme/preview/
+src/pub/static/.htaccess
