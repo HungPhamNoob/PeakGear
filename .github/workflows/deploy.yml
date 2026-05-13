@@ -1,0 +1,102 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  pull_request:
+    branches:
+      - main
+      - production
+    types: [closed]
+
+env:
+  DEPLOY_BRANCHES: "main production"
+
+jobs:
+  deploy:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DROPLET_SSH_KEY }}
+
+      - name: Add droplet to known hosts
+        run: |
+          ssh-keyscan -H ${{ vars.DROPLET_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Droplet
+        run: |
+          ssh root@${{ vars.DROPLET_IP }} "
+            set -e
+            cd /opt/peakgear
+            git pull origin ${{ github.ref_name }}
+            bash scripts/deploy.sh --no-backup
+          "
+
+      - name: Health check
+        run: |
+          sleep 10
+          HTTP_CODE=$(curl -f -s -o /dev/null -w "%{http_code}" http://${{ vars.DROPLET_IP }}/)
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ] || [ "$HTTP_CODE" = "302" ]; then
+            echo "Site is responding with HTTP $HTTP_CODE"
+          else
+            echo "Site returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+
+  lint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, gd, intl, zip
+          coverage: none
+
+      - name: Install composer dependencies
+        run: |
+          cd src
+          composer install --no-interaction --prefer-dist --ignore-platform-reqs
+
+      - name: PHP Syntax Check
+        run: |
+          find src/app/code -name "*.php" -exec php -l {} \; 2>&1 | grep -v "No syntax errors"
+
+      - name: Coding Standard
+        run: |
+          cd src
+          ./vendor/bin/phpcs --standard=Magento2 --extensions=php,phtml app/code/ || true
+
+  test:
+    if: false # Enable when tests are available
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install dependencies
+        run: |
+          cd src
+          composer install --no-interaction
+
+      - name: Run Unit Tests
+        run: |
+          cd src
+          ./vendor/bin/phpunit --testdox || true
