@@ -2,8 +2,8 @@
 set -e
 
 # ===========================================
-# PeakGear Deployment Script
-# For Single Droplet Production
+# PeakGear Deployment Script - Optimized
+# Zero-downtime deploy when possible
 # ===========================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,234 +11,181 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 COMPOSE_FILE="docker-compose.prod.yaml"
 BACKUP_ENABLED="${BACKUP_ENABLED:-true}"
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
-
-log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
+log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 check_prerequisites() {
-    log_info "Checking prerequisites..."
-
-    if ! command -v docker &> /dev/null; then
-        log_error "Docker is not installed. Please install Docker first."
+    if ! command -v docker &> /dev/null || ! docker compose version &> /dev/null; then
+        log_error "Docker Compose is required."
         exit 1
     fi
-
-    if ! command -v docker compose &> /dev/null && ! docker compose version &> /dev/null; then
-        log_error "Docker Compose is not available. Please install Docker Compose first."
-        exit 1
-    fi
-
     if [ ! -f "$PROJECT_DIR/.env" ]; then
-        log_error ".env file not found. Please copy .env.example to .env and configure it."
+        log_error ".env file not found."
         exit 1
     fi
-
-    if [ ! -f "$PROJECT_DIR/$COMPOSE_FILE" ]; then
-        log_error "$COMPOSE_FILE not found."
-        exit 1
-    fi
-
-    log_info "Prerequisites check passed."
 }
 
-load_env() {
-    log_info "Loading environment from .env..."
-    set -a
-    source "$PROJECT_DIR/.env"
-    set +a
+reload_php() {
+    log_info "Reloading PHP-FPM (zero downtime)..."
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php kill -USR2 1 2>/dev/null || true
 }
 
-backup_before_deploy() {
-    if [ "$BACKUP_ENABLED" != "true" ]; then
+restart_containers() {
+    log_info "Restarting containers..."
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" restart
+}
+
+flush_cache() {
+    log_info "Flushing Magento cache..."
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento cache:flush
+}
+
+check_code_changes() {
+    if [ ! -d "$PROJECT_DIR/.git" ]; then
+        echo "none"
         return
     fi
 
-    log_info "Creating backup before deployment..."
-    bash "$SCRIPT_DIR/backup.sh" || log_warn "Backup failed, continuing anyway..."
-}
-
-stop_services() {
-    log_info "Stopping existing services..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" down || true
-}
-
-pull_code() {
-    log_info "Updating code from repository..."
-
-    if [ -d "$PROJECT_DIR/.git" ]; then
-        cd "$PROJECT_DIR"
-        git pull origin main
-        cd - > /dev/null
+    cd "$PROJECT_DIR"
+    if git diff --quiet HEAD~1 HEAD -- '*.php' '*.phtml' '*/layout/*.xml' '*/etc/*.xml' '*/di.xml' 2>/dev/null; then
+        if git diff --quiet HEAD~1 HEAD -- 'composer.json' 'composer.lock' 2>/dev/null; then
+            echo "code-only"
+        else
+            echo "composer"
+        fi
+    elif git diff --quiet HEAD~1 HEAD -- 'composer.json' 'composer.lock' 2>/dev/null; then
+        echo "composer"
     else
-        log_warn "Not a git repository, skipping code pull."
+        echo "config"
     fi
 }
 
-build_images() {
-    log_info "Building Docker images..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" build --no-cache php
+pull_code() {
+    if [ ! -d "$PROJECT_DIR/.git" ]; then
+        log_warn "Not a git repository."
+        return
+    fi
+
+    cd "$PROJECT_DIR"
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+    log_info "Pulling $CURRENT_BRANCH..."
+    git pull origin "$CURRENT_BRANCH"
+    cd - > /dev/null
 }
 
-start_services() {
-    log_info "Starting services..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" up -d
+backup_if_needed() {
+    if [ "$BACKUP_ENABLED" = "true" ]; then
+        log_info "Creating backup..."
+        bash "$SCRIPT_DIR/backup.sh" || log_warn "Backup failed."
+    fi
+}
 
-    log_info "Waiting for services to be healthy..."
-    sleep 10
+install_composer() {
+    log_info "Installing composer dependencies..."
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php sh -c "cd /var/www/html && composer install --no-interaction --prefer-dist --no-dev"
+}
 
-    local max_attempts=30
+setup_upgrade() {
+    log_info "Running setup:upgrade..."
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento setup:upgrade
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento cache:flush
+}
+
+deploy_static() {
+    log_info "Deploying static content..."
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento setup:static-content:deploy -f --jobs=4
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento cache:flush
+}
+
+reindex() {
+    log_info "Reindexing..."
+    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento indexer:reindex
+}
+
+health_check() {
+    local max_attempts=15
     local attempt=1
-
     while [ $attempt -le $max_attempts ]; do
-        if docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" ps | grep -q "healthy"; then
-            log_info "Services are healthy."
+        if curl -sf http://localhost/ > /dev/null 2>&1; then
+            log_info "Health check passed."
             return 0
         fi
         echo -n "."
         sleep 2
         attempt=$((attempt + 1))
     done
-
     echo ""
-    log_warn "Services may not be fully healthy yet. Check status manually."
-}
-
-install_magento() {
-    log_info "Checking Magento installation status..."
-
-    if [ ! -f "$PROJECT_DIR/src/app/etc/env.php" ]; then
-        log_info "Magento not installed. Running setup..."
-
-        docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento setup:install \
-            --db-host=mysql \
-            --db-name="${MYSQL_DATABASE:-magento}" \
-            --db-user="${MYSQL_USER:-magento}" \
-            --db-password="${MYSQL_PASSWORD}" \
-            --base-url="http://${MAGENTO_HOST:-localhost}" \
-            --base-url-secure="https://${MAGENTO_HOST:-localhost}" \
-            --admin-firstname="${MAGENTO_ADMIN_FIRSTNAME:-Admin}" \
-            --admin-lastname="${MAGENTO_ADMIN_LASTNAME:-Admin}" \
-            --admin-email="${MAGENTO_ADMIN_EMAIL:-admin@example.com}" \
-            --admin-user="${MAGENTO_ADMIN_USER:-admin}" \
-            --admin-password="${MAGENTO_ADMIN_PASSWORD:-admin123}" \
-            --language="${LANGUAGE:-en_US}" \
-            --currency="${CURRENCY:-USD}" \
-            --timezone="${TIMEZONE:-Asia/Ho_Chi_Minh}" \
-            --search-engine=opensearch \
-            --opensearch-host=opensearch \
-            --opensearch-port=9200 \
-            --use-rewrites=1 \
-            --session-save=redis \
-            --session-save-redis-host=redis \
-            --session-save-redis-port=6379 \
-            --session-save-redis-db=0 \
-            --cache-backend=redis \
-            --cache-backend-redis-host=redis \
-            --cache-backend-redis-port=6379 \
-            --cache-backend-redis-db=1 \
-            --page-cache=redis \
-            --page-cache-redis-host=redis \
-            --page-cache-redis-port=6379 \
-            --page-cache-redis-db=2
-    else
-        log_info "Magento already installed. Running upgrade..."
-        docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento setup:upgrade
-        docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento cache:flush
-    fi
-}
-
-deploy_static_content() {
-    log_info "Deploying static content..."
-
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento setup:static-content:deploy -f --jobs=4
-
-    log_info "Setting production mode..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento deploy:mode:set production || true
-
-    log_info "Reindexing catalog..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento indexer:reindex
-
-    log_info "Flushing cache..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento cache:flush
-}
-
-fix_permissions() {
-    log_info "Fixing file permissions..."
-
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php bash -c "
-        chown -R www-data:www-data /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media /var/www/html/generated
-        find /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media /var/www/html/generated -type d -exec chmod 775 {} \;
-        find /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media /var/www/html/generated -type f -exec chmod 664 {} \;
-    "
-}
-
-setup_cron() {
-    log_info "Setting up cron jobs..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento cron:install || true
-}
-
-show_status() {
-    echo ""
-    log_info "=== Deployment Complete ==="
-    echo ""
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" ps
-    echo ""
-    log_info "Access your site at: http://${MAGENTO_HOST:-localhost}"
-    log_info "Admin panel at: http://${MAGENTO_HOST:-localhost}/${MAGENTO_ADMIN_USER:-admin}"
-    echo ""
-}
-
-usage() {
-    echo "Usage: $0 [OPTIONS]"
-    echo ""
-    echo "Options:"
-    echo "  --no-backup    Skip backup before deployment"
-    echo "  --help         Show this help message"
-    echo ""
-    echo "Environment variables:"
-    echo "  BACKUP_ENABLED    Set to 'false' to skip backup"
-    echo ""
+    log_error "Health check failed."
+    return 1
 }
 
 main() {
     if [ "$1" = "--help" ]; then
-        usage
+        echo "Usage: $0 [--no-backup] [--force]"
+        echo "  --no-backup  Skip backup"
+        echo "  --force      Force full deploy (skip smart deploy)"
         exit 0
     fi
 
-    if [ "$1" = "--no-backup" ]; then
+    local force=false
+    [ "$1" = "--force" ] && force=true
+
+    if [ "$1" = "--no-backup" ] || [ "$2" = "--no-backup" ]; then
         BACKUP_ENABLED="false"
     fi
 
-    log_info "Starting PeakGear deployment..."
-    echo ""
-
+    log_info "Starting deployment..."
     check_prerequisites
     load_env
-    backup_before_deploy
-    stop_services
+
     pull_code
-    build_images
-    start_services
-    install_magento
-    deploy_static_content
-    fix_permissions
-    setup_cron
-    show_status
+    backup_if_needed
+
+    local change_type
+    if [ "$force" = "true" ]; then
+        change_type="config"
+    else
+        change_type=$(check_code_changes)
+    fi
+    log_info "Change type: $change_type"
+
+    case "$change_type" in
+        "code-only")
+            reload_php
+            flush_cache
+            ;;
+        "composer")
+            install_composer
+            reload_php
+            flush_cache
+            ;;
+        "config")
+            setup_upgrade
+            restart_containers
+            deploy_static
+            reindex
+            ;;
+        *)
+            log_warn "Unknown change type, doing full deploy."
+            restart_containers
+            flush_cache
+            ;;
+    esac
+
+    health_check
+    log_info "Deployment complete."
+}
+
+load_env() {
+    set -a
+    source "$PROJECT_DIR/.env"
+    set +a
 }
 
 main "$@"
