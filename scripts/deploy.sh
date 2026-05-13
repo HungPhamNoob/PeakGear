@@ -73,9 +73,8 @@ pull_code() {
     fi
 
     cd "$PROJECT_DIR"
-    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
-    log_info "Pulling $CURRENT_BRANCH..."
-    git pull origin "$CURRENT_BRANCH"
+    log_info "Pulling main..."
+    git pull origin main
     cd - > /dev/null
 }
 
@@ -87,6 +86,10 @@ backup_if_needed() {
 }
 
 install_composer() {
+    if [ -d "$PROJECT_DIR/src/vendor" ]; then
+        log_info "vendor already exists, skipping composer install"
+        return
+    fi
     log_info "Installing composer dependencies..."
     docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php sh -c "cd /var/www/html && composer install --no-interaction --prefer-dist --no-dev"
 }
