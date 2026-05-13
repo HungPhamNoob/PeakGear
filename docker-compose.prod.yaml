@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   nginx:
     image: nginx:1.24-alpine
@@ -76,8 +74,6 @@ services:
       --innodb-log-file-size=128M
       --innodb-flush-log-at-trx-commit=2
       --innodb_flush_method=O_DIRECT
-      --query-cache-type=0
-      --query-cache-size=0
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
     volumes:
@@ -117,7 +113,7 @@ services:
         reservations:
           memory: 512M
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || wget --spider -q http://localhost:9200 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 15
