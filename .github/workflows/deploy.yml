@@ -4,15 +4,13 @@ on:
   push:
     branches:
       - main
-      - production
   pull_request:
     branches:
       - main
-      - production
     types: [closed]
 
 env:
-  DEPLOY_BRANCHES: "main production"
+  DEPLOY_BRANCH: "main"
 
 jobs:
   deploy:
