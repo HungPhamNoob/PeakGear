@@ -355,6 +355,8 @@ return [
         'Magento_WishlistAnalytics' => 1,
         'Magento_WishlistGraphQl' => 1,
         'Lillik_PriceDecimal' => 1,
+        'Mageplaza_Core' => 1,
+        'Mageplaza_SocialLogin' => 1,
         'PayPal_Braintree' => 1,
         'PayPal_BraintreeCustomerBalance' => 1,
         'PayPal_BraintreeGiftCard' => 1,

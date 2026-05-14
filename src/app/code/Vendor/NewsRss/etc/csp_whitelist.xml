@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="img-src">
+            <values>
+                <value id="vnexpress" type="host">vnexpress.net</value>
+                <value id="vnexpress-subdomains" type="host">*.vnexpress.net</value>
+                <value id="vnecdn" type="host">*.vnecdn.net</value>
+                <value id="openweathermap" type="host">openweathermap.org</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>
