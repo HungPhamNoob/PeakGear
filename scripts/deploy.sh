@@ -101,9 +101,8 @@ setup_upgrade() {
 }
 
 deploy_static() {
-    log_info "Deploying static content..."
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento setup:static-content:deploy -f --jobs=4
-    docker compose -f "$PROJECT_DIR/$COMPOSE_FILE" exec -T php php /var/www/html/bin/magento cache:flush
+    log_info "Deploying theme static content via Makefile..."
+    make -C "$PROJECT_DIR" themes DOCKER_COMPOSE="docker compose -f $PROJECT_DIR/$COMPOSE_FILE exec -T"
 }
 
 reindex() {
