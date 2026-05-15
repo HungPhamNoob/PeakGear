@@ -22,8 +22,9 @@
         <!-- Hide the default "New Customers" block since login.phtml has its own register link -->
         <referenceBlock name="customer.new" remove="true"/>
         
-        <!-- Remove the separate social login block (now built into login.phtml) -->
+        <!-- Remove social login blocks rendered by the theme/extension; custom buttons live in login.phtml. -->
         <referenceBlock name="peakgear.social.login" remove="true"/>
+        <referenceBlock name="social-login-popup-authentication-social-login" remove="true"/>
         
         <!-- Remove default page title -->
         <referenceBlock name="page.main.title" remove="true"/>
