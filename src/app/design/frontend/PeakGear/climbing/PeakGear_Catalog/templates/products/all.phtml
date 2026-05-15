@@ -7,6 +7,8 @@
  * @var \PeakGear\Catalog\Block\AllProducts $block
  */
 
+use Magento\Framework\App\Action\Action;
+
 $products = $block->getProductCollection();
 $categories = $block->getCategories();
 $currentSort = $block->getCurrentSort();
@@ -414,36 +416,65 @@ $hasActiveFilters = !empty($activeFilters);
                                 <div class="product-sale-badge">-<?= $discount ?>%</div>
                             <?php endif; ?>
 
+                            <?php
+                                $addToCartUrl = $block->getAddToCartUrl($product, ['_escape' => false]);
+                                $encodedAddToCartUrl = $this->helper(\Magento\Framework\Url\Helper\Data::class)->getEncodedUrl($addToCartUrl);
+                            ?>
+
                             <!-- Image Container -->
-                            <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-image-container">
-                                <?php if ($hasImage): ?>
-                                    <img src="<?= $block->escapeUrl($productImage) ?>"
-                                         alt="<?= $block->escapeHtmlAttr($productName) ?>"
-                                         class="product-real-image"
-                                         loading="lazy"
-                                         width="300"
-                                          height="300"/>
-                                <?php else: ?>
-                                    <div class="product-placeholder">
-                                        <div class="product-placeholder-circle">
-                                            <span class="product-placeholder-initial"><?= $block->escapeHtml($catInitial) ?></span>
+                            <div class="product-image-container">
+                                <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-image-link">
+                                    <?php if ($hasImage): ?>
+                                        <img src="<?= $block->escapeUrl($productImage) ?>"
+                                             alt="<?= $block->escapeHtmlAttr($productName) ?>"
+                                             class="product-real-image"
+                                             loading="lazy"
+                                             width="300"
+                                             height="300"/>
+                                    <?php else: ?>
+                                        <div class="product-placeholder">
+                                            <div class="product-placeholder-circle">
+                                                <span class="product-placeholder-initial"><?= $block->escapeHtml($catInitial) ?></span>
+                                            </div>
                                         </div>
-                                    </div>
-                                <?php endif; ?>
+                                    <?php endif; ?>
+                                </a>
 
                                 <!-- Quick Actions Overlay -->
                                 <div class="product-quick-actions">
-                                    <button type="button" class="product-action-btn product-action-wishlist" title="Yêu thích">
+                                    <button type="button"
+                                            class="product-action-btn product-action-wishlist"
+                                            title="Yêu thích"
+                                            aria-label="Yêu thích"
+                                            data-product-id="<?= $block->escapeHtmlAttr((int)$product->getId()) ?>"
+                                            data-wishlist-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/add')) ?>"
+                                            data-wishlist-remove-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/remove')) ?>"
+                                            data-login-url="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>"
+                                            data-register-url="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
                                     </button>
-                                    <span class="product-action-btn product-action-view" title="Xem chi tiết">
+                                    <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-action-btn product-action-view" title="Xem chi tiết" aria-label="Xem chi tiết">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                    </span>
-                                    <button type="button" class="product-action-btn product-action-cart" title="Thêm vào giỏ">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                                    </button>
+                                    </a>
+                                    <?php if ($product->isAvailable()): ?>
+                                        <form data-role="tocart-form"
+                                              data-product-sku="<?= $block->escapeHtmlAttr($product->getSku()) ?>"
+                                              action="<?= $block->escapeUrl($addToCartUrl) ?>"
+                                              method="post"
+                                              data-mage-init='{"catalogAddToCart": {"addToCartButtonSelector": ".action.tocart"}}'
+                                              class="action-cart-form" style="display: contents;">
+                                            <?= $block->getBlockHtml('formkey') ?>
+                                            <input type="hidden" name="product" value="<?= $block->escapeHtmlAttr((int)$product->getId()) ?>">
+                                            <input type="hidden" name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>"
+                                                   value="<?= $block->escapeHtmlAttr($encodedAddToCartUrl) ?>">
+                                            <button type="submit" class="product-action-btn product-action-cart action tocart" title="Thêm vào giỏ" aria-label="Thêm vào giỏ">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                                <span class="product-action-label">Thêm vào giỏ</span>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
-                            </a>
+                            </div>
                             <!-- Content -->
                             <div class="product-content">
                                 <!-- Category -->
@@ -770,5 +801,13 @@ function allprodApplyPriceRange(min, max) {
 
     var qs = params.toString();
     window.location.href = window.location.pathname + (qs ? '?' + qs : '');
+}
+</script>
+
+<script type="text/x-magento-init">
+{
+    "*": {
+        "peakgearProductActions": {}
+    }
 }
 </script>
