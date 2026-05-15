@@ -170,7 +170,6 @@ main() {
         "config")
             setup_upgrade
             restart_containers
-            deploy_static
             reindex
             ;;
         *)
@@ -180,6 +179,7 @@ main() {
             ;;
     esac
 
+    deploy_static
     health_check
     log_info "Deployment complete."
 }
