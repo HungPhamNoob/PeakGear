@@ -215,6 +215,19 @@ $formData = $block->getFormData();
                 </button>
             </form>
 
+            <!-- Divider -->
+            <div class="login-divider">
+                <div class="login-divider-line"></div>
+                <span class="login-divider-text">hoặc</span>
+                <div class="login-divider-line"></div>
+            </div>
+
+            <!-- Social Login - custom UI backed by Mageplaza SocialLogin -->
+            <?= $block->getLayout()
+                ->createBlock(\Mageplaza\SocialLogin\Block\Popup\Social::class)
+                ->setTemplate('Magento_Customer::form/mageplaza-social-buttons.phtml')
+                ->toHtml() ?>
+
             <!-- Login Link -->
             <p class="register-login-link">
                 Đã có tài khoản?

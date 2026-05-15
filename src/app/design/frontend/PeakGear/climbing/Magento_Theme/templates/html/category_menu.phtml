@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     window.peakgearCategoryMenuReady = true;
+    window.mobileCategoryCache = window.mobileCategoryCache || {};
 
     var mobileSidebarItems = document.querySelectorAll('.category-sidebar-item');
     var mobileMainTitle = document.getElementById('mobileMainTitle');
@@ -149,17 +150,23 @@ document.addEventListener('DOMContentLoaded', function() {
         if (mobileProductsGrid) mobileProductsGrid.innerHTML = '';
         if (mobileProductsLoading) mobileProductsLoading.style.display = 'block';
 
-        var query = '';
-        if (catId !== 'all') {
-            query = 'query { products(filter: { category_id: { eq: "' + catId + '" } }, pageSize: 5) { items { name url_key url_suffix price_range { minimum_price { final_price { value currency } } } image { url label } } } }';
-        } else {
-            query = 'query { products(pageSize: 5) { items { name url_key url_suffix price_range { minimum_price { final_price { value currency } } } image { url label } } } }';
+        if (window.mobileCategoryCache[catId]) {
+            if (mobileProductsLoading) mobileProductsLoading.style.display = 'none';
+            if (mobileProductsGrid) mobileProductsGrid.innerHTML = window.mobileCategoryCache[catId];
+            return;
         }
 
-        fetch('<?= $block->escapeJs($block->getUrl("graphql")) ?>', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ query: query })
+        var query = '';
+        if (catId !== 'all') {
+            query = 'query { products(filter: { category_id: { eq: "' + catId + '" } }, pageSize: 10) { items { name url_key url_suffix price_range { minimum_price { final_price { value currency } } } image { url label } } } }';
+        } else {
+            query = 'query { products(search: "", pageSize: 10) { items { name url_key url_suffix price_range { minimum_price { final_price { value currency } } } image { url label } } } }';
+        }
+
+        var fetchUrl = '<?= $block->escapeJs($block->getUrl("graphql")) ?>?query=' + encodeURIComponent(query);
+        fetch(fetchUrl, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
         })
         .then(function(res) { return res.json(); })
         .then(function(data) {
@@ -174,12 +181,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 if (mobileProductsGrid) {
-                    mobileProductsGrid.innerHTML = products.map(function(p) {
+                    var html = products.map(function(p) {
                         return window.buildProductCard(p, mobileMainViewAll ? mobileMainViewAll.href : '');
                     }).join('');
+                    mobileProductsGrid.innerHTML = html;
+                    window.mobileCategoryCache[catId] = html;
                 }
             } else {
-                if (mobileProductsGrid) mobileProductsGrid.innerHTML = '<div class="category-products-empty">Không có sản phẩm nào.</div>';
+                var emptyHtml = '<div class="category-products-empty">Không có sản phẩm nào.</div>';
+                if (mobileProductsGrid) mobileProductsGrid.innerHTML = emptyHtml;
+                window.mobileCategoryCache[catId] = emptyHtml;
             }
         })
         .catch(function() {

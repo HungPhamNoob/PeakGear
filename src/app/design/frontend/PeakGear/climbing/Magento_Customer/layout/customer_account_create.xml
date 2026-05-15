@@ -21,6 +21,9 @@
         
         <!-- Remove the separate password strength block (now built into register.phtml) -->
         <referenceBlock name="peakgear.password.strength" remove="true"/>
+
+        <!-- Remove Mageplaza default social UI; custom buttons live in register.phtml. -->
+        <referenceBlock name="social-login-popup-authentication-social-create" remove="true"/>
         
         <!-- Remove default page title -->
         <referenceBlock name="page.main.title" remove="true"/>
