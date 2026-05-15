@@ -80,71 +80,111 @@ $wishlistHelper = $this->helper(\Magento\Wishlist\Helper\Data::class);
         'mage/translate'
     ], function ($, customerData, $t) {
         'use strict';
-        
-        // Đợi DOM render xong để bind event
-        $(document).ready(function() {
-            // Chặn dứt điểm các event mặc định của magento trên nút add to cart trong wishlist
-            $('body').on('click', '.wishlist-index-index .action.ajax-tocart', function (e) {
-                // Ngăn chặn magento dataPost.js chạy submit
-                e.preventDefault();
-                e.stopImmediatePropagation();
 
-                var $button = $(this);
-                // Cấm bấm liên tục
-                if ($button.hasClass('disabled')) return false;
+        function showTopMessage(messageHtml, type) {
+            var $placeholder = $('[data-placeholder="messages"]').first(),
+                $messages,
+                messageClass;
 
-                var postData = $button.data('post');
-                if (!postData) return false;
-                
-                var url = postData.action;
-                var data = postData.data;
+            if (!$placeholder.length) {
+                return;
+            }
 
-                // Để AJAX hoạt động phải có form_key
-                var formKey = $('input[name="form_key"]').val();
-                if (formKey) {
-                    data.form_key = formKey;
+            $messages = $placeholder.children('.messages');
+            if (!$messages.length) {
+                $messages = $('<div class="messages"></div>');
+                $placeholder.append($messages);
+            }
+
+            messageClass = type === 'error'
+                ? 'message message-error error'
+                : 'message message-success success';
+
+            var $message = $('<div class="' + messageClass + '"><div>' + messageHtml + '</div></div>');
+            $messages.append($message);
+
+            setTimeout(function () {
+                $message.addClass('toast-dismiss');
+                setTimeout(function () {
+                    $message.remove();
+                }, 350);
+            }, 3500);
+        }
+
+        $(document).on('click', '#wishlist-view-form .action.ajax-tocart', function (event) {
+            var $button = $(this),
+                $box = $button.closest('.box-tocart'),
+                url = $button.data('cart-url'),
+                itemId = $button.data('item-id'),
+                qty = $box.find('[data-role="qty"]').val() || 1,
+                formKey = $('input[name="form_key"]').first().val(),
+                requestData;
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if ($button.hasClass('disabled') || !url || !itemId) {
+                return false;
+            }
+
+            requestData = {
+                item: itemId,
+                qty: qty
+            };
+
+            if (formKey) {
+                requestData.form_key = formKey;
+            }
+
+            $button.addClass('disabled').css('opacity', '0.6');
+            $button.find('span').text($t('Adding...'));
+
+            $.ajax({
+                url: url,
+                data: requestData,
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (response) {
+                if (response && response.redirectUrl && !response.success) {
+                    window.location.href = response.redirectUrl;
+                    return;
                 }
 
-                $button.addClass('disabled').text($t('Adding...')).css('opacity', '0.6');
-                
-                // Gọi AJAX thông qua endpoint Wishlist AddToCart
-                $.ajax({
-                    url: url,
-                    data: data,
-                    type: 'post',
-                    dataType: 'json',
-                    showLoader: true,
-                    success: function (res) {
-                        try {
-                            // Cập nhật lại số lượng giỏ hàng
-                            customerData.invalidate(['cart']);
-                            customerData.reload(['cart'], true);
+                if (response && response.success) {
+                    customerData.invalidate(['cart']);
+                    customerData.reload(['cart'], true);
+                    showTopMessage(response.message || $t('Thêm sản phẩm vào giỏ hàng thành công.'));
 
-                            // Load popup success message (chạy qua UiComponent messageList)
-                            require(['Magento_Ui/js/model/messageList'], function(messageList) {
-                                messageList.addSuccessMessage({
-                                    message: $t('Thêm sản phẩm vào giỏ hàng thành công.')
-                                });
-                            });
-                        } catch (err) {}
+                    $button.find('span').text($t('Added'));
+                    $button.css({
+                        'opacity': '1',
+                        'background-color': '#111',
+                        'border-color': '#111',
+                        'color': '#fff'
+                    });
 
-                        // Đổi state sang thành công
-                        $button.removeClass('disabled').text($t('Added')).css({
-                            'opacity': '1',
-                            'background-color': '#111',
-                            'border-color': '#111',
-                            'color': '#fff'
-                        });
-                        
-                        setTimeout(function(){
-                            $button.text($t('Add to Cart')).removeAttr('style');
-                        }, 3000);
-                    },
-                    error: function() {
-                        $button.removeClass('disabled').text($t('Add to Cart')).css('opacity', '1');
-                    }
-                });
+                    setTimeout(function () {
+                        $button.removeClass('disabled').removeAttr('style');
+                        $button.find('span').text($t('Add to Cart'));
+                    }, 3000);
+
+                    return;
+                }
+
+                showTopMessage(
+                    response && response.message ? response.message : $t('Không thể thêm sản phẩm vào giỏ hàng lúc này.'),
+                    'error'
+                );
+                $button.removeClass('disabled').css('opacity', '1');
+                $button.find('span').text($t('Add to Cart'));
+            }).fail(function () {
+                showTopMessage($t('Không thể thêm sản phẩm vào giỏ hàng lúc này.'), 'error');
+                $button.removeClass('disabled').css('opacity', '1');
+                $button.find('span').text($t('Add to Cart'));
             });
+
+            return false;
         });
     });
 </script>
