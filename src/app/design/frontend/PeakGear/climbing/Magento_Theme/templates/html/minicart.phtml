@@ -1,0 +1,58 @@
+<?php
+/**
+ * PeakGear header mini cart.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+$cartUrl = $block->getUrl('cart');
+$initConfig = [
+    'removeItemUrl' => $block->getUrl('checkout/sidebar/removeItem')
+];
+?>
+
+<div class="header-minicart" data-peakgear-minicart>
+    <button type="button" class="action-btn minicart-toggle" aria-label="Mở giỏ hàng" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="width:24px !important;height:24px !important;display:block !important;">
+            <circle cx="8" cy="21" r="1"/>
+            <circle cx="19" cy="21" r="1"/>
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+        </svg>
+        <span class="minicart-counter" style="display:none;">0</span>
+    </button>
+
+    <div class="peakgear-minicart-panel" aria-hidden="true">
+        <div class="peakgear-minicart-head">
+            <div>
+                <p class="peakgear-minicart-kicker">Giỏ hàng</p>
+                <strong class="peakgear-minicart-count">0 sản phẩm</strong>
+            </div>
+            <button type="button" class="peakgear-minicart-close" aria-label="Đóng giỏ hàng">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 6 6 18"/>
+                    <path d="M6 6 18 18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="peakgear-minicart-items"></div>
+        <div class="peakgear-minicart-empty">
+            Giỏ hàng của bạn đang trống.
+        </div>
+
+        <div class="peakgear-minicart-footer">
+            <div class="peakgear-minicart-total">
+                <span>Tổng tiền</span>
+                <strong class="peakgear-minicart-subtotal">0đ</strong>
+            </div>
+            <a href="<?= $block->escapeUrl($cartUrl) ?>" class="peakgear-minicart-cart-link">Xem giỏ hàng</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/x-magento-init">
+{
+    "[data-peakgear-minicart]": {
+        "peakgearMinicart": <?= /* @noEscape */ json_encode($initConfig, JSON_UNESCAPED_SLASHES) ?>
+    }
+}
+</script>
