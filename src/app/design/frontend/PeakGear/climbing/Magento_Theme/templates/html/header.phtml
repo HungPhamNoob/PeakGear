@@ -218,12 +218,35 @@ $searchSuggestions = array_slice($searchSuggestions, 0, 12);
 .app-nav-item:active,
 .app-nav-item.active {
     color: #f59e0b;
+    background: transparent !important;
 }
 
 .app-nav-item:hover svg,
 .app-nav-item:active svg,
 .app-nav-item.active svg {
     stroke: #f59e0b;
+}
+
+.app-nav-item:focus,
+.app-nav-item:active,
+.app-nav-item:hover,
+.app-nav-item.active {
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.category-sidebar-item:focus,
+.category-sidebar-item:active,
+.category-sidebar-item.active {
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-left: 3px solid transparent !important;
+    -webkit-tap-highlight-color: transparent !important;
 }
 
 /* Hide Header elements on mobile */
