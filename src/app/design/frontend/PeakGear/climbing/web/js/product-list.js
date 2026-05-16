@@ -10,8 +10,9 @@ define([
     'ko',
     'jquery',
     'Magento_Catalog/js/price-utils',
+    'peakgearProductActions',
     'mage/translate'
-], function (Component, ko, $, priceUtils, $t) {
+], function (Component, ko, $, priceUtils, productActions, $t) {
     'use strict';
 
     return Component.extend({
@@ -29,8 +30,7 @@ define([
             // Bind methods
             this.setViewMode = this.setViewMode.bind(this);
             
-            // Setup wishlist observer
-            this._initWishlist();
+            productActions();
             
             // Setup product card animations
             this._setupAnimations();
@@ -47,37 +47,6 @@ define([
             
             var container = $('.products-grid');
             container.removeClass('mode-grid mode-list').addClass('mode-' + mode);
-        },
-
-        /**
-         * Initialize wishlist customer data observer
-         * @private
-         */
-        _initWishlist: function () {
-            require(['Magento_Customer/js/customer-data'], function (customerData) {
-                var wishlist = customerData.get('wishlist');
-                
-                var updateWishlistIcons = function (data) {
-                    if (data && data.items) {
-                        var inWishlistIds = data.items.map(function (item) {
-                            // product_id could be undefined, check product_id or product
-                            return (item.product_id || item.product || '').toString();
-                        });
-                        
-                        $('.action-wishlist').each(function () {
-                            var pid = $(this).data('product-id');
-                            if (pid && inWishlistIds.indexOf(pid.toString()) !== -1) {
-                                $(this).addClass('added');
-                            } else {
-                                $(this).removeClass('added');
-                            }
-                        });
-                    }
-                };
-                
-                wishlist.subscribe(updateWishlistIcons);
-                updateWishlistIcons(wishlist());
-            });
         },
 
         /**
@@ -134,6 +103,42 @@ define([
                     notification.remove();
                 }, 300);
             }, 3000);
+        },
+
+        /**
+         * @param {String} message
+         * @param {String} type
+         * @private
+         */
+        _showTopMessage: function (message, type) {
+            var $placeholder = $('[data-placeholder="messages"]').first(),
+                messageClass = type === 'error' ? 'message-error error' : 'message-success success',
+                $messages,
+                $message;
+
+            if (!$placeholder.length) {
+                this._showNotification(message, type);
+                return;
+            }
+
+            $messages = $placeholder.children('.messages');
+            if (!$messages.length) {
+                $messages = $('<div class="messages"></div>');
+                $placeholder.append($messages);
+            }
+
+            $message = $('<div/>', {
+                'class': 'message ' + messageClass
+            }).append($('<div/>').text(message));
+
+            $messages.append($message);
+
+            setTimeout(function () {
+                $message.addClass('toast-dismiss');
+                setTimeout(function () {
+                    $message.remove();
+                }, 350);
+            }, 3500);
         }
     });
 });

@@ -41,7 +41,9 @@ var config = {
         '*': {
             'peakgearHeader': 'PeakGear_Climbing/js/header',
             'peakgearHero': 'PeakGear_Climbing/js/hero-section',
-            'peakgearProductList': 'PeakGear_Climbing/js/product-list'
+            'peakgearProductList': 'js/product-list',
+            'peakgearProductActions': 'js/product-actions',
+            'peakgearMinicart': 'js/minicart'
         }
     },
     shim: {

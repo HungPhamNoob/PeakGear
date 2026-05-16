@@ -1,0 +1,298 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+// Ensure $categories is available (passed from parent or fetched here)
+if (!isset($categories)) {
+    // If not passed, we might need a fallback, but assuming it's available from header.phtml
+    $categories = []; // Fallback just in case
+}
+
+if (!function_exists('peakgear_category_icon_svg')) {
+    function peakgear_category_icon_svg(string $name, string $fallbackIcon = ''): string
+    {
+        if (trim($fallbackIcon) !== '') {
+            return $fallbackIcon;
+        }
+
+        $normalized = mb_strtolower($name);
+
+        if (str_contains($normalized, 'giày') || str_contains($normalized, 'giay') || str_contains($normalized, 'sandal')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 2.97 9.5 3.76 8c.71-1.37 2.2-2.54 3.53-3.46C8.69 3.56 11.05 3 13 3c1.36 0 2.68.19 3.88.55"/><path d="M20 8v8"/><path d="M20 16l-4-2-4 4-4-2-4 4"/><path d="M20 20h.01"/><path d="M4 20h.01"/></svg>';
+        }
+
+        if (str_contains($normalized, 'ba lô') || str_contains($normalized, 'ba lo') || str_contains($normalized, 'balo') || str_contains($normalized, 'túi') || str_contains($normalized, 'tui')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><path d="M20 10a8 8 0 0 0-16 0"/></svg>';
+        }
+
+        if (str_contains($normalized, 'dây') || str_contains($normalized, 'day') || str_contains($normalized, 'móc') || str_contains($normalized, 'moc') || str_contains($normalized, 'carabiner')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a1 1 0 0 1-1-1v-1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1"/><path d="M9 3H7a2 2 0 0 0-2 2v1a1 1 0 0 1-1 1 1 1 0 0 1-1-1V5a4 4 0 0 1 4-4h2"/><path d="M9 3h6l3 7-4 1-2-4-2 4-4-1Z"/><path d="M14 11c.3 1.4.5 3 .5 4.5 0 3-1.2 5.5-3.5 5.5s-3-2.5-3-5.5c0-1.5.2-3.1.5-4.5"/></svg>';
+        }
+
+        if (str_contains($normalized, 'lều') || str_contains($normalized, 'leu') || str_contains($normalized, 'trại') || str_contains($normalized, 'trai') || str_contains($normalized, 'cắm trại')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/></svg>';
+        }
+
+        if (str_contains($normalized, 'áo') || str_contains($normalized, 'ao') || str_contains($normalized, 'khoác') || str_contains($normalized, 'khoac')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2 12 6 8 2 3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"/></svg>';
+        }
+
+        if (str_contains($normalized, 'đèn') || str_contains($normalized, 'den') || str_contains($normalized, 'pin')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6-6 6 6"/><path d="M9 9h6v11a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V9Z"/><path d="M12 3v6"/><path d="M10 14h4"/></svg>';
+        }
+
+        if (str_contains($normalized, 'phụ kiện') || str_contains($normalized, 'phu kien')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>';
+        }
+
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>';
+    }
+}
+
+$mobileCategoriesJson = array_map(function($cat) {
+    return [
+        'id' => (string)($cat['id'] ?? ''),
+        'name' => (string)($cat['name'] ?? ''),
+        'subcategories' => array_map(function($sub) {
+            return [
+                'name' => (string)($sub['name'] ?? ''),
+                'slug' => (string)($sub['slug'] ?? '')
+            ];
+        }, $cat['subcategories'] ?? []),
+    ];
+}, $categories);
+?>
+
+<!-- Category Menu - 2 Column Layout (Mobile + Desktop Mega Menu) -->
+<div class="category-menu-overlay" id="categoryMenu" aria-hidden="true">
+    <div class="category-menu-layout">
+        <div class="category-menu-sidebar" id="mobileMenuSidebar">
+            <button class="category-sidebar-item active" data-cat-id="all">
+                <span class="category-sidebar-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span class="category-sidebar-name">Tất cả</span>
+            </button>
+            <?php foreach ($categories as $cat): ?>
+                <button class="category-sidebar-item" data-cat-id="<?= $block->escapeHtmlAttr($cat['id']) ?>">
+                    <span class="category-sidebar-icon">
+                        <?= /* @noEscape */ peakgear_category_icon_svg((string)$cat['name'], (string)($cat['icon'] ?? '')) ?>
+                    </span>
+                    <span class="category-sidebar-name"><?= $block->escapeHtml($cat['name']) ?></span>
+                </button>
+            <?php endforeach; ?>
+        </div>
+        
+        <div class="category-menu-main" id="mobileMenuMain">
+            <div class="category-main-header">
+                <h3 class="category-main-title" id="mobileMainTitle">Tất cả sản phẩm</h3>
+                <a href="<?= $block->escapeUrl($block->getUrl('products')) ?>" class="category-main-view-all" id="mobileMainViewAll">Xem tất cả →</a>
+            </div>
+            
+            <div class="category-chips-container" id="mobileSubcategoryChips">
+                <!-- Subcategory chips dynamically injected -->
+            </div>
+            
+            <div class="category-featured-products">
+                <h4 class="category-featured-title">Sản phẩm nổi bật</h4>
+                <div id="mobileProductsLoading" class="category-products-loading" style="display:none;">
+                    Đang tải...
+                </div>
+                <div class="category-products-grid" id="mobileProductsGrid">
+                    <!-- Products dynamically injected -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var mobileCategoriesData = <?= json_encode($mobileCategoriesJson, JSON_UNESCAPED_UNICODE) ?>;
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.peakgearCategoryMenuReady) {
+        return;
+    }
+    window.peakgearCategoryMenuReady = true;
+    window.mobileCategoryCache = window.mobileCategoryCache || {};
+
+    var mobileSidebarItems = document.querySelectorAll('.category-sidebar-item');
+    var mobileMainTitle = document.getElementById('mobileMainTitle');
+    var mobileMainViewAll = document.getElementById('mobileMainViewAll');
+    var mobileSubcategoryChips = document.getElementById('mobileSubcategoryChips');
+    var mobileProductsGrid = document.getElementById('mobileProductsGrid');
+    var mobileProductsLoading = document.getElementById('mobileProductsLoading');
+
+    function renderMobileCategoryContent(catId, catName) {
+        if (!mobileCategoriesData || !mobileProductsGrid) return;
+        
+        if (mobileMainTitle) mobileMainTitle.textContent = catName;
+        
+        if (catId === 'all') {
+            if (mobileMainViewAll) mobileMainViewAll.href = '<?= $block->escapeJs($block->getUrl("products")) ?>';
+            if (mobileSubcategoryChips) mobileSubcategoryChips.innerHTML = '';
+        } else {
+            if (mobileMainViewAll) mobileMainViewAll.href = '<?= $block->escapeJs($block->getUrl("products")) ?>?category=' + catId;
+            var catData = mobileCategoriesData.find(function(c) { return c.id === catId; });
+            if (catData && catData.subcategories && catData.subcategories.length > 0) {
+                if (mobileSubcategoryChips) {
+                    mobileSubcategoryChips.innerHTML = catData.subcategories.map(function(sub) {
+                        return '<a class="category-chip" href="' + (mobileMainViewAll ? mobileMainViewAll.href : '') + '&sub=' + encodeURIComponent(sub.slug) + '">' + window.escapeHtml(sub.name) + '</a>';
+                    }).join('');
+                }
+            } else {
+                if (mobileSubcategoryChips) mobileSubcategoryChips.innerHTML = '';
+            }
+        }
+
+        if (mobileProductsGrid) mobileProductsGrid.innerHTML = '';
+        if (mobileProductsLoading) mobileProductsLoading.style.display = 'block';
+
+        if (window.mobileCategoryCache[catId]) {
+            if (mobileProductsLoading) mobileProductsLoading.style.display = 'none';
+            if (mobileProductsGrid) mobileProductsGrid.innerHTML = window.mobileCategoryCache[catId];
+            return;
+        }
+
+        var query = '';
+        if (catId !== 'all') {
+            query = 'query { products(filter: { category_id: { eq: "' + catId + '" } }, pageSize: 10) { items { name url_key url_suffix price_range { minimum_price { final_price { value currency } } } image { url label } } } }';
+        } else {
+            query = 'query { products(search: "", pageSize: 10) { items { name url_key url_suffix price_range { minimum_price { final_price { value currency } } } image { url label } } } }';
+        }
+
+        var fetchUrl = '<?= $block->escapeJs($block->getUrl("graphql")) ?>?query=' + encodeURIComponent(query);
+        fetch(fetchUrl, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (mobileProductsLoading) mobileProductsLoading.style.display = 'none';
+            if (data.data && data.data.products && data.data.products.items && data.data.products.items.length > 0) {
+                var products = data.data.products.items.map(function(item) {
+                    var value = item.price_range && item.price_range.minimum_price && item.price_range.minimum_price.final_price ? item.price_range.minimum_price.final_price.value : 0;
+                    var suffix = item.url_suffix || '.html';
+                    var url = item.url_key ? ('<?= $block->escapeJs($block->getBaseUrl()) ?>' + item.url_key + suffix) : window.searchResultBaseUrl + '?q=' + encodeURIComponent(item.name);
+                    var img = (item.image && item.image.url) ? item.image.url : '';
+                    return { name: item.name || '', url: url, imageUrl: img, price: value };
+                });
+                
+                if (mobileProductsGrid) {
+                    var html = products.map(function(p) {
+                        return window.buildProductCard(p, mobileMainViewAll ? mobileMainViewAll.href : '');
+                    }).join('');
+                    mobileProductsGrid.innerHTML = html;
+                    window.mobileCategoryCache[catId] = html;
+                }
+            } else {
+                var emptyHtml = '<div class="category-products-empty">Không có sản phẩm nào.</div>';
+                if (mobileProductsGrid) mobileProductsGrid.innerHTML = emptyHtml;
+                window.mobileCategoryCache[catId] = emptyHtml;
+            }
+        })
+        .catch(function() {
+            if (mobileProductsLoading) mobileProductsLoading.style.display = 'none';
+            if (mobileProductsGrid) mobileProductsGrid.innerHTML = '<div class="category-products-empty">Lỗi tải sản phẩm.</div>';
+        });
+    }
+
+    mobileSidebarItems.forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            var catId = this.getAttribute('data-cat-id');
+            var catName = this.querySelector('.category-sidebar-name').textContent;
+            
+            mobileSidebarItems.forEach(function(btn) { btn.classList.remove('active'); });
+            this.classList.add('active');
+            
+            renderMobileCategoryContent(catId, catName);
+        });
+    });
+
+    // Initial render for "Tất cả"
+    if (mobileSidebarItems.length > 0) {
+        renderMobileCategoryContent('all', 'Tất cả sản phẩm');
+    }
+
+    // Laptop Hover logic
+    var desktopCategoryContainer = document.getElementById('desktopCategoryContainer');
+    var desktopCategoryTrigger = document.getElementById('desktopCategoryTrigger');
+    var categoryMenu = document.getElementById('categoryMenu');
+    var desktopHoverTimeout;
+
+    function openCategoryMenu() {
+        clearTimeout(desktopHoverTimeout);
+        categoryMenu.classList.add('open');
+        categoryMenu.setAttribute('aria-hidden', 'false');
+        if (desktopCategoryTrigger) {
+            desktopCategoryTrigger.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    function closeCategoryMenu(delay) {
+        clearTimeout(desktopHoverTimeout);
+        desktopHoverTimeout = setTimeout(function() {
+            categoryMenu.classList.remove('open');
+            categoryMenu.setAttribute('aria-hidden', 'true');
+            if (desktopCategoryTrigger) {
+                desktopCategoryTrigger.setAttribute('aria-expanded', 'false');
+            }
+        }, delay || 0);
+    }
+
+    if (desktopCategoryContainer && categoryMenu) {
+        desktopCategoryContainer.addEventListener('mouseenter', function() {
+            if(window.innerWidth >= 768) {
+                openCategoryMenu();
+            }
+        });
+        desktopCategoryContainer.addEventListener('mouseleave', function() {
+            if(window.innerWidth >= 768) {
+                closeCategoryMenu(150);
+            }
+        });
+        if (desktopCategoryTrigger) {
+            desktopCategoryTrigger.setAttribute('aria-expanded', 'false');
+            desktopCategoryTrigger.addEventListener('click', function(e) {
+                if (window.innerWidth < 768) {
+                    return;
+                }
+                e.preventDefault();
+                if (categoryMenu.classList.contains('open')) {
+                    closeCategoryMenu(0);
+                } else {
+                    openCategoryMenu();
+                }
+            });
+        }
+        categoryMenu.addEventListener('mouseenter', function() {
+            if(window.innerWidth >= 768) {
+                clearTimeout(desktopHoverTimeout);
+            }
+        });
+        categoryMenu.addEventListener('mouseleave', function() {
+            if(window.innerWidth >= 768) {
+                closeCategoryMenu(150);
+            }
+        });
+        document.addEventListener('click', function(e) {
+            if (
+                window.innerWidth >= 768 &&
+                categoryMenu.classList.contains('open') &&
+                !categoryMenu.contains(e.target) &&
+                !desktopCategoryContainer.contains(e.target)
+            ) {
+                closeCategoryMenu(0);
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && categoryMenu.classList.contains('open')) {
+                closeCategoryMenu(0);
+            }
+        });
+    }
+});
+</script>

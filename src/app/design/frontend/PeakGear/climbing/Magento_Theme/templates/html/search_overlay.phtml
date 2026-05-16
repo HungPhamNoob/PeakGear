@@ -1,0 +1,80 @@
+<?php
+/**
+ * PeakGear search overlay.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+?>
+
+<div class="search-overlay" id="searchOverlay" aria-hidden="true">
+    <div class="search-overlay-backdrop" data-search-close></div>
+    <div class="search-overlay-panel" role="search">
+        <form action="<?= $block->escapeUrl($block->getUrl('catalogsearch/result')) ?>" method="get" class="search-overlay-form" id="searchOverlayForm">
+            <div class="search-overlay-bar">
+                <input type="text"
+                       name="q"
+                       id="searchOverlayInput"
+                       class="search-overlay-input"
+                       placeholder="Tìm kiếm sản phẩm, danh mục..."
+                       autocomplete="off"
+                       autocapitalize="off"/>
+                <button type="submit" class="search-overlay-submit" title="<?= $block->escapeHtmlAttr(__('Search')) ?>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </button>
+                <button type="button" class="search-overlay-close" id="searchOverlayClose" aria-label="Đóng tìm kiếm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <div class="search-overlay-body">
+            <div class="search-overlay-default" id="searchOverlayDefault">
+                <section class="search-overlay-section" id="popularKeywordSection">
+                    <div class="search-section-heading">
+                        <h3 class="search-overlay-title">Từ khóa phổ biến</h3>
+                    </div>
+                    <div class="search-chip-list" id="popularKeywordChips">
+                        <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Lều cắm trại') ?>">Lều cắm trại</a>
+                        <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Balo leo núi') ?>">Balo leo núi</a>
+                        <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Giày trekking') ?>">Giày trekking</a>
+                        <a class="search-chip search-chip-keyword" href="<?= $block->escapeUrl($block->getUrl('catalogsearch/result').'?q=Đèn pin') ?>">Đèn pin</a>
+                    </div>
+                </section>
+
+                <section class="search-overlay-section">
+                    <div class="search-section-heading">
+                        <h3 class="search-overlay-title">Gợi ý sản phẩm</h3>
+                        <a href="<?= $block->escapeUrl($block->getUrl('products')) ?>" class="search-view-all">Xem tất cả</a>
+                    </div>
+                    <div class="search-result-grid search-result-grid-suggested" id="searchSuggestionList"></div>
+                </section>
+            </div>
+
+            <div class="search-overlay-results" id="searchOverlayResults" hidden>
+                <section class="search-overlay-section" id="searchKeywordSection" hidden>
+                    <div class="search-section-heading">
+                        <h3 class="search-overlay-title">Gợi ý tìm kiếm</h3>
+                    </div>
+                    <div class="search-chip-list search-chip-list-keywords" id="searchKeywordChips"></div>
+                </section>
+
+                <section class="search-overlay-section">
+                    <div class="search-section-heading">
+                        <h3 class="search-overlay-title">Kết quả nhanh</h3>
+                        <a href="#" class="search-view-all" id="searchViewAll">Xem tất cả</a>
+                    </div>
+                    <div class="search-result-grid" id="searchResultGrid"></div>
+                    <div class="search-empty-state" id="searchEmptyState" hidden>
+                        Không tìm thấy kết quả phù hợp. Hãy thử từ khóa khác hoặc chọn gợi ý bên trên.
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

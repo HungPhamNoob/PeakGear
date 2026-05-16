@@ -308,17 +308,19 @@
     }
 }
 
-.login-social-facebook {
-    background: @peakgear-facebook;
-    color: @peakgear-text;
+.login-social-zalo {
+    background: #0068ff !important;
+    border-color: #0068ff !important;
+    color: @peakgear-text !important;
 
     &:hover {
-        background: #166FE5;
+        background: #0057d8 !important;
+        border-color: #0057d8 !important;
     }
+}
 
-    svg {
-        fill: @peakgear-text;
-    }
+.login-social-icon-image {
+    object-fit: contain;
 }
 
 // Register link
@@ -522,6 +524,36 @@
     padding-right: 2.25rem;
 }
 
+.register-method-toggle {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.register-method-option {
+    height: 2.75rem;
+    border: 1px solid fade(@peakgear-text, 18%);
+    border-radius: 0.5rem;
+    background: fade(@peakgear-text, 6%);
+    color: fade(@peakgear-text, 72%);
+    cursor: pointer;
+    font-family: @font-sans;
+    font-weight: 600;
+    transition: border-color @transition-fast, background @transition-fast, color @transition-fast;
+
+    &.active {
+        border-color: @peakgear-primary;
+        background: fade(@peakgear-primary, 20%);
+        color: @peakgear-primary-light;
+    }
+
+    &:hover {
+        border-color: fade(@peakgear-primary, 70%);
+        color: @peakgear-primary-light;
+    }
+}
+
 .register-eye-toggle {
     position: absolute;
     right: 0.4rem;
@@ -698,4 +730,3 @@
         }
     }
 }
-

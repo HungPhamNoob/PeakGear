@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="PeakGear_FlashSale::flash_sale"
+             title="Flash Sales"
+             module="PeakGear_FlashSale"
+             sortOrder="80"
+             parent="Magento_Catalog::catalog"
+             action="peakgear_flashsale/sale/index"
+             resource="PeakGear_FlashSale::flash_sale"/>
+    </menu>
+</config>

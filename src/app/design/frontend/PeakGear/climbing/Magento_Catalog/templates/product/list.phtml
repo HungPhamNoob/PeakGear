@@ -57,48 +57,60 @@ $_helper = $block->getData('outputHelper');
                 <?php endif; ?>
 
                 <!-- Image Container -->
-                <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-image-container">
-                    <?php if ($hasImage): ?>
-                        <img src="<?= $block->escapeUrl($productImageObj->getImageUrl()) ?>"
-                             alt="<?= $block->escapeHtmlAttr($productName) ?>"
-                             class="product-real-image"
-                             loading="lazy"
-                             width="300"
-                             height="300"/>
-                    <?php else: ?>
-                        <div class="product-placeholder">
-                            <div class="product-placeholder-circle">
-                                <span class="product-placeholder-initial">P</span>
+                <div class="product-image-container">
+                    <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-image-link">
+                        <?php if ($hasImage): ?>
+                            <img src="<?= $block->escapeUrl($productImageObj->getImageUrl()) ?>"
+                                 alt="<?= $block->escapeHtmlAttr($productName) ?>"
+                                 class="product-real-image"
+                                 loading="lazy"
+                                 width="300"
+                                 height="300"/>
+                        <?php else: ?>
+                            <div class="product-placeholder">
+                                <div class="product-placeholder-circle">
+                                    <span class="product-placeholder-initial">P</span>
+                                </div>
                             </div>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </a>
 
                     <!-- Quick Actions Overlay -->
                     <div class="product-quick-actions">
-                        <button type="button" class="product-action-btn product-action-wishlist" title="Yêu thích" data-action="add-to-wishlist" data-product-id="<?= $block->escapeHtmlAttr($productId) ?>">
+                        <button type="button"
+                                class="product-action-btn product-action-wishlist"
+                                title="Yêu thích"
+                                aria-label="Yêu thích"
+                                data-product-id="<?= $block->escapeHtmlAttr($productId) ?>"
+                                data-wishlist-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/add')) ?>"
+                                data-wishlist-remove-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/remove')) ?>"
+                                data-login-url="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>"
+                                data-register-url="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
                         </button>
-                        <span class="product-action-btn product-action-view" title="Xem chi tiết" onclick="window.location.href='<?= $block->escapeUrl($productUrl) ?>'">
+                        <a href="<?= $block->escapeUrl($productUrl) ?>" class="product-action-btn product-action-view" title="Xem chi tiết" aria-label="Xem chi tiết">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </span>
+                        </a>
                         
                         <?php if ($_product->isAvailable()): ?>
                             <form data-role="tocart-form" 
                                   data-product-sku="<?= $block->escapeHtmlAttr($_product->getSku()) ?>"
                                   action="<?= $block->escapeUrl($addToCartParams['action']) ?>" 
                                   method="post"
+                                  data-mage-init='{"catalogAddToCart": {"addToCartButtonSelector": ".action.tocart"}}'
                                   class="action-cart-form" style="display: contents;">
                                 <?= $block->getBlockHtml('formkey') ?>
                                 <input type="hidden" name="product" value="<?= $block->escapeHtmlAttr($productId) ?>">
                                 <input type="hidden" name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>" 
                                        value="<?= /* @noEscape */ $addToCartParams['data'][Action::PARAM_NAME_URL_ENCODED] ?>">
-                                <button type="submit" class="product-action-btn product-action-cart" title="Thêm vào giỏ">
+                                <button type="submit" class="product-action-btn product-action-cart action tocart" title="Thêm vào giỏ" aria-label="Thêm vào giỏ">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                    <span class="product-action-label">Thêm vào giỏ</span>
                                 </button>
                             </form>
                         <?php endif; ?>
                     </div>
-                </a>
+                </div>
 
                 <!-- Content -->
                 <div class="product-content">
@@ -153,6 +165,9 @@ $_helper = $block->getData('outputHelper');
                 }
             }
         }
+    },
+    "*": {
+        "peakgearProductActions": {}
     }
 }
 </script>

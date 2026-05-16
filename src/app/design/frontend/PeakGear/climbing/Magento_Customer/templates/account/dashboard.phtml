@@ -9,15 +9,25 @@ $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 $customerSession = $objectManager->get(\Magento\Customer\Model\Session::class);
 $customer = $customerSession->getCustomer();
 $customerName = '';
-$customerEmail = '';
+$customerEmail = 'Chưa cập nhật email';
+$customerPhone = 'Chưa cập nhật số điện thoại';
 if ($customer && $customer->getId()) {
     $customerName = $customer->getFirstname() . ' ' . $customer->getLastname();
-    $customerEmail = $customer->getEmail();
+    $email = (string) $customer->getEmail();
+    if (!preg_match('/^phone-[0-9]+@peakgear\.local$/', $email)) {
+        $customerEmail = $email;
+    }
+
+    $mobileNumber = (string) $customer->getData('mobile_number');
+    if ($mobileNumber !== '') {
+        $customerPhone = $mobileNumber;
+    } elseif (preg_match('/^phone-([0-9]+)@peakgear\.local$/', $email, $matches)) {
+        $customerPhone = $matches[1];
+    }
 }
 $initial = $customerName ? strtoupper($customerName[0]) : 'U';
 
 $shippingAddressInfo = 'Chưa cập nhật địa chỉ';
-$shippingPhoneInfo = 'Chưa cập nhật số điện thoại';
 if ($customer && $customer->getId()) {
     $primaryShipping = $customer->getPrimaryShippingAddress();
     if ($primaryShipping) {
@@ -31,10 +41,6 @@ if ($customer && $customer->getId()) {
         
         if (!empty($fullAddress)) {
             $shippingAddressInfo = implode(', ', $fullAddress);
-        }
-        $telephone = $primaryShipping->getTelephone();
-        if ($telephone) {
-            $shippingPhoneInfo = $telephone;
         }
     }
 }
@@ -76,7 +82,7 @@ if ($customer && $customer->getId()) {
                     </div>
                     <div class="info-split-column">
                         <p><strong>Địa chỉ:</strong> <?= $block->escapeHtml($shippingAddressInfo) ?></p>
-                        <p><strong>Điện thoại:</strong> <?= $block->escapeHtml($shippingPhoneInfo) ?></p>
+                        <p><strong>Điện thoại:</strong> <?= $block->escapeHtml($customerPhone) ?></p>
                     </div>
                 </div>
             </a>

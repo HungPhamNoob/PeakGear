@@ -6,4 +6,29 @@
                 type="PeakGear\Customer\Plugin\CreatePostPlugin"
                 sortOrder="10"/>
     </type>
+    <type name="Magento\Customer\Controller\Account\LoginPost">
+        <plugin name="PeakGearCustomerPhoneLogin"
+                type="PeakGear\Customer\Plugin\LoginPostPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Customer\Model\CustomerExtractor">
+        <plugin name="PeakGearCustomerTelephoneExtractor"
+                type="PeakGear\Customer\Plugin\CustomerExtractorPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Mageplaza\SocialLogin\Model\Social">
+        <plugin name="PeakGearCustomerSocialLoginProvider"
+                type="PeakGear\Customer\Plugin\SocialLogin\SocialPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Mageplaza\SocialLogin\Helper\Data">
+        <plugin name="PeakGearCustomerSocialLoginData"
+                type="PeakGear\Customer\Plugin\SocialLogin\DataPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Mageplaza\SocialLogin\Helper\Social">
+        <plugin name="PeakGearCustomerSocialLoginHelper"
+                type="PeakGear\Customer\Plugin\SocialLogin\SocialHelperPlugin"
+                sortOrder="10"/>
+    </type>
 </config>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="checkout_cart_product_add_after">
+        <observer name="peakgear_flash_sale_apply_cart_price"
+                  instance="PeakGear\FlashSale\Observer\ApplyCartItemFlashSale"/>
+    </event>
+    <event name="checkout_cart_update_items_before">
+        <observer name="peakgear_flash_sale_validate_cart_update"
+                  instance="PeakGear\FlashSale\Observer\ValidateCartUpdate"/>
+    </event>
+    <event name="sales_quote_collect_totals_before">
+        <observer name="peakgear_flash_sale_refresh_quote_prices"
+                  instance="PeakGear\FlashSale\Observer\RefreshQuotePrices"/>
+    </event>
+</config>
