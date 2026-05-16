@@ -146,7 +146,7 @@ main() {
     check_prerequisites
     load_env
 
-    pull_code
+    #pull_code
     backup_if_needed
 
     local change_type

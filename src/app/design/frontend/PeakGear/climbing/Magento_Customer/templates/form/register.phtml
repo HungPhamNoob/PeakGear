@@ -42,6 +42,16 @@ $formData = $block->getFormData();
                   autocomplete="off"
                   data-mage-init='{"validation":{}}'>
                 <?= $block->getBlockHtml('formkey') ?>
+                <input type="hidden" name="account_create_method" id="account-create-method" value="email"/>
+
+                <div class="register-method-toggle" role="group" aria-label="Chọn cách tạo tài khoản">
+                    <button type="button" class="register-method-option active" data-create-method="email">
+                        Email
+                    </button>
+                    <button type="button" class="register-method-option" data-create-method="phone">
+                        Số điện thoại
+                    </button>
+                </div>
 
                 <!-- Full Name (visible) — JS splits into firstname/lastname on submit -->
                 <div class="register-field">
@@ -66,7 +76,7 @@ $formData = $block->getFormData();
                        value="<?= $block->escapeHtmlAttr($formData->getLastname()) ?>"/>
 
                 <!-- Email -->
-                <div class="register-field">
+                <div class="register-field" id="register-email-field">
                     <label class="register-label" for="email_address">Email <span class="required-star">*</span></label>
                     <div class="register-input-wrapper">
                         <svg class="register-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -86,8 +96,8 @@ $formData = $block->getFormData();
                 </div>
 
                 <!-- Phone -->
-                <div class="register-field">
-                    <label class="register-label" for="phone">Số điện thoại</label>
+                <div class="register-field" id="register-phone-field">
+                    <label class="register-label" for="phone">Số điện thoại <span class="required-star register-phone-required" style="display:none">*</span></label>
                     <div class="register-input-wrapper">
                         <svg class="register-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -96,7 +106,8 @@ $formData = $block->getFormData();
                                name="telephone"
                                id="phone"
                                class="register-input"
-                               placeholder="0123 456 789"/>
+                               placeholder="0123 456 789"
+                               autocomplete="tel"/>
                     </div>
                 </div>
 
@@ -258,6 +269,47 @@ document.addEventListener('DOMContentLoaded', function() {
     var confirmInput = document.getElementById('password-confirmation');
     var strengthGrid = document.getElementById('password-strength-grid');
     var mismatchMsg = document.getElementById('password-mismatch');
+    var methodInput = document.getElementById('account-create-method');
+    var methodButtons = document.querySelectorAll('.register-method-option');
+    var emailField = document.getElementById('register-email-field');
+    var phoneRequired = document.querySelector('.register-phone-required');
+    var emailInput = document.getElementById('email_address');
+    var phoneInput = document.getElementById('phone');
+
+    function setCreateMethod(method) {
+        if (!methodInput || !emailInput || !phoneInput) {
+            return;
+        }
+        methodInput.value = method;
+        methodButtons.forEach(function(button) {
+            button.classList.toggle('active', button.getAttribute('data-create-method') === method);
+        });
+
+        if (method === 'phone') {
+            emailField.style.display = 'none';
+            emailInput.removeAttribute('required');
+            emailInput.removeAttribute('data-validate');
+            emailInput.disabled = true;
+            phoneInput.setAttribute('required', 'required');
+            phoneInput.setAttribute('data-validate', '{required:true}');
+            if (phoneRequired) phoneRequired.style.display = '';
+        } else {
+            emailField.style.display = '';
+            emailInput.disabled = false;
+            emailInput.setAttribute('required', 'required');
+            emailInput.setAttribute('data-validate', "{required:true, 'validate-email':true}");
+            phoneInput.removeAttribute('required');
+            phoneInput.removeAttribute('data-validate');
+            if (phoneRequired) phoneRequired.style.display = 'none';
+        }
+    }
+
+    methodButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            setCreateMethod(button.getAttribute('data-create-method'));
+        });
+    });
+    setCreateMethod(methodInput ? methodInput.value : 'email');
 
     if (passwordInput) {
         passwordInput.addEventListener('input', function() {

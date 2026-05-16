@@ -12,7 +12,13 @@ $customer = $customerSession->getCustomer();
 
 $firstname = ($customer && $customer->getId()) ? $customer->getFirstname() : '';
 $lastname = ($customer && $customer->getId()) ? $customer->getLastname() : '';
-$email = ($customer && $customer->getId()) ? $customer->getEmail() : '';
+$email = '';
+if ($customer && $customer->getId()) {
+    $customerEmail = (string) $customer->getEmail();
+    if (!preg_match('/^phone-[0-9]+@peakgear\.local$/', $customerEmail)) {
+        $email = $customerEmail;
+    }
+}
 
 $shippingAddressInfo = 'Chưa cập nhật địa chỉ giao hàng';
 $shippingPhoneInfo = 'Chưa cập nhật số điện thoại';

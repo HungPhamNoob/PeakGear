@@ -41,21 +41,21 @@
                   data-mage-init='{"validation":{}}'>
                 <?= $block->getBlockHtml('formkey') ?>
 
-                <!-- Email Field -->
+                <!-- Email/Phone Field -->
                 <div class="login-field">
-                    <label for="email" class="login-label">Email</label>
+                    <label for="email" class="login-label">Email hoặc số điện thoại</label>
                     <div class="login-input-wrapper">
                         <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                             <polyline points="22,6 12,13 2,6"/>
                         </svg>
-                        <input type="email"
+                        <input type="text"
                                name="login[username]"
                                id="email"
                                class="login-input"
-                               placeholder="your@email.com"
-                               autocomplete="email"
-                               data-validate="{required:true, 'validate-email':true}"/>
+                               placeholder="your@email.com hoặc 0123 456 789"
+                               autocomplete="username"
+                               data-validate="{required:true}"/>
                     </div>
                 </div>
 
