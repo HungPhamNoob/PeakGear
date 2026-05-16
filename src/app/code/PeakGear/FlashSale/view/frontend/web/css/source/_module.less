@@ -1,3 +1,22 @@
+// ── FlashSale module: local variable defaults ────────────────────────────────
+// These mirror the PeakGear theme tokens. They are declared as defaults so
+// that if the active theme already defines them the theme value wins (LESS uses
+// the LAST declaration, so a theme @import that runs after this will override).
+// This prevents "variable is undefined" when compiled against Magento/blank.
+@peakgear-primary:          #f59e0b; // amber-500
+@peakgear-primary-hover:    #d97706; // amber-600
+@peakgear-primary-light:    #fbbf24; // amber-400
+@peakgear-dark:             #0f0f1a;
+@peakgear-dark-secondary:   #1a1a2e;
+@peakgear-dark-footer:      #0a0a14;
+@peakgear-text:             #ffffff;
+@peakgear-border:           rgba(255, 255, 255, 0.1);
+@peakgear-red:              #ef4444;
+@peakgear-green:            #22c55e;
+@font-sans:                 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+@max-width:                 80rem;
+// ─────────────────────────────────────────────────────────────────────────────
+
 .pg-flash-sale {
     padding: 3rem 1.5rem;
     background:
