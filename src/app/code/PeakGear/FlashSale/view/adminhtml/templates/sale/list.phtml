@@ -1,0 +1,41 @@
+<?php
+/** @var \PeakGear\FlashSale\Block\Adminhtml\Sale\ListBlock $block */
+$sales = $block->getSales();
+?>
+<div class="page-main-actions">
+    <div class="page-actions">
+        <a class="action-primary" href="<?= $block->escapeUrl($block->getUrl('*/*/new')) ?>">Thêm flash sale</a>
+    </div>
+</div>
+<table class="admin__table-primary">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Tiêu đề</th>
+        <th>Trạng thái</th>
+        <th>Bắt đầu</th>
+        <th>Kết thúc</th>
+        <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php if (empty($sales)): ?>
+        <tr><td colspan="6">Chưa có flash sale.</td></tr>
+    <?php endif; ?>
+    <?php foreach ($sales as $sale): ?>
+        <tr>
+            <td><?= (int)$sale->getId() ?></td>
+            <td><?= $block->escapeHtml((string)$sale->getData('title')) ?></td>
+            <td><?= (int)$sale->getData('is_active') ? 'Bật' : 'Tắt' ?></td>
+            <td><?= $block->escapeHtml($block->formatStoreDateTime((string)$sale->getData('start_at'))) ?></td>
+            <td><?= $block->escapeHtml($block->formatStoreDateTime((string)$sale->getData('end_at'))) ?></td>
+            <td>
+                <a href="<?= $block->escapeUrl($block->getUrl('*/*/edit', ['sale_id' => (int)$sale->getId()])) ?>">Sửa</a>
+                |
+                <a href="<?= $block->escapeUrl($block->getUrl('*/*/delete', ['sale_id' => (int)$sale->getId()])) ?>"
+                   onclick="return confirm('Xóa flash sale này?')">Xóa</a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>

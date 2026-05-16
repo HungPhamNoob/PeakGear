@@ -18,6 +18,9 @@ $canApplyMsrp = $helper->isShowBeforeOrderConfirm($product) && $helper->isMinima
 /** @var \PeakGear\Cart\ViewModel\CartItemQuantity|null $quantityViewModel */
 $quantityViewModel = $block->getData('quantity_view_model');
 $quantityConfig = $quantityViewModel ? $quantityViewModel->getConfig($_item) : [];
+/** @var \PeakGear\FlashSale\ViewModel\CartItemFlashSale|null $flashSaleViewModel */
+$flashSaleViewModel = $block->getData('flash_sale_view_model');
+$flashSaleInfo = $flashSaleViewModel ? $flashSaleViewModel->getInfo($_item) : null;
 $currentQty = isset($quantityConfig['currentQty']) ? (float) $quantityConfig['currentQty'] : (float) $block->getQty();
 $minAllowed = isset($quantityConfig['minAllowed']) ? (float) $quantityConfig['minAllowed'] : 1.0;
 $maxAllowed = array_key_exists('maxAllowed', $quantityConfig) ? $quantityConfig['maxAllowed'] : null;
@@ -110,6 +113,17 @@ if (!empty($quantityConfig['qtyIncrements'])) {
                             <div><?= $block->escapeHtml($message['text']) ?></div>
                         </div>
                     <?php endforeach; ?>
+                <?php endif; ?>
+                <?php if ($flashSaleInfo): ?>
+                    <div class="cart item message notice">
+                        <div>
+                            Flash sale -<?= (int)round((float)$flashSaleInfo['discount_percent']) ?>%,
+                            còn <?= (int)$flashSaleInfo['remaining_qty'] ?> sản phẩm.
+                            <?php if ((int)$flashSaleInfo['max_per_order'] > 0): ?>
+                                Tối đa <?= (int)$flashSaleInfo['max_per_order'] ?> sản phẩm/đơn.
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 <?php endif; ?>
                 <?php $addInfoBlock = $block->getProductAdditionalInformationBlock(); ?>
                 <?php if ($addInfoBlock): ?>

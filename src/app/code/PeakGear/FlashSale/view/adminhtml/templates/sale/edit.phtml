@@ -1,0 +1,210 @@
+<?php
+/** @var \PeakGear\FlashSale\Block\Adminhtml\Sale\EditBlock $block */
+$sale = $block->getSale();
+$saleId = (int)$sale->getId();
+$items = $block->getItems($saleId);
+if (empty($items)) {
+    $items = [null];
+}
+?>
+<form method="post" action="<?= $block->escapeUrl($block->getUrl('*/*/save')) ?>">
+    <?= $block->getBlockHtml('formkey') ?>
+    <input type="hidden" name="sale_id" value="<?= $saleId ?>">
+    <div class="admin__fieldset">
+        <div class="admin__field">
+            <label class="admin__field-label" for="title">Tiêu đề</label>
+            <div class="admin__field-control">
+                <input class="admin__control-text" id="title" name="title" value="<?= $block->escapeHtmlAttr((string)$sale->getData('title')) ?>" required>
+            </div>
+        </div>
+        <div class="admin__field">
+            <label class="admin__field-label" for="is_active">Trạng thái</label>
+            <div class="admin__field-control">
+                <select class="admin__control-select" id="is_active" name="is_active">
+                    <option value="1" <?= (int)$sale->getData('is_active') !== 0 ? 'selected' : '' ?>>Bật</option>
+                    <option value="0" <?= (int)$sale->getData('is_active') === 0 ? 'selected' : '' ?>>Tắt</option>
+                </select>
+            </div>
+        </div>
+        <div class="admin__field">
+            <label class="admin__field-label" for="start_at">Bắt đầu</label>
+            <div class="admin__field-control">
+                <input class="admin__control-text flashsale-datetime"
+                       id="start_at"
+                       name="start_at"
+                       type="text"
+                       inputmode="numeric"
+                       placeholder="YYYY-MM-DD HH:mm"
+                       value="<?= $block->escapeHtmlAttr($block->formatDateTimeInput((string)$sale->getData('start_at'))) ?>"
+                       required>
+                <div class="admin__field-note">Timezone: <?= $block->escapeHtml($block->getTimezoneLabel()) ?>, định dạng 24h.</div>
+            </div>
+        </div>
+        <div class="admin__field">
+            <label class="admin__field-label" for="end_at">Kết thúc</label>
+            <div class="admin__field-control">
+                <input class="admin__control-text flashsale-datetime"
+                       id="end_at"
+                       name="end_at"
+                       type="text"
+                       inputmode="numeric"
+                       placeholder="YYYY-MM-DD HH:mm"
+                       value="<?= $block->escapeHtmlAttr($block->formatDateTimeInput((string)$sale->getData('end_at'))) ?>"
+                       required>
+                <div class="admin__field-note">Timezone: <?= $block->escapeHtml($block->getTimezoneLabel()) ?>, định dạng 24h.</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Sản phẩm flash sale</h2>
+    <p>Tìm theo tên, SKU hoặc ID rồi chọn sản phẩm trong danh sách. Đặt giới hạn bằng 0 nếu không muốn áp dụng giới hạn đó.</p>
+    <table class="admin__table-primary" id="flashsale-items">
+        <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th>% giảm</th>
+            <th>Số lượng sale</th>
+            <th>Đã bán</th>
+            <th>Tối đa/khách</th>
+            <th>Tối đa/đơn</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach (array_values($items) as $index => $item): ?>
+            <tr>
+                <?php $productId = $item ? (int)$item->getData('product_id') : 0; ?>
+                <td class="flashsale-product-cell">
+                    <input class="admin__control-text flashsale-product-search"
+                           type="search"
+                           autocomplete="off"
+                           placeholder="Tìm tên, SKU hoặc ID"
+                           value="<?= $block->escapeHtmlAttr($block->getProductSearchLabel($productId)) ?>">
+                    <input type="hidden" class="flashsale-product-value" name="items[<?= (int)$index ?>][product]" value="<?= $productId ?: '' ?>">
+                    <div class="flashsale-product-results" hidden></div>
+                </td>
+                <td><input class="admin__control-text" name="items[<?= (int)$index ?>][discount_percent]" type="number" step="0.01" min="0" max="100" value="<?= $item ? $block->escapeHtmlAttr((string)$item->getData('discount_percent')) : '' ?>"></td>
+                <td><input class="admin__control-text" name="items[<?= (int)$index ?>][qty_limit]" type="number" min="0" value="<?= $item ? $block->escapeHtmlAttr((string)$item->getData('qty_limit')) : '' ?>"></td>
+                <td><input class="admin__control-text" name="items[<?= (int)$index ?>][sold_qty]" type="number" min="0" value="<?= $item ? $block->escapeHtmlAttr((string)$item->getData('sold_qty')) : '0' ?>"></td>
+                <td><input class="admin__control-text" name="items[<?= (int)$index ?>][max_per_customer]" type="number" min="0" value="<?= $item ? $block->escapeHtmlAttr((string)$item->getData('max_per_customer')) : '' ?>"></td>
+                <td><input class="admin__control-text" name="items[<?= (int)$index ?>][max_per_order]" type="number" min="0" value="<?= $item ? $block->escapeHtmlAttr((string)$item->getData('max_per_order')) : '' ?>"></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+    <button type="button" class="action-secondary" id="add-flashsale-row">Thêm dòng</button>
+    <div class="page-main-actions" style="margin-top: 24px;">
+        <button class="action-primary" type="submit">Lưu</button>
+        <a class="action-secondary" href="<?= $block->escapeUrl($block->getUrl('*/*/index')) ?>">Quay lại</a>
+    </div>
+</form>
+<style>
+    .flashsale-product-cell { min-width: 320px; position: relative; }
+    .flashsale-product-results {
+        background: #fff;
+        border: 1px solid #adadad;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .16);
+        left: 0;
+        max-height: 260px;
+        overflow: auto;
+        position: absolute;
+        right: 12px;
+        top: 36px;
+        z-index: 40;
+    }
+    .flashsale-product-result {
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        padding: 10px 12px;
+    }
+    .flashsale-product-result:hover { background: #f5f5f5; }
+    .flashsale-product-result strong { display: block; }
+    .flashsale-product-result span { color: #666; font-size: 12px; }
+</style>
+<script>
+require(['jquery', 'mage/calendar'], function ($) {
+    'use strict';
+
+    var searchUrl = '<?= $block->escapeJs($block->getUrl('peakgear_flashsale/product/search')) ?>';
+    var searchTimer = null;
+
+    $('.flashsale-datetime').calendar({
+        showsTime: true,
+        showTime: true,
+        timeFormat: 'HH:mm',
+        dateFormat: 'yy-mm-dd',
+        ampm: false,
+        showButtonPanel: true
+    });
+
+    function escapeHtml(value) {
+        return $('<div/>').text(value || '').html();
+    }
+
+    function productCell(index) {
+        return '<td class="flashsale-product-cell">' +
+            '<input class="admin__control-text flashsale-product-search" type="search" autocomplete="off" placeholder="Tìm tên, SKU hoặc ID">' +
+            '<input type="hidden" class="flashsale-product-value" name="items[' + index + '][product]">' +
+            '<div class="flashsale-product-results" hidden></div>' +
+            '</td>';
+    }
+
+    $('#add-flashsale-row').on('click', function () {
+        var index = $('#flashsale-items tbody tr').length;
+        var row = '<tr>' +
+            productCell(index) +
+            '<td><input class="admin__control-text" name="items[' + index + '][discount_percent]" type="number" step="0.01" min="0" max="100"></td>' +
+            '<td><input class="admin__control-text" name="items[' + index + '][qty_limit]" type="number" min="0"></td>' +
+            '<td><input class="admin__control-text" name="items[' + index + '][sold_qty]" type="number" min="0" value="0"></td>' +
+            '<td><input class="admin__control-text" name="items[' + index + '][max_per_customer]" type="number" min="0"></td>' +
+            '<td><input class="admin__control-text" name="items[' + index + '][max_per_order]" type="number" min="0"></td>' +
+            '</tr>';
+        $('#flashsale-items tbody').append(row);
+    });
+
+    $('#flashsale-items').on('input', '.flashsale-product-search', function () {
+        var $input = $(this);
+        var $cell = $input.closest('.flashsale-product-cell');
+        var $results = $cell.find('.flashsale-product-results');
+        var query = $.trim($input.val());
+
+        $cell.find('.flashsale-product-value').val('');
+        window.clearTimeout(searchTimer);
+
+        if (query.length < 2) {
+            $results.prop('hidden', true).empty();
+            return;
+        }
+
+        searchTimer = window.setTimeout(function () {
+            $.getJSON(searchUrl, {q: query}).done(function (response) {
+                var items = response && response.items ? response.items : [];
+                if (!items.length) {
+                    $results.html('<div class="flashsale-product-result"><span>Không tìm thấy sản phẩm</span></div>').prop('hidden', false);
+                    return;
+                }
+
+                $results.html(items.map(function (item) {
+                    return '<div class="flashsale-product-result" data-id="' + item.id + '" data-label="' + escapeHtml(item.label) + '">' +
+                        '<strong>' + escapeHtml(item.name) + '</strong>' +
+                        '<span>#' + item.id + ' - ' + escapeHtml(item.sku) + '</span>' +
+                        '</div>';
+                }).join('')).prop('hidden', false);
+            });
+        }, 250);
+    });
+
+    $('#flashsale-items').on('click', '.flashsale-product-result[data-id]', function () {
+        var $result = $(this);
+        var $cell = $result.closest('.flashsale-product-cell');
+        $cell.find('.flashsale-product-search').val($result.data('label'));
+        $cell.find('.flashsale-product-value').val($result.data('id'));
+        $cell.find('.flashsale-product-results').prop('hidden', true).empty();
+    });
+
+    $(document).on('click', function (event) {
+        if (!$(event.target).closest('.flashsale-product-cell').length) {
+            $('.flashsale-product-results').prop('hidden', true);
+        }
+    });
+});
+</script>

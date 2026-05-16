@@ -23,12 +23,18 @@
                    name="peakgear.features" 
                    template="Magento_Cms::homepage/features.phtml"
                    after="peakgear.hero"/>
+
+            <!-- Flash Sale Section -->
+            <block class="PeakGear\FlashSale\Block\Home\FlashSale"
+                   name="peakgear.flashsale.home"
+                   template="PeakGear_FlashSale::home/flash-sale.phtml"
+                   after="peakgear.features"/>
             
             <!-- Categories Section (dynamic from DB) -->
             <block class="PeakGear\Catalog\Block\CategoryList" 
                    name="peakgear.categories" 
                    template="Magento_Cms::homepage/categories.phtml"
-                   after="peakgear.features"/>
+                   after="peakgear.flashsale.home"/>
             
             <!-- Featured Products (newest products from DB) -->
             <block class="PeakGear\Catalog\Block\FeaturedProducts" 

@@ -1,0 +1,278 @@
+.pg-flash-sale {
+    padding: 3rem 1.5rem;
+    background:
+        radial-gradient(circle at 8% 16%, fade(@peakgear-primary-light, 16%), transparent 16rem),
+        radial-gradient(circle at 82% 74%, fade(@peakgear-primary-light, 10%), transparent 18rem),
+        linear-gradient(to bottom, @peakgear-dark, @peakgear-dark-secondary);
+
+    @media (min-width: 768px) {
+        padding: 4rem 3rem;
+    }
+}
+
+.pg-flash-sale__inner {
+    position: relative;
+    overflow: hidden;
+    max-width: @max-width;
+    min-height: 28rem;
+    margin: 0 auto;
+    padding: 2rem;
+    border: 1px solid fade(@peakgear-primary-light, 34%);
+    border-radius: 1.25rem;
+    background:
+        radial-gradient(circle at 90% 55%, fade(@peakgear-primary-light, 10%), transparent 18rem),
+        linear-gradient(135deg, fade(@peakgear-dark-secondary, 96%), fade(@peakgear-dark, 98%));
+    box-shadow:
+        0 26px 80px fade(#000, 38%),
+        0 0 0 1px fade(@peakgear-text, 5%) inset,
+        0 0 36px fade(@peakgear-primary-light, 12%);
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        pointer-events: none;
+    }
+
+    &::before {
+        inset: 0;
+        border-radius: inherit;
+        background:
+            linear-gradient(90deg, transparent, fade(@peakgear-primary-light, 24%), transparent) top left / 100% 1px no-repeat,
+            linear-gradient(180deg, transparent, fade(@peakgear-primary-light, 22%), transparent) top right / 1px 100% no-repeat;
+    }
+
+    &::after {
+        right: -8rem;
+        bottom: -10rem;
+        width: 34rem;
+        height: 34rem;
+        border-radius: 50%;
+        border: 1px solid fade(@peakgear-primary-light, 8%);
+        box-shadow:
+            -2rem -2rem 0 -1.95rem fade(@peakgear-primary-light, 10%),
+            -4rem -4rem 0 -3.9rem fade(@peakgear-primary-light, 8%),
+            -6rem -6rem 0 -5.85rem fade(@peakgear-primary-light, 6%),
+            -8rem -8rem 0 -7.8rem fade(@peakgear-primary-light, 5%);
+        opacity: .9;
+    }
+
+    @media (min-width: 768px) {
+        padding: 2.25rem;
+    }
+}
+
+.pg-flash-sale__header,
+.pg-flash-sale__grid {
+    position: relative;
+    z-index: 1;
+}
+
+.pg-flash-sale__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.7rem;
+
+    @media (min-width: 980px) {
+        grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+        align-items: start;
+    }
+}
+
+.pg-flash-sale__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: 0.45rem 1rem;
+    border: 1px solid fade(@peakgear-primary-light, 42%);
+    border-radius: 999px;
+    background: fade(@peakgear-primary-light, 12%);
+    box-shadow: 0 0 18px fade(@peakgear-primary-light, 16%);
+    color: @peakgear-primary-light;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.pg-flash-sale__eyebrow svg,
+.pg-flash-sale__meta svg,
+.pg-flash-sale__timer-label svg {
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.pg-flash-sale__eyebrow svg {
+    fill: currentColor;
+    stroke: none;
+}
+
+.pg-flash-sale--active .pg-flash-sale__eyebrow {
+    border-color: fade(@peakgear-red, 46%);
+    background: fade(@peakgear-red, 16%);
+    color: lighten(@peakgear-red, 11%);
+}
+
+.pg-flash-sale__title {
+    max-width: 42rem;
+    margin: 1rem 0 0;
+    color: @peakgear-text;
+    font-family: @font-sans;
+    font-size: 2.35rem;
+    font-weight: 800;
+    line-height: 1.05;
+    text-shadow: 0 10px 30px fade(#000, 30%);
+
+    @media (min-width: 768px) {
+        font-size: 3rem;
+    }
+}
+
+.pg-flash-sale__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: 1rem 0 0;
+    color: fade(@peakgear-text, 68%);
+    font-size: 0.95rem;
+    line-height: 1.55;
+
+    svg {
+        color: @peakgear-primary-light;
+    }
+}
+
+.pg-flash-sale__timer-wrap {
+    width: 100%;
+    padding: 1.15rem;
+    border: 1px solid fade(@peakgear-primary-light, 28%);
+    border-radius: 1rem;
+    background: fade(@peakgear-dark-secondary, 78%);
+    box-shadow:
+        0 18px 48px fade(#000, 22%),
+        0 0 22px fade(@peakgear-primary-light, 12%);
+}
+
+.pg-flash-sale__timer-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    margin-bottom: 1rem;
+    color: @peakgear-primary-light;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.pg-flash-sale__timer {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.pg-flash-sale__timer span {
+    display: grid;
+    gap: .35rem;
+    justify-items: center;
+    min-width: 0;
+    padding: 1rem .6rem;
+    border-radius: .75rem;
+    background: fade(#020617, 74%);
+    box-shadow: 0 10px 24px fade(#000, 18%) inset;
+    color: @peakgear-text;
+}
+
+.pg-flash-sale__timer strong {
+    font-size: 1.55rem;
+    font-weight: 900;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.pg-flash-sale__timer em {
+    color: fade(@peakgear-text, 62%);
+    font-size: .76rem;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.pg-flash-sale__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+.pg-flash-sale__card {
+    max-width: 15rem;
+    margin: 0;
+    border: 1px solid fade(@peakgear-primary-light, 20%);
+    box-shadow: 0 18px 44px fade(#000, 22%);
+}
+
+.pg-flash-sale__card .product-content {
+    min-height: 10rem;
+}
+
+.pg-flash-sale__card .product-category-tag {
+    color: @peakgear-primary-light;
+}
+
+.pg-flash-sale__card .product-current-price {
+    color: @peakgear-text;
+}
+
+.pg-flash-sale__card .product-original-price {
+    color: fade(@peakgear-text, 38%);
+}
+
+@media (max-width: 900px) {
+    .pg-flash-sale__inner {
+        min-height: 0;
+        padding: 1.5rem;
+    }
+
+    .pg-flash-sale__card {
+        max-width: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .pg-flash-sale {
+        padding: 2rem 1rem;
+    }
+
+    .pg-flash-sale__inner {
+        padding: 1rem;
+        border-radius: 1rem;
+    }
+
+    .pg-flash-sale__title {
+        font-size: 2rem;
+    }
+
+    .pg-flash-sale__timer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pg-flash-sale__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pg-flash-sale__card .product-content {
+        min-height: 0;
+    }
+}
