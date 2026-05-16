@@ -34,7 +34,8 @@ jobs:
           ssh root@${{ vars.DROPLET_IP }} "
             set -e
             cd /opt/peakgear
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             bash scripts/deploy.sh --no-backup
           "
 
