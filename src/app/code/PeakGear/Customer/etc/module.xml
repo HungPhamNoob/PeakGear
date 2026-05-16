@@ -4,6 +4,7 @@
     <module name="PeakGear_Customer" setup_version="1.0.0">
         <sequence>
             <module name="Magento_Customer"/>
+            <module name="Mageplaza_SocialLogin"/>
         </sequence>
     </module>
 </config>
