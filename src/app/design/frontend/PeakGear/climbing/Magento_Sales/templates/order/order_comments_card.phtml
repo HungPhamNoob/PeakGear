@@ -1,0 +1,31 @@
+<?php
+/**
+ * PeakGear Climbing Theme – Order Comments
+ *
+ * @var \Magento\Sales\Block\Order\View $block
+ */
+$_history = $block->getOrder()->getVisibleStatusHistory();
+?>
+<?php if (!empty($_history)) : ?>
+    <section class="pg-order-comments-card">
+        <div class="pg-order-section-header">
+            <div>
+                <p class="pg-order-section-header__eyebrow">Cập nhật đơn hàng</p>
+                <h3 class="pg-order-section-header__title">Lịch sử xử lý</h3>
+            </div>
+        </div>
+
+        <dl class="pg-order-comments-list">
+            <?php foreach ($_history as $_historyItem) : ?>
+                <div class="pg-order-comments-list__item">
+                    <dt class="pg-order-comments-list__date">
+                        <?= /* @noEscape */ $block->formatDate($_historyItem->getCreatedAt(), \IntlDateFormatter::MEDIUM, true) ?>
+                    </dt>
+                    <dd class="pg-order-comments-list__content">
+                        <?= $block->escapeHtml($_historyItem->getComment(), ['b', 'br', 'strong', 'i', 'u', 'a']) ?>
+                    </dd>
+                </div>
+            <?php endforeach; ?>
+        </dl>
+    </section>
+<?php endif; ?>
