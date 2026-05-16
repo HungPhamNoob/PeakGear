@@ -102,7 +102,7 @@ setup_upgrade() {
 
 deploy_static() {
     log_info "Deploying theme static content via Makefile..."
-    make -C "$PROJECT_DIR" themes DOCKER_COMPOSE="docker compose -f $PROJECT_DIR/$COMPOSE_FILE exec -T"
+    make -C "$PROJECT_DIR" deploy-full DOCKER_COMPOSE="docker compose -f $PROJECT_DIR/$COMPOSE_FILE exec -T"
 }
 
 reindex() {
