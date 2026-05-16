@@ -370,6 +370,7 @@ return [
         'PeakGear_Catalog' => 1,
         'PeakGear_Cms' => 1,
         'PeakGear_Customer' => 1,
+        'PeakGear_FlashSale' => 1,
         'Utklasad_AdminProductGridCategoryFilter' => 1,
         'Vendor_CurrencyRate' => 1,
         'Vendor_NewsRss' => 1,

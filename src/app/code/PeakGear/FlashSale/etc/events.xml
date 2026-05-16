@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="sales_order_place_after">
+        <observer name="peakgear_flash_sale_decrement_sale_qty"
+                  instance="PeakGear\FlashSale\Observer\DecrementSaleQuantity"/>
+    </event>
+    <event name="sales_model_service_quote_submit_before">
+        <observer name="peakgear_flash_sale_validate_before_submit"
+                  instance="PeakGear\FlashSale\Observer\ValidateQuoteBeforeSubmit"/>
+    </event>
+</config>
