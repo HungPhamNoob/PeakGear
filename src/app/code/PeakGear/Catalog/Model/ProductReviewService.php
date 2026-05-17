@@ -12,7 +12,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\Url\EncoderInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Review\Model\AppendSummaryData;
 use Magento\Review\Model\Rating;
 use Magento\Review\Model\RatingFactory;
 use Magento\Review\Model\ResourceModel\Review\CollectionFactory as ReviewCollectionFactory;
@@ -39,7 +38,6 @@ class ProductReviewService
     private array $ratingCache = [];
 
     public function __construct(
-        private readonly AppendSummaryData $appendSummaryData,
         private readonly ReviewCollectionFactory $reviewCollectionFactory,
         private readonly RatingFactory $ratingFactory,
         private readonly StoreManagerInterface $storeManager,
@@ -70,12 +68,10 @@ class ProductReviewService
             return $this->summaryCache[$productId];
         }
 
-        $storeId = (int)$this->storeManager->getStore()->getId();
-        $this->appendSummaryData->execute($product, $storeId, Review::ENTITY_PRODUCT_CODE);
-
-        $reviewCount = count($this->getApprovedReviews($product));
-        $ratingSummaryPercent = max(0, (int)$product->getData('rating_summary'));
-        $average = $reviewCount > 0 ? round($ratingSummaryPercent / 20, 1) : 0.0;
+        $reviews = $this->getApprovedReviews($product);
+        $reviewCount = count($reviews);
+        $average = $this->calculateAverageStars($reviews);
+        $ratingSummaryPercent = (int)round($average * 20);
 
         $this->summaryCache[$productId] = [
             'count' => $reviewCount,
@@ -85,6 +81,22 @@ class ProductReviewService
         ];
 
         return $this->summaryCache[$productId];
+    }
+
+    /**
+     * @return array{
+     *     summary: array{count:int,average:float,ratingSummaryPercent:int,roundedStars:int},
+     *     reviews: array<int, array{nickname:string,date:string,stars:int,detail:string}>
+     * }
+     */
+    public function getReviewState(Product $product): array
+    {
+        $reviews = $this->getApprovedReviews($product);
+
+        return [
+            'summary' => $this->getSummary($product),
+            'reviews' => $reviews,
+        ];
     }
 
     /**
@@ -153,6 +165,11 @@ class ProductReviewService
     public function getPostUrl(): string
     {
         return $this->urlBuilder->getUrl('products/review/post');
+    }
+
+    public function getStateUrl(int $productId): string
+    {
+        return $this->urlBuilder->getUrl('products/review/state', ['product_id' => $productId]);
     }
 
     /**
@@ -275,5 +292,23 @@ class ProductReviewService
         } catch (\Exception) {
             return $this->timezone->date()->format('d/m/Y');
         }
+    }
+
+    /**
+     * @param array<int, array{nickname:string,date:string,stars:int,detail:string}> $reviews
+     */
+    private function calculateAverageStars(array $reviews): float
+    {
+        $reviewCount = count($reviews);
+        if ($reviewCount === 0) {
+            return 0.0;
+        }
+
+        $totalStars = 0;
+        foreach ($reviews as $review) {
+            $totalStars += max(0, (int)$review['stars']);
+        }
+
+        return round($totalStars / $reviewCount, 1);
     }
 }

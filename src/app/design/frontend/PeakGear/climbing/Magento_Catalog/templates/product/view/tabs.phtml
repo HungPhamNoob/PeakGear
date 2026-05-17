@@ -21,11 +21,13 @@ $reviewCount = (int)$reviewSummary['count'];
 $isLoggedIn = $reviewViewModel ? $reviewViewModel->isLoggedIn() : false;
 $loginUrl = $reviewViewModel ? $reviewViewModel->getLoginUrl() : $block->getUrl('customer/account/login');
 $reviewPostUrl = $reviewViewModel ? $reviewViewModel->getPostUrl() : $block->getUrl('products/review/post');
+$reviewStateUrl = $reviewViewModel ? $reviewViewModel->getStateUrl((int)$product->getId()) : $block->getUrl('products/review/state', ['product_id' => (int)$product->getId()]);
 ?>
 
 <div class="pdp-tabs-section"
      data-review-auth="<?= $isLoggedIn ? '1' : '0' ?>"
-     data-review-login-url="<?= $block->escapeUrl($loginUrl) ?>">
+     data-review-login-url="<?= $block->escapeUrl($loginUrl) ?>"
+     data-review-state-url="<?= $block->escapeUrl($reviewStateUrl) ?>">
     <div class="pdp-tabs-nav">
         <button class="pdp-tab-btn active" data-tab="specs" type="button">
             Thông số kỹ thuật
@@ -333,6 +335,56 @@ require(['jquery'], function ($) {
             + '</div>';
     }
 
+    function applyReviewState($section, state) {
+        var summary = state && state.summary ? state.summary : {};
+        var reviews = state && $.isArray(state.reviews) ? state.reviews : [];
+        var $reviewList = $section.find('[data-role="pdp-review-list"]');
+        var $emptyState = $section.find('[data-role="pdp-review-empty"]');
+        var listHtml = '';
+
+        updateSummary($section, summary);
+
+        $.each(reviews, function (_, review) {
+            listHtml += renderReviewItem(review);
+        });
+
+        $reviewList.html(listHtml);
+
+        if (reviews.length > 0) {
+            $reviewList.removeClass('is-hidden');
+            $emptyState.addClass('is-hidden');
+        } else {
+            $reviewList.addClass('is-hidden');
+            $emptyState.removeClass('is-hidden');
+        }
+
+        syncTabContentHeight($section);
+    }
+
+    function fetchReviewState($section) {
+        var stateUrl = $section.data('review-state-url');
+
+        if (!stateUrl) {
+            return $.Deferred().resolve().promise();
+        }
+
+        return $.ajax({
+            url: stateUrl,
+            type: 'GET',
+            dataType: 'json',
+            cache: false,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).done(function (response) {
+            if (!response || response.success !== true) {
+                return;
+            }
+
+            applyReviewState($section, response);
+        });
+    }
+
     function showTopMessage(messageHtml, type) {
         var $placeholder = $('[data-placeholder="messages"]').first();
         var $messages;
@@ -524,6 +576,7 @@ require(['jquery'], function ($) {
                     updateSummary($section, response.summary);
                 }
 
+                fetchReviewState($section);
                 closeModal();
                 syncTabContentHeight($section);
                 showTopMessage(response.message || 'Đánh giá của bạn đã được đăng thành công.');
@@ -544,6 +597,7 @@ require(['jquery'], function ($) {
             });
         });
 
+        fetchReviewState($section);
         syncTabContentHeight($section);
     });
 

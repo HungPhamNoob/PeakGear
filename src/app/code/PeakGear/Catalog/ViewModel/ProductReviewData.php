@@ -30,6 +30,17 @@ class ProductReviewData implements ArgumentInterface
         return $this->productReviewService->getApprovedReviews($product);
     }
 
+    /**
+     * @return array{
+     *     summary: array{count:int,average:float,ratingSummaryPercent:int,roundedStars:int},
+     *     reviews: array<int, array{nickname:string,date:string,stars:int,detail:string}>
+     * }
+     */
+    public function getReviewState(Product $product): array
+    {
+        return $this->productReviewService->getReviewState($product);
+    }
+
     public function isLoggedIn(): bool
     {
         return $this->productReviewService->isLoggedIn();
@@ -43,5 +54,10 @@ class ProductReviewData implements ArgumentInterface
     public function getPostUrl(): string
     {
         return $this->productReviewService->getPostUrl();
+    }
+
+    public function getStateUrl(int $productId): string
+    {
+        return $this->productReviewService->getStateUrl($productId);
     }
 }

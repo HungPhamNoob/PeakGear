@@ -141,13 +141,13 @@ class Post extends Action implements HttpPostActionInterface
             }
 
             $review->aggregate();
-            $summary = $this->productReviewService->getSummary($product);
+            $state = $this->productReviewService->getReviewState($product);
 
             return $resultJson->setData([
                 'success' => true,
                 'message' => (string)__('Đánh giá của bạn đã được đăng thành công.'),
                 'review' => $this->productReviewService->buildReviewPayload($review, $selectedRating),
-                'summary' => $summary,
+                'summary' => $state['summary'],
             ]);
         } catch (LocalizedException $exception) {
             return $resultJson
