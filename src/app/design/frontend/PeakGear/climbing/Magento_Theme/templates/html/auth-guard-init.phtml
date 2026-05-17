@@ -1,0 +1,26 @@
+<?php
+/**
+ * Global auth guard bootstrap.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+$config = [
+    'loginUrl' => $block->getUrl('customer/account/login'),
+    'registerUrl' => $block->getUrl('customer/account/create'),
+    'messages' => [
+        'cart' => (string)__('Bạn cần đăng nhập để sử dụng tính năng này.'),
+        'wishlist' => (string)__('Bạn cần đăng nhập để sử dụng tính năng này.'),
+        'buy-now' => (string)__('Bạn cần đăng nhập để sử dụng tính năng này.'),
+        'minicart' => (string)__('Bạn cần đăng nhập để sử dụng tính năng này.'),
+        'checkout' => (string)__('Bạn cần đăng nhập để sử dụng tính năng này.'),
+        'default' => (string)__('Bạn cần đăng nhập để sử dụng tính năng này.'),
+    ],
+];
+?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "peakgearAuthGuard": <?= /* @noEscape */ json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>
+    }
+}
+</script>

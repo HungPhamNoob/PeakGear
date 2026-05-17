@@ -81,6 +81,10 @@ $_helper = $block->getData('outputHelper');
                                 class="product-action-btn product-action-wishlist"
                                 title="Yêu thích"
                                 aria-label="Yêu thích"
+                                data-auth-required="1"
+                                data-auth-action="wishlist"
+                                data-auth-title="Đăng nhập để sử dụng tính năng này"
+                                data-auth-message="Bạn cần đăng nhập để sử dụng tính năng này."
                                 data-product-id="<?= $block->escapeHtmlAttr($productId) ?>"
                                 data-wishlist-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/add')) ?>"
                                 data-wishlist-remove-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/remove')) ?>"
@@ -97,6 +101,10 @@ $_helper = $block->getData('outputHelper');
                                   data-product-sku="<?= $block->escapeHtmlAttr($_product->getSku()) ?>"
                                   action="<?= $block->escapeUrl($addToCartParams['action']) ?>" 
                                   method="post"
+                                  data-auth-required="1"
+                                  data-auth-action="cart"
+                                  data-auth-title="Đăng nhập để sử dụng tính năng này"
+                                  data-auth-message="Bạn cần đăng nhập để sử dụng tính năng này."
                                   data-mage-init='{"catalogAddToCart": {"addToCartButtonSelector": ".action.tocart"}}'
                                   class="action-cart-form" style="display: contents;">
                                 <?= $block->getBlockHtml('formkey') ?>

@@ -3,7 +3,9 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
     <module name="PeakGear_Customer" setup_version="1.0.0">
         <sequence>
+            <module name="Magento_Checkout"/>
             <module name="Magento_Customer"/>
+            <module name="Magento_Wishlist"/>
             <module name="Mageplaza_SocialLogin"/>
         </sequence>
     </module>

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Checkout\Controller\Cart\Add">
+        <plugin name="peakgear_guest_guard_checkout_cart_add"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Cart\Addgroup">
+        <plugin name="peakgear_guest_guard_checkout_cart_addgroup"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Cart\Delete">
+        <plugin name="peakgear_guest_guard_checkout_cart_delete"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Cart\Index">
+        <plugin name="peakgear_guest_guard_checkout_cart_index"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Cart\UpdateItemOptions">
+        <plugin name="peakgear_guest_guard_checkout_cart_update_item_options"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Cart\UpdateItemQty">
+        <plugin name="peakgear_guest_guard_checkout_cart_update_item_qty"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Cart\UpdatePost">
+        <plugin name="peakgear_guest_guard_checkout_cart_update_post"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Index\Index">
+        <plugin name="peakgear_guest_guard_checkout_index"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Sidebar\RemoveItem">
+        <plugin name="peakgear_guest_guard_checkout_sidebar_remove"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Controller\Sidebar\UpdateItemQty">
+        <plugin name="peakgear_guest_guard_checkout_sidebar_update"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Wishlist\Controller\Index\Add">
+        <plugin name="peakgear_guest_guard_wishlist_add"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Wishlist\Controller\Index\Remove">
+        <plugin name="peakgear_guest_guard_wishlist_remove"
+                type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Model\Session">
+        <plugin name="peakgear_guest_guard_checkout_session_quote_cleanup"
+                type="PeakGear\Customer\Plugin\CheckoutSessionGuestQuotePlugin"
+                sortOrder="10"/>
+    </type>
+</config>

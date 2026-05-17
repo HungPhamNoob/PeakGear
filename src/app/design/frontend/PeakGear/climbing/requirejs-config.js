@@ -43,7 +43,8 @@ var config = {
             'peakgearHero': 'PeakGear_Climbing/js/hero-section',
             'peakgearProductList': 'js/product-list',
             'peakgearProductActions': 'js/product-actions',
-            'peakgearMinicart': 'js/minicart'
+            'peakgearMinicart': 'js/minicart',
+            'peakgearAuthGuard': 'js/auth-guard'
         }
     },
     shim: {

@@ -7,6 +7,7 @@ use Magento\Catalog\Helper\Product;
 use Magento\Catalog\Model\Product\Exception as ProductException;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Checkout\Model\Cart as CheckoutCart;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\Json;
@@ -20,6 +21,7 @@ use Magento\Wishlist\Model\ItemFactory;
 use Magento\Wishlist\Model\LocaleQuantityProcessor;
 use Magento\Wishlist\Model\ResourceModel\Item\Option\Collection;
 use Magento\Wishlist\Model\Item\OptionFactory;
+use PeakGear\Customer\Model\GuestAccess\DeniedResultFactory;
 
 class Cart extends AbstractIndex implements HttpPostActionInterface
 {
@@ -33,7 +35,9 @@ class Cart extends AbstractIndex implements HttpPostActionInterface
         private readonly Product $productHelper,
         private readonly Data $wishlistHelper,
         private readonly CartHelper $cartHelper,
-        private readonly Validator $formKeyValidator
+        private readonly Validator $formKeyValidator,
+        private readonly CustomerSession $customerSession,
+        private readonly DeniedResultFactory $deniedResultFactory
     ) {
         parent::__construct($context);
     }
@@ -42,6 +46,13 @@ class Cart extends AbstractIndex implements HttpPostActionInterface
     {
         /** @var Json $resultJson */
         $resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
+
+        if (!$this->customerSession->isLoggedIn()) {
+            return $this->deniedResultFactory->createJsonResult(
+                'Bạn cần đăng nhập để sử dụng danh sách yêu thích.',
+                $this->getRequest()
+            );
+        }
 
         if (!$this->formKeyValidator->validate($this->getRequest())) {
             return $resultJson->setData([

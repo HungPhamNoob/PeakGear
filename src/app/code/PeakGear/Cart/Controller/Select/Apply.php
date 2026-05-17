@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace PeakGear\Cart\Controller\Select;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
@@ -11,6 +12,7 @@ use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
+use PeakGear\Customer\Model\GuestAccess\DeniedResultFactory;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -38,12 +40,21 @@ class Apply implements HttpPostActionInterface
         private readonly CheckoutSession         $checkoutSession,
         private readonly CartRepositoryInterface $cartRepository,
         private readonly SessionManagerInterface $session,
-        private readonly LoggerInterface         $logger
+        private readonly LoggerInterface         $logger,
+        private readonly CustomerSession         $customerSession,
+        private readonly DeniedResultFactory     $deniedResultFactory
     ) {
     }
 
     public function execute(): Redirect
     {
+        if (!$this->customerSession->isLoggedIn()) {
+            return $this->deniedResultFactory->createRedirectResult(
+                'Bạn cần đăng nhập để tiếp tục thanh toán.',
+                $this->request
+            );
+        }
+
         $redirect = $this->redirectFactory->create();
 
         $raw = (string) $this->request->getParam('deselected_ids', '');

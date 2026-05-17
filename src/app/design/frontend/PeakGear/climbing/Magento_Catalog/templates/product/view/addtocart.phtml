@@ -31,7 +31,13 @@ $isInWishlist = false;
 
     <!-- CTA Buttons -->
     <div class="pdp-actions">
-        <button type="button" class="pdp-buynow-btn" id="pdp-buynow-btn">MUA NGAY</button>
+        <button type="button"
+                class="pdp-buynow-btn"
+                id="pdp-buynow-btn"
+                data-auth-required="1"
+                data-auth-action="buy-now"
+                data-auth-title="Đăng nhập để sử dụng tính năng này"
+                data-auth-message="Bạn cần đăng nhập để sử dụng tính năng này.">MUA NGAY</button>
         <button type="submit" class="pdp-addtocart-btn">THÊM VÀO GIỎ</button>
     </div>
 
@@ -40,10 +46,15 @@ $isInWishlist = false;
         <button type="button"
                 class="pdp-wishlist-btn<?= $isInWishlist ? ' is-wishlisted' : '' ?>"
                 id="pdp-wishlist-btn"
+                data-auth-required="1"
+                data-auth-action="wishlist"
+                data-auth-title="Đăng nhập để sử dụng tính năng này"
+                data-auth-message="Bạn cần đăng nhập để sử dụng tính năng này."
                 data-product-id="<?= (int)$product->getId() ?>"
                 data-wishlist-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/add')) ?>"
                 data-wishlist-remove-url="<?= $block->escapeUrl($block->getUrl('wishlist/index/remove')) ?>"
                 data-login-url="<?= $block->escapeUrl($block->getUrl('customer/account/login')) ?>"
+                data-register-url="<?= $block->escapeUrl($block->getUrl('customer/account/create')) ?>"
                 <?= $isInWishlist ? 'disabled' : '' ?>
                 aria-label="Yêu thích">
             <svg class="pdp-wishlist-icon"

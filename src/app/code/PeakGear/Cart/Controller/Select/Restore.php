@@ -5,14 +5,15 @@ namespace PeakGear\Cart\Controller\Select;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Checkout\Model\Cart as CheckoutCart;
-use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Session\SessionManagerInterface;
-use Magento\Quote\Model\Quote\Item\Option\Factory as OptionFactory;
+use PeakGear\Customer\Model\GuestAccess\DeniedResultFactory;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -28,16 +29,25 @@ class Restore implements HttpGetActionInterface
 
     public function __construct(
         private readonly SessionManagerInterface    $session,
-        private readonly CheckoutSession            $checkoutSession,
         private readonly CheckoutCart               $cart,
         private readonly ProductRepositoryInterface $productRepository,
         private readonly RedirectFactory            $redirectFactory,
-        private readonly LoggerInterface            $logger
+        private readonly LoggerInterface            $logger,
+        private readonly CustomerSession            $customerSession,
+        private readonly DeniedResultFactory        $deniedResultFactory,
+        private readonly RequestInterface           $request
     ) {
     }
 
     public function execute(): Redirect
     {
+        if (!$this->customerSession->isLoggedIn()) {
+            return $this->deniedResultFactory->createRedirectResult(
+                'Bạn cần đăng nhập để sử dụng giỏ hàng.',
+                $this->request
+            );
+        }
+
         $this->restoreItems();
 
         $redirect = $this->redirectFactory->create();
@@ -50,6 +60,10 @@ class Restore implements HttpGetActionInterface
      */
     public function restoreItems(): void
     {
+        if (!$this->customerSession->isLoggedIn()) {
+            return;
+        }
+
         $savedItems = $this->session->getData(self::SESSION_KEY);
 
         if (empty($savedItems) || !is_array($savedItems)) {
