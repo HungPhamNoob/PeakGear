@@ -1,0 +1,49 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+
+<!-- ko foreach: getRegion('before_details') -->
+    <!-- ko template: getTemplate() --><!-- /ko -->
+<!-- /ko -->
+<div class="product-item-details">
+
+    <div class="product-item-inner">
+        <div class="product-item-name-block">
+            <strong class="product-item-name" data-bind="html: getNameUnsanitizedHtml($parent)"></strong>
+            <div class="details-qty">
+                <span class="label"><!-- ko i18n: 'Qty' --><!-- /ko --></span>
+                <span class="value" data-bind="text: $parent.qty.toLocaleString(window.LOCALE)"></span>
+            </div>
+        </div>
+        <!-- ko foreach: getRegion('after_details') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+        <!-- /ko -->
+    </div>
+
+    <!-- ko if: (JSON.parse($parent.options).length > 0)-->
+    <div class="product options pg-summary-item-options" data-bind="mageInit: {'collapsible':{'openedState': 'active'}}">
+        <span data-role="title" class="toggle"><!-- ko i18n: 'View Details' --><!-- /ko --></span>
+        <div data-role="content" class="content">
+            <div class="pg-summary-option-list">
+                <!-- ko foreach: JSON.parse($parent.options) -->
+                <div class="pg-summary-option-row">
+                    <span class="pg-summary-option-label" data-bind="text: label"></span>
+                    <!-- ko if: ($data.full_view) -->
+                    <div class="pg-summary-option-value" data-bind="html: $data.full_view"></div>
+                    <!-- /ko -->
+                    <!-- ko ifnot: ($data.full_view) -->
+                    <div class="pg-summary-option-value" data-bind="html: $data.value"></div>
+                    <!-- /ko -->
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+</div>
+<!-- ko foreach: getRegion('item_message') -->
+    <!-- ko template: getTemplate() --><!-- /ko -->
+<!-- /ko -->

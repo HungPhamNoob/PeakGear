@@ -1,0 +1,24 @@
+<?php
+/**
+ * PeakGear Climbing Theme – Order View Actions
+ *
+ * @var \Magento\Sales\Block\Order\Info\Buttons $block
+ */
+$_order = $block->getOrder();
+?>
+<div class="pg-order-toolbar__actions">
+    <?php if ($this->helper(\Magento\Sales\Helper\Reorder::class)->canReorder($_order->getEntityId())) : ?>
+        <a href="#"
+           data-post='<?= /* @noEscape */ $this->helper(\Magento\Framework\Data\Helper\PostHelper::class)->getPostData($block->getReorderUrl($_order)) ?>'
+           class="pg-action-btn">
+            <span>Đặt lại</span>
+        </a>
+    <?php endif ?>
+    <a href="<?= $block->escapeUrl($block->getPrintUrl($_order)) ?>"
+       class="pg-action-btn pg-action-btn--ghost"
+       target="_blank"
+       rel="noopener">
+        <span>In đơn hàng</span>
+    </a>
+    <?= $block->getChildHtml() ?>
+</div>

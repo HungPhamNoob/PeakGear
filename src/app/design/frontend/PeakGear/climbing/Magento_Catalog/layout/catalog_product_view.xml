@@ -57,6 +57,7 @@
         <referenceBlock name="product.info.form">
             <arguments>
                 <argument name="view_model" xsi:type="object">PeakGear\Catalog\ViewModel\ProductViewData</argument>
+                <argument name="review_view_model" xsi:type="object">PeakGear\Catalog\ViewModel\ProductReviewData</argument>
             </arguments>
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Magento_Catalog::product/view/form.phtml</argument>
@@ -69,6 +70,9 @@
                    name="peakgear.product.tabs"
                    template="Magento_Catalog::product/view/tabs.phtml"
                  after="-">
+                <arguments>
+                    <argument name="review_view_model" xsi:type="object">PeakGear\Catalog\ViewModel\ProductReviewData</argument>
+                </arguments>
                 <block class="Magento\Catalog\Block\Product\View\Description"
                        name="peakgear.tab.description"
                        template="Magento_Catalog::product/view/tabs/description.phtml"/>

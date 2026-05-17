@@ -1688,6 +1688,30 @@
         }
     }
 
+    @media (min-width: 1024px) {
+        .cart-container > .form,
+        .cart-container > .cart-form-wrapper {
+            max-height: none;
+            overflow: visible;
+        }
+
+        .cart.table-wrapper {
+            max-height: calc(100vh - 14rem);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 0.75rem;
+            scrollbar-gutter: stable;
+            overscroll-behavior-y: auto;
+        }
+
+        .cart-container > .cart-summary {
+            position: static !important;
+            top: auto;
+            align-self: flex-start;
+            z-index: 3;
+        }
+    }
+
     // ============================================================
     // CART ITEM SELECTION – Checkboxes
     // ============================================================

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column">
+    <head>
+        <title>Chi tiết đơn hàng - PeakGear</title>
+    </head>
+    <body>
+        <attribute name="class" value="account-page sales-order-view-page"/>
+        <referenceBlock name="sidebar.main" remove="true"/>
+        <referenceBlock name="sidebar.extra" remove="true"/>
+        <referenceBlock name="order.status" remove="true"/>
+        <referenceBlock name="order.date" remove="true"/>
+        <referenceContainer name="order.actions.container" remove="true"/>
+
+        <referenceBlock name="sales.order.view">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Magento_Sales::order/view_card.phtml</argument>
+            </action>
+            <block class="Magento\Sales\Block\Order\Info\Buttons"
+                   name="sales.order.info.buttons.inline"
+                   template="Magento_Sales::order/info/buttons_inline.phtml"
+                   before="order_items"/>
+        </referenceBlock>
+
+        <referenceBlock name="order_items">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Magento_Sales::order/items_card.phtml</argument>
+            </action>
+        </referenceBlock>
+
+        <referenceBlock name="sales.order.info">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Magento_Sales::order/info_card.phtml</argument>
+            </action>
+        </referenceBlock>
+
+        <referenceBlock name="order.comments">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Magento_Sales::order/order_comments_card.phtml</argument>
+            </action>
+        </referenceBlock>
+
+        <move element="peakgear_customer_dashboard" destination="content" before="sales.order.view"/>
+        <move element="sales.order.info" destination="sales.order.view" before="order_items"/>
+        <move element="order.comments" destination="sales.order.view" after="sales.order.info"/>
+    </body>
+</page>

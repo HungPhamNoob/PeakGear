@@ -20,6 +20,28 @@
     </div>
 </section>
 
+<script>
+require(['Magento_Customer/js/customer-data'], function (customerData) {
+    'use strict';
+
+    var customer = customerData.get('customer');
+
+    customerData.getInitCustomerData().done(function () {
+        var customerDataValue = customer() || {};
+        var hasIdentity = !!(customerDataValue.fullname || customerDataValue.firstname);
+
+        if (hasIdentity) {
+            customerData.invalidate(['cart']);
+            customerData.reload(['cart'], true);
+            return;
+        }
+
+        customerData.invalidate(['customer', 'cart']);
+        customerData.reload(['customer', 'cart'], true);
+    });
+});
+</script>
+
 <style>
 .pg-successful-payment {
     max-width: 980px;

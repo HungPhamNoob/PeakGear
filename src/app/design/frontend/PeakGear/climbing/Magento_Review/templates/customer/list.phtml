@@ -3,7 +3,6 @@
  * PeakGear Climbing Theme – Customer Reviews
  * @var \Magento\Review\Block\Customer\ListCustomer $block
  * @var \Magento\Framework\Escaper $escaper
- * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 $reviewHelper = $block->getData('reviewHelper');
 $reviews = $block->getReviews();
@@ -26,15 +25,14 @@ $reviews = $block->getReviews();
             </h2>
 
             <?php if ($reviews && count($reviews)): ?>
-                <div class="pg-table-scroll">
-                    <table class="pg-table" id="my-reviews-table">
+                <div class="pg-table-scroll pg-review-listing">
+                    <table class="pg-table pg-review-table" id="my-reviews-table">
                         <thead>
                             <tr>
                                 <th><?= $escaper->escapeHtml(__('Ngày')) ?></th>
                                 <th><?= $escaper->escapeHtml(__('Sản phẩm')) ?></th>
                                 <th><?= $escaper->escapeHtml(__('Xếp hạng')) ?></th>
                                 <th><?= $escaper->escapeHtml(__('Nội dung')) ?></th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,10 +61,6 @@ $reviews = $block->getReviews();
                                                 </svg>
                                             <?php endfor; ?>
                                         </div>
-                                        <?= /* @noEscape */ $secureRenderer->renderStyleAsTag(
-                                            "width:{$pct}%;",
-                                            "div.rating-result>span.rating_{$escaper->escapeUrl($review->getReviewId())}"
-                                        ) ?>
                                     <?php else: ?>
                                         <span class="pg-table__muted">—</span>
                                     <?php endif; ?>
@@ -74,20 +68,15 @@ $reviews = $block->getReviews();
                                 <td class="pg-table__excerpt">
                                     <?= $reviewHelper->getDetailHtml($review->getDetail()) ?>
                                 </td>
-                                <td class="pg-table__actions">
-                                    <a href="<?= $escaper->escapeUrl($block->getReviewUrl($review)) ?>" class="pg-action-btn">
-                                        Chi tiết
-                                    </a>
-                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
 
-                <?php if ($block->getToolbarHtml()): ?>
+                <!-- <?php if ($block->getToolbarHtml()): ?>
                     <div class="pg-pager-wrap"><?= $block->getToolbarHtml() ?></div>
-                <?php endif; ?>
+                <?php endif; ?> -->
 
             <?php else: ?>
                 <div class="pg-empty-notice">

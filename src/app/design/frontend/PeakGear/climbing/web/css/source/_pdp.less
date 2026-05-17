@@ -19,6 +19,8 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
+body.pdp-review-modal-open { overflow: hidden; }
+
 // =============================================================================
 // SCOPE: body.page-product-view
 // =============================================================================
@@ -624,7 +626,7 @@
             }
 
             .swatch-attribute-selected-option {
-                color: @peakgear-primary-light; font-weight: 500; margin-left: 0.5rem;
+                display: none !important;
             }
 
             .swatch-attribute-options {
@@ -801,7 +803,31 @@
             .pdp-reviews-count { color: fade(@peakgear-text, 50%); font-size: 0.875rem; margin-top: 0.25rem; }
         }
 
-        .pdp-review-write-toggle { margin-top: 1.5rem; text-align: center; }
+        .is-hidden { display: none !important; }
+
+        .pdp-review-topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 0.85rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+
+        .pdp-review-login-cta {
+            display: inline-flex; align-items: center; gap: 0.55rem;
+            flex: 0 1 auto; min-width: 0; max-width: 100%;
+            padding: 0.55rem 0.8rem;
+            background: fade(@peakgear-primary-light, 10%);
+            border: 1px solid fade(@peakgear-primary-light, 20%);
+            border-radius: 0.6rem;
+            color: fade(@peakgear-text, 78%);
+            font-size: 0.875rem;
+            line-height: 1.35;
+            white-space: nowrap;
+            svg {
+                width: 1rem; height: 1rem;
+                color: @peakgear-primary-light; flex-shrink: 0;
+            }
+        }
+
+        .pdp-review-write-toggle { margin-top: 0; text-align: left; }
 
         .pdp-review-write-btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
@@ -814,13 +840,108 @@
             &:hover { background: fade(@peakgear-primary-light, 20%); }
         }
 
-        .pdp-review-form-wrapper {
-            margin-top: 1.75rem; padding: 1.75rem;
-            background: fade(@peakgear-dark-secondary, 50%);
-            border: 1px solid fade(@peakgear-text, 10%); border-radius: 0.75rem;
+        .pdp-review-list {
+            display: flex; flex-direction: column; gap: 1rem;
+            max-height: 30rem; overflow-y: auto; padding-right: 0.35rem;
         }
 
-        .pdp-review-form { max-width: 36rem; }
+        .pdp-review-item {
+            padding: 1rem 1.1rem;
+            background: fade(@peakgear-text, 3%);
+            border: 1px solid fade(@peakgear-text, 10%);
+            border-radius: 0.75rem;
+        }
+
+        .pdp-review-item-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 0.75rem; margin-bottom: 0.75rem;
+        }
+
+        .pdp-review-item-meta {
+            display: flex; flex-direction: column; gap: 0.25rem;
+        }
+
+        .pdp-review-item-author {
+            color: @peakgear-text; font-weight: 600; font-size: 0.95rem;
+        }
+
+        .pdp-review-item-date {
+            color: fade(@peakgear-text, 50%); font-size: 0.8125rem;
+        }
+
+        .pdp-review-item-stars {
+            display: inline-flex; align-items: center; gap: 0.2rem;
+            color: @peakgear-primary-light;
+        }
+
+        .pdp-review-item-body {
+            color: fade(@peakgear-text, 78%);
+            line-height: 1.7;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .pdp-review-modal {
+            position: fixed; inset: 0; z-index: 1100;
+            display: none; align-items: center; justify-content: center;
+            padding: 1.25rem;
+            &.is-open { display: flex; }
+        }
+
+        .pdp-review-modal-backdrop {
+            position: absolute; inset: 0; background: fade(#000, 74%);
+        }
+
+        .pdp-review-modal-dialog {
+            position: relative; z-index: 1;
+            width: 100%;
+            max-width: 34rem;
+            background: linear-gradient(180deg, fade(@peakgear-dark-secondary, 95%), fade(@peakgear-dark, 96%));
+            border: 1px solid fade(@peakgear-text, 12%);
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px fade(#000, 45%);
+            padding: 1.5rem;
+        }
+
+        .pdp-review-modal-close {
+            position: absolute; top: 0.85rem; right: 0.85rem;
+            width: 2.2rem; height: 2.2rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: transparent; border: none; cursor: pointer;
+            border-radius: 999px; color: fade(@peakgear-text, 65%);
+            transition: background @transition-fast, color @transition-fast;
+            span { line-height: 1; font-size: 1.6rem; }
+            &:hover { background: fade(@peakgear-text, 8%); color: @peakgear-text; }
+        }
+
+        .pdp-review-modal-panel {
+            &.is-hidden { display: none; }
+        }
+
+        .pdp-review-modal-icon {
+            width: 3rem; height: 3rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 999px; margin-bottom: 1rem;
+            background: fade(@peakgear-primary-light, 12%);
+            color: @peakgear-primary-light;
+            svg { width: 1.4rem; height: 1.4rem; }
+        }
+
+        .pdp-review-modal-title {
+            color: @peakgear-text; font-size: 1.25rem; font-weight: 700;
+            margin: 0 0 0.5rem;
+        }
+
+        .pdp-review-modal-text {
+            color: fade(@peakgear-text, 65%); line-height: 1.7;
+            margin: 0 0 1.25rem;
+        }
+
+        .pdp-review-modal-actions {
+            display: flex; justify-content: flex-start;
+        }
+
+        .pdp-review-form { max-width: 100%; }
 
         .pdp-review-field {
             margin-bottom: 1.25rem;
@@ -840,7 +961,7 @@
 
         .pdp-review-textarea { resize: vertical; min-height: 5.5rem; }
 
-        .pdp-review-rating-select { display: flex; gap: 0.25rem; }
+        .pdp-review-rating-select { display: flex; gap: 0.25rem; align-items: center; }
 
         .pdp-review-star-btn {
             background: transparent; border: none; padding: 0.25rem; cursor: pointer;
@@ -848,6 +969,18 @@
             transition: color @transition-fast, transform @transition-fast;
             svg { width: 1.5rem; height: 1.5rem; }
             &:hover, &.active { color: @peakgear-primary-light; transform: scale(1.15); }
+        }
+
+        .pdp-review-field-error {
+            min-height: 1.1rem; margin-top: 0.5rem;
+            color: #ff7b7b; font-size: 0.8125rem;
+        }
+
+        .pdp-review-form-message {
+            min-height: 1.25rem; margin-bottom: 0.25rem;
+            font-size: 0.875rem; line-height: 1.5;
+            &.is-error { color: #ff9b9b; }
+            &.is-success { color: #8fe3a5; }
         }
 
         .pdp-review-actions { display: flex; gap: 1rem; justify-content: flex-end; }
@@ -866,6 +999,12 @@
             font-size: 0.9375rem; font-weight: 600; font-family: @font-sans;
             transition: background @transition-fast;
             &:hover { background: @peakgear-primary-hover; }
+            &[disabled] { opacity: 0.65; cursor: wait; }
+        }
+
+        .pdp-review-submit-link {
+            display: inline-flex; align-items: center; justify-content: center;
+            text-decoration: none;
         }
     }
 
@@ -890,6 +1029,52 @@
             .pdp-tabs-content {
                 padding: 1.2rem;
                 min-height: 0;
+            }
+
+            .pdp-review-topbar {
+                align-items: stretch;
+            }
+
+            .pdp-review-login-cta,
+            .pdp-review-write-toggle,
+            .pdp-review-write-btn {
+                width: 100%;
+            }
+
+            .pdp-review-login-cta {
+                white-space: normal;
+            }
+
+            .pdp-review-write-btn {
+                justify-content: center;
+            }
+
+            .pdp-review-list {
+                max-height: 26rem;
+            }
+
+            .pdp-review-item-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .pdp-review-modal {
+                padding: 0.85rem;
+            }
+
+            .pdp-review-modal-dialog {
+                padding: 1.2rem;
+            }
+
+            .pdp-review-actions {
+                flex-direction: column-reverse;
+            }
+
+            .pdp-review-cancel-btn,
+            .pdp-review-submit-btn,
+            .pdp-review-submit-link {
+                width: 100%;
+                justify-content: center;
             }
         }
 

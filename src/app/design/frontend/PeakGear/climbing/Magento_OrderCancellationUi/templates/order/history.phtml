@@ -1,8 +1,12 @@
 <?php
 /**
- * PeakGear Climbing Theme – Order History
+ * PeakGear Climbing Theme – Order History With Cancellation
+ *
  * @var \Magento\Sales\Block\Order\History $block
+ * @var \Magento\OrderCancellationUi\ViewModel\Config $viewModel
  */
+// phpcs:disable Magento2.Templates.ThisInTemplate
+$viewModel = $block->getViewModel();
 $_orders = $block->getOrders();
 $reorderHelper = $this->helper(\Magento\Sales\Helper\Reorder::class);
 $postHelper = $this->helper(\Magento\Framework\Data\Helper\PostHelper::class);
@@ -70,25 +74,34 @@ $postHelper = $this->helper(\Magento\Framework\Data\Helper\PostHelper::class);
                                 <?php endif; ?>
                             </div>
 
-                            <div class="pg-order-history-card__foot">
-                                <a href="<?= $block->escapeUrl($block->getViewUrl($_order)) ?>" class="pg-action-btn">
-                                    Xem chi tiết
-                                </a>
-                                <?php
-                                try {
-                                    if ($reorderHelper->canReorder($_order->getEntityId())):
-                                ?>
-                                    <a href="#"
-                                       data-post='<?= /* @noEscape */ $postHelper->getPostData($block->getReorderUrl($_order)) ?>'
-                                       class="pg-action-btn pg-action-btn--ghost">
-                                        Đặt lại
+                            <?php if ($_order->getStatus() !== 'received'): ?>
+                                <div class="pg-order-history-card__foot">
+                                    <a href="<?= $block->escapeUrl($block->getViewUrl($_order)) ?>" class="pg-action-btn">
+                                        Xem chi tiết
                                     </a>
-                                <?php
-                                    endif;
-                                } catch (\Exception $exception) {
-                                }
-                                ?>
-                            </div>
+                                    <?php if ($reorderHelper->canReorder($_order->getEntityId())): ?>
+                                        <a href="#"
+                                           data-post='<?= /* @noEscape */ $postHelper->getPostData($block->getReorderUrl($_order)) ?>'
+                                           class="pg-action-btn pg-action-btn--ghost">
+                                            Đặt lại
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($viewModel && $viewModel->canCancel($_order->getEntityId())): ?>
+                                        <a href="#"
+                                           class="pg-action-btn pg-action-btn--danger cancel-order"
+                                           id="cancel-order-<?= /* @noEscape */ $_order->getId() ?>"
+                                           data-mage-init='{"cancelOrderModal":{"url":"<?= /* @noEscape */ $block->getBaseUrl(); ?>","order_id":"<?= $block->escapeHtml($_order->getId()); ?>"}}'>
+                                            Hủy
+                                        </a>
+                                        <?= $this->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
+                                            ->setOrder($_order)
+                                            ->setReasons($viewModel->getCancellationReasons($_order->getEntityId()))
+                                            ->setTemplate('Magento_OrderCancellationUi::cancel-order-modal.phtml')
+                                            ->toHtml()
+                                        ?>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                         </article>
                     <?php endforeach; ?>
                 </div>
@@ -96,11 +109,10 @@ $postHelper = $this->helper(\Magento\Framework\Data\Helper\PostHelper::class);
                 <?php if ($block->getPagerHtml()): ?>
                     <div class="pg-pager-wrap"><?= $block->getPagerHtml() ?></div>
                 <?php endif; ?>
-
             <?php else: ?>
                 <div class="pg-empty-notice">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-                    <span>Bạn chưa có đơn hàng nào.</span>
+                    <span><?= $block->escapeHtml($block->getEmptyOrdersMessage()) ?></span>
                 </div>
             <?php endif; ?>
         </div>

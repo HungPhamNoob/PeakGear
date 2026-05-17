@@ -9,22 +9,20 @@
  */
 $product   = $block->getProduct();
 $viewModel = $block->getData('view_model');
+$reviewViewModel = $block->getData('review_view_model');
 
 // Category
 $categoryName = $viewModel ? $viewModel->getPrimaryCategoryName($product) : '';
 
-// Rating
-$reviewCount   = 0;
-$ratingSummary = 0;
-try {
-    $reviewSummary = $product->getRatingSummary();
-    if ($reviewSummary) {
-        $ratingSummary = $reviewSummary->getRatingSummary() ?: 0;
-        $reviewCount   = $reviewSummary->getReviewsCount()  ?: 0;
-    }
-} catch (\Exception $e) {}
-$ratingStars = $ratingSummary ? round($ratingSummary / 20, 1) : 0;
-$ratingFull  = (int)floor($ratingStars);
+$reviewSummary = $reviewViewModel ? $reviewViewModel->getSummary($product) : [
+    'count' => 0,
+    'average' => 0.0,
+    'ratingSummaryPercent' => 0,
+    'roundedStars' => 0,
+];
+$reviewCount = (int)$reviewSummary['count'];
+$ratingAverage = (float)$reviewSummary['average'];
+$ratingRounded = (int)$reviewSummary['roundedStars'];
 
 // Prices
 $finalPrice    = $product->getFinalPrice();
@@ -50,23 +48,22 @@ $sku         = $product->getSku();
 
         <!-- Rating & Meta row -->
         <div class="pdp-meta-row">
-            <!-- Stars -->
-            <div class="pdp-rating-stars">
-                <?php for ($i = 0; $i < 5; $i++): ?>
-                    <?php if ($i < $ratingFull): ?>
+            <div class="pdp-rating-stars" data-role="pdp-review-summary-stars">
+                <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <?php if ($i <= $ratingRounded): ?>
                         <svg class="pdp-star pdp-star-filled" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     <?php else: ?>
                         <svg class="pdp-star pdp-star-empty" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     <?php endif; ?>
                 <?php endfor; ?>
             </div>
-            <?php if ($reviewCount > 0): ?>
-                <span class="pdp-meta-sep">|</span>
-                <span class="pdp-meta-text">Xem <?= (int)$reviewCount ?> đánh giá</span>
-            <?php else: ?>
-                <span class="pdp-meta-sep">|</span>
-                <span class="pdp-meta-text">Chưa có đánh giá</span>
-            <?php endif; ?>
+            <span class="pdp-meta-text" data-role="pdp-review-summary-average"><?= $block->escapeHtml(number_format($ratingAverage, 1)) ?>/5</span>
+            <span class="pdp-meta-sep">|</span>
+            <span class="pdp-meta-text" data-role="pdp-review-summary-count-text">
+                <?= $reviewCount > 0
+                    ? $block->escapeHtml((string)__('%1 đánh giá', $reviewCount))
+                    : $block->escapeHtml((string)__('Chưa có đánh giá')) ?>
+            </span>
             <?php if ($sku): ?>
                 <span class="pdp-meta-sep">|</span>
                 <span class="pdp-meta-text">Mã hàng: <strong><?= $block->escapeHtml($sku) ?></strong></span>
@@ -143,6 +140,11 @@ $sku         = $product->getSku();
 
 <script type="text/x-magento-init">
     {
+        "[data-role=priceBox][data-price-box=product-id-<?= $block->escapeHtml($product->getId()) ?>]": {
+            "priceBox": {
+                "priceConfig": <?= /* @noEscape */ $block->getJsonConfig() ?>
+            }
+        },
         "#product_addtocart_form": {
             "catalogAddToCart": {}
         }

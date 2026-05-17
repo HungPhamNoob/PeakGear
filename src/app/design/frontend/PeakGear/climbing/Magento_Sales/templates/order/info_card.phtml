@@ -1,0 +1,44 @@
+<?php
+/**
+ * PeakGear Climbing Theme – Order Information Cards
+ *
+ * @var \Magento\Sales\Block\Order\Info $block
+ */
+$_order = $block->getOrder();
+?>
+
+<section class="pg-order-info-grid" aria-label="<?= $block->escapeHtmlAttr(__('Order information')) ?>">
+    <?php if (!$_order->getIsVirtual()) : ?>
+        <article class="pg-order-info-card">
+            <h3 class="pg-order-info-card__title">Địa chỉ giao hàng</h3>
+            <div class="pg-order-info-card__content pg-order-info-card__content--address">
+                <address><?= /* @noEscape */ $block->getFormattedAddress($_order->getShippingAddress()) ?></address>
+            </div>
+        </article>
+
+        <article class="pg-order-info-card">
+            <h3 class="pg-order-info-card__title">Phương thức giao hàng</h3>
+            <div class="pg-order-info-card__content">
+                <?php if ($_order->getShippingDescription()) : ?>
+                    <?= $block->escapeHtml($_order->getShippingDescription()) ?>
+                <?php else : ?>
+                    <?= $block->escapeHtml(__('No shipping information available')) ?>
+                <?php endif; ?>
+            </div>
+        </article>
+    <?php endif; ?>
+
+    <article class="pg-order-info-card">
+        <h3 class="pg-order-info-card__title">Địa chỉ thanh toán</h3>
+        <div class="pg-order-info-card__content pg-order-info-card__content--address">
+            <address><?= /* @noEscape */ $block->getFormattedAddress($_order->getBillingAddress()) ?></address>
+        </div>
+    </article>
+
+    <article class="pg-order-info-card">
+        <h3 class="pg-order-info-card__title">Phương thức thanh toán</h3>
+        <div class="pg-order-info-card__content pg-order-info-card__content--payment">
+            <?= /* @noEscape */ $block->getPaymentInfoHtml() ?>
+        </div>
+    </article>
+</section>

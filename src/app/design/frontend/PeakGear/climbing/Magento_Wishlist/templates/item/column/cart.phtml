@@ -30,8 +30,13 @@ $allowedQty = $viewModel->setItem($item)->getMinMaxQty();
     <?php if ($product->isSaleable()) : ?>
     <div class="product-item-actions">
         <div class="actions-primary">
-            <button type="button" data-role="ajax-tocart" data-post='<?= /* @noEscape */ $block->getItemAddToCartParams($item) ?>' title="<?= $block->escapeHtmlAttr(__('Add to Cart')) ?>" data-item-id="<?= $block->escapeHtmlAttr($item->getId()) ?>" class="action ajax-tocart btn-cart primary">
-                <span><?= $block->escapeHtml(__('Add to Cart')) ?></span>
+            <button type="button"
+                    data-role="ajax-tocart"
+                    data-item-id="<?= $block->escapeHtmlAttr($item->getId()) ?>"
+                    data-cart-url="<?= $block->escapeUrl($block->getUrl('myaccount/wishlist/cart')) ?>"
+                    title="<?= $block->escapeHtmlAttr(__('Thêm vào giỏ hàng')) ?>"
+                    class="action ajax-tocart btn-cart primary">
+                <span><?= $block->escapeHtml(__('Thêm vào giỏ hàng')) ?></span>
             </button>
         </div>
     </div>
