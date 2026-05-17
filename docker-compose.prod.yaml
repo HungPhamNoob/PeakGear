@@ -31,6 +31,8 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: peakgear_php
     restart: always
+    env_file:
+      - .env
     environment:
       - PHP_DISPLAY_ERRORS=Off
       - MAGENTO_MODE=production
