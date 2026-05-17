@@ -606,6 +606,14 @@
 .categories-slider-viewport {
     overflow: hidden;
     width: 100%;
+    cursor: grab;
+    overscroll-behavior-x: contain;
+    touch-action: pan-y;
+    user-select: none;
+
+    &.is-dragging {
+        cursor: grabbing;
+    }
 }
 
 .categories-slider-track {
@@ -618,6 +626,10 @@
 .categories-slide {
     flex: 0 0 100%;
     min-width: 100%;
+}
+
+.categories-slider.is-dragging .categories-slider-track {
+    transition: none;
 }
 
 .categories-nav {
@@ -681,16 +693,17 @@
 }
 
 @media (max-width: 767px) {
+    .featured-nav-btn,
+    .categories-nav {
+        display: none;
+    }
+
+    .featured-carousel {
+        gap: 0;
+    }
+
     .categories-grid-six-per-slide {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-
-    .categories-nav-prev {
-        left: -0.6rem;
-    }
-
-    .categories-nav-next {
-        right: -0.6rem;
     }
 }
 

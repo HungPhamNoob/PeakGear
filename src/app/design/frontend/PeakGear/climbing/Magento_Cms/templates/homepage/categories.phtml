@@ -129,29 +129,39 @@ require(['jquery'], function ($) {
 
     $('.categories-slider').each(function () {
         var $slider = $(this);
+        var $viewport = $slider.find('.categories-slider-viewport').first();
         var $track = $slider.find('.categories-slider-track').first();
         var $prev = $slider.find('.categories-nav-prev');
         var $next = $slider.find('.categories-nav-next');
         var totalSlides = parseInt($slider.data('total-slides'), 10) || 1;
         var currentSlide = 0;
+        var dragStartX = 0;
+        var dragCurrentX = 0;
+        var isDragging = false;
+        var hasDragged = false;
 
-        function updateSlider() {
-            $track.css('transform', 'translate3d(-' + (currentSlide * 100) + '%, 0, 0)');
+        function updateSlider(offsetPx) {
+            var viewportWidth = $viewport.outerWidth() || 1;
+            var translate = -(currentSlide * viewportWidth) + (offsetPx || 0);
+            $track.css('transform', 'translate3d(' + translate + 'px, 0, 0)');
             $prev.prop('disabled', currentSlide === 0);
             $next.prop('disabled', currentSlide >= totalSlides - 1);
         }
 
+        function goToSlide(index) {
+            currentSlide = Math.max(0, Math.min(totalSlides - 1, index));
+            updateSlider();
+        }
+
         $prev.on('click', function () {
             if (currentSlide > 0) {
-                currentSlide -= 1;
-                updateSlider();
+                goToSlide(currentSlide - 1);
             }
         });
 
         $next.on('click', function () {
             if (currentSlide < totalSlides - 1) {
-                currentSlide += 1;
-                updateSlider();
+                goToSlide(currentSlide + 1);
             }
         });
 
@@ -162,6 +172,80 @@ require(['jquery'], function ($) {
             if (event.key === 'ArrowRight') {
                 $next.trigger('click');
             }
+        });
+
+        $viewport.on('pointerdown', function (event) {
+            if (event.pointerType === 'mouse' && event.button !== 0) {
+                return;
+            }
+
+            dragStartX = event.clientX;
+            dragCurrentX = event.clientX;
+            isDragging = true;
+            hasDragged = false;
+            $slider.addClass('is-dragging');
+            $viewport.addClass('is-dragging');
+            this.setPointerCapture(event.pointerId);
+        });
+
+        $viewport.on('pointermove', function (event) {
+            if (!isDragging) {
+                return;
+            }
+
+            dragCurrentX = event.clientX;
+            var deltaX = dragCurrentX - dragStartX;
+            var maxPull = ($viewport.outerWidth() || 1) * 0.25;
+
+            if (Math.abs(deltaX) > 6) {
+                hasDragged = true;
+                event.preventDefault();
+            }
+
+            if ((currentSlide === 0 && deltaX > 0) || (currentSlide === totalSlides - 1 && deltaX < 0)) {
+                deltaX = Math.max(-maxPull, Math.min(maxPull, deltaX * 0.35));
+            }
+
+            updateSlider(deltaX);
+        });
+
+        function endDrag() {
+            if (!isDragging) {
+                return;
+            }
+
+            var deltaX = dragCurrentX - dragStartX;
+            var threshold = Math.min(90, ($viewport.outerWidth() || 1) * 0.18);
+
+            isDragging = false;
+            $slider.removeClass('is-dragging');
+            $viewport.removeClass('is-dragging');
+
+            if (deltaX <= -threshold && currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+                return;
+            }
+
+            if (deltaX >= threshold && currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+                return;
+            }
+
+            updateSlider();
+        }
+
+        $viewport.on('pointerup pointercancel pointerleave', endDrag);
+
+        $viewport.on('click', 'a', function (event) {
+            if (hasDragged) {
+                event.preventDefault();
+                event.stopPropagation();
+                hasDragged = false;
+            }
+        });
+
+        $(window).on('resize', function () {
+            updateSlider();
         });
 
         updateSlider();
