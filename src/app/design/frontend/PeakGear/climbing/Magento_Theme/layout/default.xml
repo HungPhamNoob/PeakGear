@@ -32,6 +32,11 @@
 
         <!-- Ensure toast messages render below the header (not inside nav) -->
         <move element="page.messages" destination="page.wrapper" after="header.container"/>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="peakgear.auth.guard.init"
+                   template="Magento_Theme::html/auth-guard-init.phtml"/>
+        </referenceContainer>
         
         <!-- ===== HIDE ALL MAGENTO DEFAULT HEADER BLOCKS ===== -->
         <referenceBlock name="header.panel.wrapper" remove="true"/>
