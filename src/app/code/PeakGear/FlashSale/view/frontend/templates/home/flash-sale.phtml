@@ -5,6 +5,7 @@ use Magento\Framework\App\Action\Action;
 $saleGroups = $block->getSaleGroups();
 ?>
 <?php foreach ($saleGroups as $sale): ?>
+<?php $canSlide = count($sale['items']) > 1; ?>
 <section class="pg-flash-sale pg-flash-sale--<?= $block->escapeHtmlAttr($sale['status']) ?>" data-countdown-to="<?= $block->escapeHtmlAttr($sale['countdown_to']) ?>">
     <div class="pg-flash-sale__inner">
         <div class="pg-flash-sale__header">
@@ -33,63 +34,75 @@ $saleGroups = $block->getSaleGroups();
                 </div>
             </div>
         </div>
-        <div class="pg-flash-sale__grid">
-            <?php foreach ($sale['items'] as $entry): ?>
-                <?php
-                $product = $entry['product'];
-                $addToCartUrl = $block->getAddToCartUrl($product, ['_escape' => false]);
-                $encodedAddToCartUrl = $this->helper(\Magento\Framework\Url\Helper\Data::class)->getEncodedUrl($addToCartUrl);
-                ?>
-                <article class="product-card hover-lift pg-flash-sale__card">
-                    <div class="product-sale-badge">-<?= (int)round($entry['discount_percent']) ?>%</div>
-                    <div class="product-image-container">
-                        <a href="<?= $block->escapeUrl($entry['url']) ?>" class="product-image-link">
-                            <img src="<?= $block->escapeUrl($entry['image_url']) ?>"
-                                 alt="<?= $block->escapeHtmlAttr($entry['name']) ?>"
-                                 class="product-real-image"
-                                 loading="lazy"
-                                 width="300"
-                                 height="300">
-                        </a>
-                        <div class="product-quick-actions">
-                            <a href="<?= $block->escapeUrl($entry['url']) ?>" class="product-action-btn product-action-view" title="Xem chi tiết" aria-label="Xem chi tiết">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </a>
-                            <?php if ($sale['status'] === 'active' && $product->isAvailable()): ?>
-                            <form data-role="tocart-form"
-                                  data-product-sku="<?= $block->escapeHtmlAttr($product->getSku()) ?>"
-                                  action="<?= $block->escapeUrl($addToCartUrl) ?>"
-                                  method="post"
-                                  data-auth-required="1"
-                                  data-auth-action="cart"
-                                  data-auth-title="Đăng nhập để sử dụng tính năng này"
-                                  data-auth-message="Bạn cần đăng nhập để sử dụng tính năng này."
-                                  data-mage-init='{"catalogAddToCart": {"addToCartButtonSelector": ".action.tocart"}}'
-                                  class="action-cart-form" style="display: contents;">
-                                <?= $block->getBlockHtml('formkey') ?>
-                                <input type="hidden" name="product" value="<?= $block->escapeHtmlAttr((int)$product->getId()) ?>">
-                                <input type="hidden" name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>"
-                                       value="<?= $block->escapeHtmlAttr($encodedAddToCartUrl) ?>">
-                                <button type="submit" class="product-action-btn product-action-cart action tocart" title="Thêm vào giỏ" aria-label="Thêm vào giỏ">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                                </button>
-                            </form>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="product-content">
-                        <span class="product-category-tag">Còn <?= (int)$entry['remaining_qty'] ?> sản phẩm</span>
-                        <h3 class="product-card-name">
-                            <a href="<?= $block->escapeUrl($entry['url']) ?>"><?= $block->escapeHtml($entry['name']) ?></a>
-                        </h3>
-                        <div class="product-price-row">
-                            <span class="product-current-price"><?= /* @noEscape */ $block->formatPrice((float)$entry['sale_price']) ?></span>
-                            <span class="product-original-price"><?= /* @noEscape */ $block->formatPrice((float)$entry['regular_price']) ?></span>
-                        </div>
-                    </div>
-                    <div class="product-accent-line"></div>
-                </article>
-            <?php endforeach; ?>
+        <div class="pg-flash-sale__carousel">
+            <?php if ($canSlide): ?>
+            <button type="button" class="pg-flash-sale__nav pg-flash-sale__nav--prev" aria-label="Sản phẩm flash sale trước">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <?php endif; ?>
+
+            <div class="pg-flash-sale__track-wrap">
+                <div class="pg-flash-sale__grid">
+                    <?php foreach ($sale['items'] as $entry): ?>
+                        <?php
+                        $product = $entry['product'];
+                        $addToCartUrl = $block->getAddToCartUrl($product, ['_escape' => false]);
+                        $encodedAddToCartUrl = $this->helper(\Magento\Framework\Url\Helper\Data::class)->getEncodedUrl($addToCartUrl);
+                        ?>
+                        <article class="product-card hover-lift pg-flash-sale__card">
+                            <div class="product-sale-badge">-<?= (int)round($entry['discount_percent']) ?>%</div>
+                            <div class="product-image-container">
+                                <a href="<?= $block->escapeUrl($entry['url']) ?>" class="product-image-link">
+                                    <img src="<?= $block->escapeUrl($entry['image_url']) ?>"
+                                         alt="<?= $block->escapeHtmlAttr($entry['name']) ?>"
+                                         class="product-real-image"
+                                         loading="lazy"
+                                         width="300"
+                                         height="300">
+                                </a>
+                                <div class="product-quick-actions">
+                                    <a href="<?= $block->escapeUrl($entry['url']) ?>" class="product-action-btn product-action-view" title="Xem chi tiết" aria-label="Xem chi tiết">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <?php if ($sale['status'] === 'active' && $product->isAvailable()): ?>
+                                    <form data-role="tocart-form"
+                                          data-product-sku="<?= $block->escapeHtmlAttr($product->getSku()) ?>"
+                                          action="<?= $block->escapeUrl($addToCartUrl) ?>"
+                                          method="post"
+                                          data-mage-init='{"catalogAddToCart": {"addToCartButtonSelector": ".action.tocart"}}'
+                                          class="action-cart-form" style="display: contents;">
+                                        <?= $block->getBlockHtml('formkey') ?>
+                                        <input type="hidden" name="product" value="<?= $block->escapeHtmlAttr((int)$product->getId()) ?>">
+                                        <input type="hidden" name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>"
+                                               value="<?= $block->escapeHtmlAttr($encodedAddToCartUrl) ?>">
+                                        <button type="submit" class="product-action-btn product-action-cart action tocart" title="Thêm vào giỏ" aria-label="Thêm vào giỏ">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                        </button>
+                                    </form>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <span class="product-category-tag">Còn <?= (int)$entry['remaining_qty'] ?> sản phẩm</span>
+                                <h3 class="product-card-name">
+                                    <a href="<?= $block->escapeUrl($entry['url']) ?>"><?= $block->escapeHtml($entry['name']) ?></a>
+                                </h3>
+                                <div class="product-price-row">
+                                    <span class="product-current-price"><?= /* @noEscape */ $block->formatPrice((float)$entry['sale_price']) ?></span>
+                                    <span class="product-original-price"><?= /* @noEscape */ $block->formatPrice((float)$entry['regular_price']) ?></span>
+                                </div>
+                            </div>
+                            <div class="product-accent-line"></div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <?php if ($canSlide): ?>
+            <button type="button" class="pg-flash-sale__nav pg-flash-sale__nav--next" aria-label="Sản phẩm flash sale sau">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -118,6 +131,47 @@ require(['jquery'], function ($) {
     }
     tick();
     window.setInterval(tick, 1000);
+
+    $('.pg-flash-sale__carousel').each(function () {
+        var $carousel = $(this);
+        var track = $carousel.find('.pg-flash-sale__grid').get(0);
+        var prev = $carousel.find('.pg-flash-sale__nav--prev').get(0);
+        var next = $carousel.find('.pg-flash-sale__nav--next').get(0);
+        var cards = track ? Array.prototype.slice.call(track.querySelectorAll('.pg-flash-sale__card')) : [];
+        var currentIndex = 0;
+
+        if (!track || !prev || !next || !cards.length) {
+            return;
+        }
+
+        function normalizeIndex(index) {
+            var length = cards.length;
+            return ((index % length) + length) % length;
+        }
+
+        function scrollToIndex(index, behavior) {
+            currentIndex = normalizeIndex(index);
+            track.scrollTo({ left: cards[currentIndex].offsetLeft, behavior: behavior || 'smooth' });
+        }
+
+        function detectCurrentIndex() {
+            var closest = 0;
+            var minDiff = Number.POSITIVE_INFINITY;
+            cards.forEach(function (card, index) {
+                var diff = Math.abs(card.offsetLeft - track.scrollLeft);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = index;
+                }
+            });
+            currentIndex = closest;
+        }
+
+        prev.addEventListener('click', function () { scrollToIndex(currentIndex - 1, 'smooth'); });
+        next.addEventListener('click', function () { scrollToIndex(currentIndex + 1, 'smooth'); });
+        track.addEventListener('scroll', function () { window.requestAnimationFrame(detectCurrentIndex); });
+        window.addEventListener('resize', function () { scrollToIndex(currentIndex, 'auto'); });
+    });
 });
 </script>
 <script type="text/x-magento-init">

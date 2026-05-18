@@ -18,13 +18,17 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 .pg-flash-sale {
-    padding: 3rem 1.5rem;
+    padding: 2.75rem 1.25rem;
     background:
         radial-gradient(circle at 8% 16%, fade(@peakgear-primary-light, 16%), transparent 16rem),
         radial-gradient(circle at 82% 74%, fade(@peakgear-primary-light, 10%), transparent 18rem),
         linear-gradient(to bottom, @peakgear-dark, @peakgear-dark-secondary);
 
     @media (min-width: 768px) {
+        padding: 3.5rem 2rem;
+    }
+
+    @media (min-width: 1200px) {
         padding: 4rem 3rem;
     }
 }
@@ -33,7 +37,7 @@
     position: relative;
     overflow: hidden;
     max-width: @max-width;
-    min-height: 28rem;
+    min-height: 0;
     margin: 0 auto;
     padding: 2rem;
     border: 1px solid fade(@peakgear-primary-light, 34%);
@@ -90,11 +94,11 @@
 .pg-flash-sale__header {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 1.7rem;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
 
     @media (min-width: 980px) {
-        grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+        grid-template-columns: minmax(0, 1fr) minmax(20rem, 25rem);
         align-items: start;
     }
 }
@@ -103,7 +107,7 @@
     display: inline-flex;
     align-items: center;
     gap: .45rem;
-    padding: 0.45rem 1rem;
+    padding: 0.4rem 0.9rem;
     border: 1px solid fade(@peakgear-primary-light, 42%);
     border-radius: 999px;
     background: fade(@peakgear-primary-light, 12%);
@@ -141,16 +145,16 @@
 
 .pg-flash-sale__title {
     max-width: 42rem;
-    margin: 1rem 0 0;
+    margin: 0.85rem 0 0;
     color: @peakgear-text;
     font-family: @font-sans;
-    font-size: 2.35rem;
+    font-size: 2.1rem;
     font-weight: 800;
     line-height: 1.05;
     text-shadow: 0 10px 30px fade(#000, 30%);
 
     @media (min-width: 768px) {
-        font-size: 3rem;
+        font-size: 2.75rem;
     }
 }
 
@@ -159,7 +163,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: .5rem;
-    margin: 1rem 0 0;
+    margin: 0.85rem 0 0;
     color: fade(@peakgear-text, 68%);
     font-size: 0.95rem;
     line-height: 1.55;
@@ -171,7 +175,7 @@
 
 .pg-flash-sale__timer-wrap {
     width: 100%;
-    padding: 1.15rem;
+    padding: 1rem;
     border: 1px solid fade(@peakgear-primary-light, 28%);
     border-radius: 1rem;
     background: fade(@peakgear-dark-secondary, 78%);
@@ -184,7 +188,7 @@
     display: inline-flex;
     align-items: center;
     gap: .45rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
     color: @peakgear-primary-light;
     font-size: 0.85rem;
     font-weight: 800;
@@ -195,7 +199,7 @@
 .pg-flash-sale__timer {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: .75rem;
+    gap: .6rem;
 }
 
 .pg-flash-sale__timer span {
@@ -203,7 +207,7 @@
     gap: .35rem;
     justify-items: center;
     min-width: 0;
-    padding: 1rem .6rem;
+    padding: .85rem .5rem;
     border-radius: .75rem;
     background: fade(#020617, 74%);
     box-shadow: 0 10px 24px fade(#000, 18%) inset;
@@ -211,7 +215,7 @@
 }
 
 .pg-flash-sale__timer strong {
-    font-size: 1.55rem;
+    font-size: 1.4rem;
     font-weight: 900;
     line-height: 1;
     font-variant-numeric: tabular-nums;
@@ -224,26 +228,90 @@
     font-weight: 700;
 }
 
-.pg-flash-sale__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1.25rem;
+.pg-flash-sale__carousel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 
-    @media (min-width: 768px) {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 1.5rem;
+.pg-flash-sale__track-wrap {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.pg-flash-sale__grid {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.pg-flash-sale__nav {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid fade(@peakgear-text, 18%);
+    border-radius: 50%;
+    background: fade(@peakgear-text, 6%);
+    color: @peakgear-text;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+
+    svg {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    &:hover {
+        border-color: @peakgear-primary-light;
+        background: fade(@peakgear-primary-light, 18%);
+        color: @peakgear-primary-light;
     }
 }
 
 .pg-flash-sale__card {
-    max-width: 15rem;
+    flex: 0 0 15rem;
+    scroll-snap-align: start;
+    max-width: none;
     margin: 0;
     border: 1px solid fade(@peakgear-primary-light, 20%);
     box-shadow: 0 18px 44px fade(#000, 22%);
+
+    @media (min-width: 480px) {
+        flex-basis: calc((100% - 1rem) / 2);
+    }
+
+    @media (min-width: 768px) {
+        flex-basis: calc((100% - 2rem) / 3);
+    }
+
+    @media (min-width: 1024px) {
+        flex-basis: calc((100% - 3rem) / 4);
+    }
+
+    @media (min-width: 1200px) {
+        flex-basis: calc((100% - 4rem) / 5);
+    }
 }
 
 .pg-flash-sale__card .product-content {
-    min-height: 10rem;
+    min-height: 8.5rem;
+    padding: 0.9rem;
 }
 
 .pg-flash-sale__card .product-category-tag {
@@ -263,9 +331,15 @@
         min-height: 0;
         padding: 1.5rem;
     }
+}
 
-    .pg-flash-sale__card {
-        max-width: none;
+@media (max-width: 767px) {
+    .pg-flash-sale__carousel {
+        gap: 0;
+    }
+
+    .pg-flash-sale__nav {
+        display: none;
     }
 }
 
@@ -279,19 +353,99 @@
         border-radius: 1rem;
     }
 
+    .pg-flash-sale__header {
+        gap: 1rem;
+        margin-bottom: 1.1rem;
+    }
+
     .pg-flash-sale__title {
-        font-size: 2rem;
+        font-size: 1.75rem;
+    }
+
+    .pg-flash-sale__meta {
+        font-size: 0.85rem;
+    }
+
+    .pg-flash-sale__timer-wrap {
+        padding: 0.7rem;
+        border-radius: 0.75rem;
     }
 
     .pg-flash-sale__timer {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: .35rem;
     }
 
-    .pg-flash-sale__grid {
-        grid-template-columns: 1fr;
+    .pg-flash-sale__timer span {
+        gap: .2rem;
+        padding: .55rem .25rem;
+        border-radius: .45rem;
+    }
+
+    .pg-flash-sale__timer strong {
+        font-size: 1.05rem;
+    }
+
+    .pg-flash-sale__timer em {
+        font-size: .65rem;
+    }
+
+    .pg-flash-sale__timer-label {
+        margin-bottom: .55rem;
+        font-size: .75rem;
+    }
+
+    .pg-flash-sale__carousel {
+        gap: .6rem;
     }
 
     .pg-flash-sale__card .product-content {
         min-height: 0;
+        padding: 0.85rem;
+    }
+
+    .pg-flash-sale__card .product-card-name {
+        font-size: 0.9rem;
+        min-height: 2.55rem;
+    }
+
+    .pg-flash-sale__card .product-current-price {
+        font-size: 0.98rem;
+    }
+
+    .pg-flash-sale__card .product-original-price {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .pg-flash-sale {
+        padding: 1.75rem .75rem;
+    }
+
+    .pg-flash-sale__inner {
+        padding: .85rem;
+    }
+
+    .pg-flash-sale__carousel {
+        margin: 0 -.3rem;
+    }
+
+    .pg-flash-sale__grid {
+        gap: .75rem;
+    }
+
+    .pg-flash-sale__card {
+        flex-basis: 72vw;
+    }
+}
+
+@media (max-width: 340px) {
+    .pg-flash-sale__timer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pg-flash-sale__timer span {
+        padding: .5rem .35rem;
     }
 }
