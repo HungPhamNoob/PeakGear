@@ -129,21 +129,23 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
                     </div>
 
                     <div class="field">
-                        <label for="pg-district-input">Quận / Huyện <span style="color:#ff6b6b">*</span></label>
-                        <div class="pg-combo is-disabled" id="pg-district-wrap">
+                        <label for="pg-ward-input">Phường / Xã <span style="color:#ff6b6b">*</span></label>
+                        <div class="pg-combo is-disabled" id="pg-ward-wrap">
                             <div class="pg-combo__input-wrap">
-                                <input type="text" id="pg-district-input"
+                                <input type="text" id="pg-ward-input"
                                        class="pg-combo__input"
                                        placeholder="Chọn tỉnh thành trước"
                                        autocomplete="off" spellcheck="false" disabled>
-                                <span class="pg-combo__icon pg-combo__arrow" id="pg-district-arrow">
+                                <span class="pg-combo__icon pg-combo__arrow" id="pg-ward-arrow">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                                 </span>
                             </div>
-                            <ul class="pg-combo__list" id="pg-district-list" style="display:none"></ul>
+                            <ul class="pg-combo__list" id="pg-ward-list" style="display:none"></ul>
                         </div>
                     </div>
                 </div>
+
+
 
                 <div class="field">
                     <label for="street_1">Địa chỉ (Số nhà, đường...)</label>
@@ -174,19 +176,7 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
                 </div>
 
                 <div style="margin-top: 1.5rem;">
-                    <?php if ($block->isDefaultBilling()): ?>
-                        <div style="margin-bottom: 0.5rem; background: rgba(90, 138, 60, 0.1); border: 1px solid rgba(90, 138, 60, 0.3); color: #c8ddb8; padding: 0.75rem; border-radius: 0.5rem;">
-                            <span>Đang đóng vai trò là <strong>địa chỉ thanh toán mặc định</strong>.</span>
-                        </div>
-                    <?php elseif ($block->canSetAsDefaultBilling()): ?>
-                        <label class="toggle-switch" for="primary_billing">
-                            <input type="checkbox" id="primary_billing" name="default_billing" value="1">
-                            <span class="slider"></span>
-                            Lưu làm địa chỉ thanh toán mặc định
-                        </label>
-                    <?php else: ?>
                         <input type="hidden" name="default_billing" value="1" />
-                    <?php endif; ?>
 
                     <?php if ($block->isDefaultShipping()): ?>
                         <div style="margin-bottom: 0.5rem; background: rgba(90, 138, 60, 0.1); border: 1px solid rgba(90, 138, 60, 0.3); color: #c8ddb8; padding: 0.75rem; border-radius: 0.5rem;">
@@ -369,17 +359,17 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
 (function () {
     'use strict';
 
-    var API_BASE          = 'https://provinces.open-api.vn/api';
+    var API_BASE          = 'https://esgoo.net/api-tinhthanh-new';
     var defaultRegionName = "<?= $escaper->escapeJs($block->getRegion()) ?>";
     var defaultCity       = "<?= $escaper->escapeJs($block->getAddress()->getCity()) ?>";
+    
+    var defaultWardName   = defaultCity;
 
-    var allProvinces      = [];   // [{code, name}]
-    var currentDistricts  = [];   // [{code, name}]
+    var allProvinces      = [];
+    var currentWards      = [];
 
     /* ---- tiny combobox factory ---- */
     function Combo(cfg) {
-        /* cfg: { wrap, input, list, arrow, spin?,
-                  getItems, onPick, placeholder } */
         var wrap  = document.getElementById(cfg.wrap);
         var inp   = document.getElementById(cfg.input);
         var list  = document.getElementById(cfg.list);
@@ -388,6 +378,7 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
 
         var shown = false;
         var focusIdx = -1;
+        var selectedItem = null;
 
         function showList(items) {
             list.innerHTML = '';
@@ -399,7 +390,7 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
             } else {
                 items.forEach(function (item, i) {
                     var li = document.createElement('li');
-                    li.textContent = item.name;
+                    li.textContent = item.full_name;
                     li.addEventListener('mousedown', function (e) {
                         e.preventDefault();
                         pickItem(item);
@@ -421,7 +412,8 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
         }
 
         function pickItem(item) {
-            inp.value = item.name;
+            selectedItem = item;
+            inp.value = item.full_name;
             hideList();
             if (cfg.onPick) cfg.onPick(item);
         }
@@ -430,10 +422,9 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
             var items = cfg.getItems();
             if (!q) return items;
             var lq = q.toLowerCase();
-            return items.filter(function (it) { return it.name.toLowerCase().includes(lq); });
+            return items.filter(function (it) { return it.full_name.toLowerCase().includes(lq); });
         }
 
-        /* keyboard navigation */
         inp.addEventListener('keydown', function (e) {
             var lis = list.querySelectorAll('li:not(.pg-no-result)');
             if (e.key === 'ArrowDown') {
@@ -468,11 +459,9 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
             showList(filter(this.value));
         });
         inp.addEventListener('blur', function () {
-            // small delay so mousedown on list fires first
             setTimeout(hideList, 150);
         });
 
-        /* PUBLIC */
         function enable(placeholder) {
             wrap.classList.remove('is-disabled');
             inp.disabled = false;
@@ -483,10 +472,15 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
             inp.disabled = true;
             inp.value = '';
             inp.placeholder = placeholder || cfg.placeholder;
+            selectedItem = null;
             hideList();
         }
-        function setVal(name) {
+        function setVal(name, item) {
             inp.value = name || '';
+            selectedItem = item || null;
+        }
+        function getSelectedItem() {
+            return selectedItem;
         }
         function setLoading(show) {
             if (!spin) return;
@@ -494,10 +488,16 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
             if (arrow) arrow.style.display = show ? 'none' : 'flex';
         }
 
-        return { enable: enable, disable: disable, setVal: setVal, setLoading: setLoading };
+        return { enable: enable, disable: disable, setVal: setVal, setLoading: setLoading, getSelectedItem: getSelectedItem };
     }
 
-    /* ---- init ---- */
+    function updateCityField() {
+        var ward = wardCombo.getSelectedItem();
+        if (ward) {
+            document.getElementById('city').value = ward.full_name;
+        }
+    }
+
     var provCombo = Combo({
         wrap: 'pg-province-wrap', input: 'pg-province-input',
         list: 'pg-province-list', arrow: 'pg-province-arrow',
@@ -505,68 +505,67 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
         placeholder: 'Gõ hoặc chọn Tỉnh / Thành phố',
         getItems: function () { return allProvinces; },
         onPick: function (prov) {
-            document.getElementById('region_id').value = prov.code;
-            document.getElementById('region').value   = prov.name;
+            document.getElementById('region_id').value = prov.id;
+            document.getElementById('region').value   = prov.full_name;
             document.getElementById('city').value     = '';
-            distCombo.disable('Đang tải...');
-            distCombo.setLoading(false);
-            currentDistricts = [];
-            loadDistricts(prov);
+            wardCombo.disable('Đang tải...');
+            currentWards = [];
+            loadWards(prov);
         }
     });
 
-    var distCombo = Combo({
-        wrap: 'pg-district-wrap', input: 'pg-district-input',
-        list: 'pg-district-list', arrow: 'pg-district-arrow',
-        placeholder: 'Gõ hoặc chọn Quận / Huyện',
-        getItems: function () { return currentDistricts; },
-        onPick: function (dist) {
-            document.getElementById('city').value = dist.name;
+    var wardCombo = Combo({
+        wrap: 'pg-ward-wrap', input: 'pg-ward-input',
+        list: 'pg-ward-list', arrow: 'pg-ward-arrow',
+        placeholder: 'Gõ hoặc chọn Phường / Xã',
+        getItems: function () { return currentWards; },
+        onPick: function (ward) {
+            updateCityField();
         }
     });
 
-    /* ---- Load districts for a province ---- */
-    function loadDistricts(prov) {
-        fetch(API_BASE + '/p/' + prov.code + '?depth=2')
+    function loadWards(prov) {
+        fetch(API_BASE + '/2/' + prov.id + '.htm')
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                currentDistricts = (data.districts || []).map(function (d) {
-                    return { code: d.code, name: d.name };
-                });
-                distCombo.enable('Gõ hoặc chọn Quận / Huyện');
+                if(data.error === 0) {
+                    currentWards = data.data;
+                    wardCombo.enable('Gõ hoặc chọn Phường / Xã');
 
-                if (defaultCity) {
-                    var saved = currentDistricts.find(function (d) {
-                        return d.name.toLowerCase() === defaultCity.toLowerCase();
-                    });
-                    if (saved) {
-                        distCombo.setVal(saved.name);
-                        document.getElementById('city').value = saved.name;
+                    if (defaultWardName) {
+                        var saved = currentWards.find(function (w) {
+                            return w.full_name.toLowerCase() === defaultWardName.toLowerCase();
+                        });
+                        if (saved) {
+                            wardCombo.setVal(saved.full_name, saved);
+                            updateCityField();
+                        }
+                        defaultWardName = null;
                     }
-                    defaultCity = null;
                 }
             })
-            .catch(function () { distCombo.enable('Lỗi tải dữ liệu'); });
+            .catch(function () { wardCombo.enable('Lỗi tải dữ liệu'); });
     }
 
-    /* ---- Load all provinces on page load ---- */
     provCombo.setLoading(true);
-    fetch(API_BASE + '/?depth=1')
+    fetch(API_BASE + '/1/0.htm')
         .then(function (r) { return r.json(); })
         .then(function (data) {
-            allProvinces = data.map(function (p) { return { code: p.code, name: p.name }; });
-            provCombo.setLoading(false);
+            if(data.error === 0) {
+                allProvinces = data.data;
+                provCombo.setLoading(false);
 
-            if (defaultRegionName) {
-                var saved = allProvinces.find(function (p) {
-                    return p.name.toLowerCase() === defaultRegionName.toLowerCase();
-                });
-                if (saved) {
-                    provCombo.setVal(saved.name);
-                    document.getElementById('region_id').value = saved.code;
-                    document.getElementById('region').value   = saved.name;
-                    distCombo.disable('Đang tải...');
-                    loadDistricts(saved);
+                if (defaultRegionName) {
+                    var saved = allProvinces.find(function (p) {
+                        return p.full_name.toLowerCase() === defaultRegionName.toLowerCase();
+                    });
+                    if (saved) {
+                        provCombo.setVal(saved.full_name, saved);
+                        document.getElementById('region_id').value = saved.id;
+                        document.getElementById('region').value   = saved.full_name;
+                        wardCombo.disable('Đang tải...');
+                        loadWards(saved);
+                    }
                 }
             }
         })

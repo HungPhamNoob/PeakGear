@@ -34,6 +34,9 @@ var config = {
             },
             'Magento_SalesRule/js/view/payment/discount': {
                 'Magento_SalesRule/js/view/payment/discount-mixin': true
+            },
+            'Magento_Catalog/js/price-utils': {
+                'Magento_Catalog/js/price-utils-mixin': true
             }
         }
     },

@@ -100,7 +100,11 @@ class FlashSale extends AbstractProduct
 
     public function formatPrice(float $price): string
     {
-        return $this->priceCurrency->format($price, false);
+        $formatted = $this->priceCurrency->format($price, false);
+        if (str_contains($formatted, '₫')) {
+            return number_format((int) round($price), 0, '.', ',') . '₫';
+        }
+        return $formatted;
     }
 
     private function formatStoreDate(\DateTimeImmutable $date): string

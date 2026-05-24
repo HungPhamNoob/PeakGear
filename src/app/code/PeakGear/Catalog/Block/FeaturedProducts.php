@@ -189,7 +189,11 @@ class FeaturedProducts extends AbstractProduct
      */
     public function formatPriceVnd(float $price): string
     {
-        return number_format($price, 0, ',', '.') . '₫';
+        $formatted = $this->priceCurrency->format($price, false);
+        if (str_contains($formatted, '₫')) {
+            return number_format((int) round($price), 0, '.', ',') . '₫';
+        }
+        return $formatted;
     }
 
     /**

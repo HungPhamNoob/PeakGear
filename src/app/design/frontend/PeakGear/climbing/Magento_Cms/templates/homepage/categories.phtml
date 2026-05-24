@@ -185,7 +185,8 @@ require(['jquery'], function ($) {
             hasDragged = false;
             $slider.addClass('is-dragging');
             $viewport.addClass('is-dragging');
-            this.setPointerCapture(event.pointerId);
+            // NOTE: Không dùng setPointerCapture vì sẽ khiến click event
+            // fire lên viewport thay vì thẻ <a>, làm link điều hướng bị vô hiệu.
         });
 
         $viewport.on('pointermove', function (event) {
@@ -197,7 +198,7 @@ require(['jquery'], function ($) {
             var deltaX = dragCurrentX - dragStartX;
             var maxPull = ($viewport.outerWidth() || 1) * 0.25;
 
-            if (Math.abs(deltaX) > 6) {
+            if (Math.abs(deltaX) > 8) {
                 hasDragged = true;
                 event.preventDefault();
             }
@@ -218,6 +219,7 @@ require(['jquery'], function ($) {
             var threshold = Math.min(90, ($viewport.outerWidth() || 1) * 0.18);
 
             isDragging = false;
+            hasDragged = Math.abs(deltaX) > 8; // Reset nếu không đủ threshold
             $slider.removeClass('is-dragging');
             $viewport.removeClass('is-dragging');
 
@@ -234,14 +236,26 @@ require(['jquery'], function ($) {
             updateSlider();
         }
 
-        $viewport.on('pointerup pointercancel pointerleave', endDrag);
+        // Dùng document-level listener để bắt pointerup/cancel kể cả khi
+        // pointer ra ngoài viewport (thay cho setPointerCapture).
+        $(document).on('pointerup.catslider pointercancel.catslider', function (event) {
+            if (isDragging) {
+                endDrag();
+            }
+        });
 
-        $viewport.on('click', 'a', function (event) {
+        $viewport.on('pointerleave', function () {
+            if (isDragging) {
+                endDrag();
+            }
+        });
+
+        $viewport.on('click', 'a.category-card', function (event) {
             if (hasDragged) {
                 event.preventDefault();
                 event.stopPropagation();
-                hasDragged = false;
             }
+            hasDragged = false;
         });
 
         $(window).on('resize', function () {
