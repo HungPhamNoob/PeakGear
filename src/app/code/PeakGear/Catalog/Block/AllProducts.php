@@ -558,7 +558,11 @@ class AllProducts extends AbstractProduct
      */
     public function formatPrice(float $price): string
     {
-        return number_format((int) round($price), 0, '.', ',') . '₫';
+        $formatted = $this->priceHelper->currency($price, true, false);
+        if (str_contains($formatted, '₫')) {
+            return number_format((int) round($price), 0, '.', ',') . '₫';
+        }
+        return $formatted;
     }
 
     public function getProductImageUrl(ProductInterface $product): string

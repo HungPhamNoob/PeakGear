@@ -25,4 +25,9 @@
         </arguments>
     </type>
 
+    <!-- Global Currency Format Fix (VND) -->
+    <type name="Magento\Directory\Model\Currency">
+        <plugin name="peakgear_currency_format_fix" type="PeakGear\Catalog\Plugin\CurrencyFormatPlugin" sortOrder="10"/>
+    </type>
+
 </config>
