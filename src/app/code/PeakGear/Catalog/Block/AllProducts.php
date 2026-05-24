@@ -67,6 +67,7 @@ class AllProducts extends AbstractProduct
 
     /**
      * @var PriceHelper
+     * @deprecated Use $this->_priceCurrency instead (precision-aware)
      */
     private $priceHelper;
 
@@ -557,7 +558,7 @@ class AllProducts extends AbstractProduct
      */
     public function formatPrice(float $price): string
     {
-        return $this->priceHelper->currency($price, true, false);
+        return number_format((int) round($price), 0, '.', ',') . '₫';
     }
 
     public function getProductImageUrl(ProductInterface $product): string

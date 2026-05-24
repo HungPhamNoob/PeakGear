@@ -6,7 +6,7 @@ namespace PeakGear\Catalog\ViewModel;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Helper\Image;
-use Magento\Framework\Pricing\Helper\Data as PriceHelper;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 
 /**
@@ -21,7 +21,7 @@ class ProductViewData implements ArgumentInterface
 
     public function __construct(
         private readonly Image $imageHelper,
-        private readonly PriceHelper $priceHelper,
+        private readonly PriceCurrencyInterface $priceCurrency,
         private readonly CategoryRepositoryInterface $categoryRepository
     ) {
     }
@@ -33,7 +33,7 @@ class ProductViewData implements ArgumentInterface
 
     public function formatPrice(float $price): string
     {
-        return $this->priceHelper->currency($price, true, false);
+        return number_format((int) round($price), 0, '.', ',') . '₫';
     }
 
     public function getPrimaryCategoryName(ProductInterface $product): string
