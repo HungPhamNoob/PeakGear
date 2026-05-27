@@ -6,6 +6,19 @@
  * @var \Magento\Customer\Block\Form\Register $block
  */
 $formData = $block->getFormData();
+
+// Read server-side session error messages (e.g. from CreatePostPlugin InputException)
+$serverErrors = [];
+try {
+    /** @var \Magento\Framework\Message\ManagerInterface $msgManager */
+    $msgManager = \Magento\Framework\App\ObjectManager::getInstance()
+        ->get(\Magento\Framework\Message\ManagerInterface::class);
+    foreach ($msgManager->getMessages(true)->getItemsByType(\Magento\Framework\Message\MessageInterface::TYPE_ERROR) as $msg) {
+        $serverErrors[] = $block->escapeHtml((string) $msg->getText());
+    }
+} catch (\Throwable $e) {
+    // fail silently
+}
 ?>
 
 <section class="register-section">
@@ -25,14 +38,14 @@ $formData = $block->getFormData();
             <h1 class="register-title">Tạo Tài Khoản</h1>
             <p class="register-subtitle">Tham gia cùng cộng đồng leo núi</p>
 
-            <!-- Error Message -->
-            <div class="register-error" id="register-error" style="display: none;">
+            <!-- Error Message (server-side + JS-side) -->
+            <div class="register-error" id="register-error"<?= empty($serverErrors) ? ' style="display: none;"' : '' ?>>
                 <svg class="register-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <p class="register-error-text" id="register-error-text"></p>
+                <p class="register-error-text" id="register-error-text"><?= implode('<br>', $serverErrors) ?></p>
             </div>
 
             <form class="register-form"
@@ -109,6 +122,7 @@ $formData = $block->getFormData();
                                placeholder="0123 456 789"
                                autocomplete="tel"/>
                     </div>
+                    <p class="register-phone-error" id="phone-error" style="display:none; color:#ef4444; font-size:0.8rem; margin-top:4px;">Vui lòng nhập số điện thoại hợp lệ (VD: 0912345678)</p>
                 </div>
 
                 <!-- Password -->
@@ -332,11 +346,55 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Split full name into first/last on submit
+    // Split full name into first/last on submit + validate phone
     var form = document.getElementById('form-validate');
     var fullnameInput = document.getElementById('fullname');
+    var phoneErrorEl = document.getElementById('phone-error');
+
+    function normalizePhone(phone) {
+        phone = phone.trim();
+        var digits = phone.replace(/\D+/g, '');
+        if (phone.startsWith('+') && digits.startsWith('84')) {
+            return '0' + digits.substring(2);
+        }
+        if (digits.startsWith('84') && digits.length >= 11) {
+            return '0' + digits.substring(2);
+        }
+        return digits;
+    }
+
+    function isValidVietnamesePhone(phone) {
+        return /^0[0-9]{9,10}$/.test(normalizePhone(phone));
+    }
+
     if (form && fullnameInput) {
-        form.addEventListener('submit', function() {
+        form.addEventListener('submit', function(e) {
+            // Validate phone before submit
+            var currentMethod = methodInput ? methodInput.value : 'email';
+            var phoneVal = phoneInput ? phoneInput.value.trim() : '';
+            var phoneValid = true;
+
+            if (currentMethod === 'phone') {
+                if (!phoneVal || !isValidVietnamesePhone(phoneVal)) {
+                    phoneValid = false;
+                }
+            } else if (phoneVal !== '') {
+                if (!isValidVietnamesePhone(phoneVal)) {
+                    phoneValid = false;
+                }
+            }
+
+            if (!phoneValid) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (phoneErrorEl) phoneErrorEl.style.display = 'block';
+                if (phoneInput) phoneInput.focus();
+                return false;
+            } else {
+                if (phoneErrorEl) phoneErrorEl.style.display = 'none';
+            }
+
+            // Split full name into first/last
             var fullname = fullnameInput.value.trim();
             var parts = fullname.split(/\s+/);
             if (parts.length >= 2) {
@@ -346,6 +404,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('firstname').value = fullname;
                 document.getElementById('lastname').value = '-';
             }
+        });
+    }
+
+    // Hide phone error when user starts typing
+    if (phoneInput && phoneErrorEl) {
+        phoneInput.addEventListener('input', function() {
+            phoneErrorEl.style.display = 'none';
         });
     }
 });
