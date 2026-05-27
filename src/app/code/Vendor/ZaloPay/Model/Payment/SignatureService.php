@@ -49,6 +49,11 @@ class SignatureService
 
     public function verifyCallback(array $payload): bool
     {
+        // Guard: refuse verification if Key2 is not configured.
+        if ($this->config->getKey2() === '') {
+            return false;
+        }
+
         $expectedMac = hash_hmac('sha256', (string)($payload['data'] ?? ''), $this->config->getKey2());
 
         return hash_equals($expectedMac, (string)($payload['mac'] ?? ''));

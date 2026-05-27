@@ -36,7 +36,16 @@ class SignatureService
      */
     public function verify(array $params): bool
     {
+        // Guard: refuse verification if the secret key is not configured.
+        if ($this->config->getHashSecret() === '') {
+            return false;
+        }
+
         $providedHash = strtolower((string)($params['vnp_SecureHash'] ?? ''));
+        if ($providedHash === '') {
+            return false;
+        }
+
         unset($params['vnp_SecureHash'], $params['vnp_SecureHashType']);
 
         return hash_equals(strtolower($this->sign($params)), $providedHash);

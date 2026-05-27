@@ -38,13 +38,9 @@ class Result implements HttpGetActionInterface
                 throw new \RuntimeException('Unable to locate the last placed order for ZaloPay result.');
             }
 
-            if (in_array($order->getState(), [Order::STATE_PROCESSING, Order::STATE_COMPLETE], true)) {
-                $this->checkoutSession->setData(self::GATEWAY_STARTED_KEY, false);
-                $this->checkoutSession->unsetData(self::REDIRECT_CACHE_KEY);
-                $this->checkoutSession->clearQuote();
-                $this->checkoutSession->setData('peakgear_successful_payment_order', (string)$order->getIncrementId());
-                return $resultRedirect->setPath('checkout/successful-payment');
-            }
+            // Do NOT shortcut based on order state — always verify with ZaloPay API.
+            // A callback may have arrived first and set the order to PROCESSING, but
+            // the user could also reach this page after cancelling, so we must confirm.
 
             $payment = $order->getPayment();
             $appTransId = $payment ? (string)$payment->getAdditionalInformation('peakgear_zalopay_app_trans_id') : '';
