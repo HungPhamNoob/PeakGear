@@ -15,32 +15,94 @@ if (!function_exists('peakgear_category_icon_svg')) {
 
         $normalized = mb_strtolower($name);
 
+        // Boot / Shoe / Sandal
         if (str_contains($normalized, 'giày') || str_contains($normalized, 'giay') || str_contains($normalized, 'sandal')) {
-            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 2.97 9.5 3.76 8c.71-1.37 2.2-2.54 3.53-3.46C8.69 3.56 11.05 3 13 3c1.36 0 2.68.19 3.88.55"/><path d="M20 8v8"/><path d="M20 16l-4-2-4 4-4-2-4 4"/><path d="M20 20h.01"/><path d="M4 20h.01"/></svg>';
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v10h5a1 1 0 0 1 1 1v1l1 3v2H3v-2l1-3v-1a1 1 0 0 1 1-1h5V2z"/><path d="M3 17h18"/><path d="M10 12H6"/></svg>';
         }
 
-        if (str_contains($normalized, 'ba lô') || str_contains($normalized, 'ba lo') || str_contains($normalized, 'balo') || str_contains($normalized, 'túi') || str_contains($normalized, 'tui')) {
-            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><path d="M20 10a8 8 0 0 0-16 0"/></svg>';
+        // Socks
+        if (str_contains($normalized, 'tất') || str_contains($normalized, 'tat') || str_contains($normalized, 'sock') || str_contains($normalized, 'vớ')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v10l-4 4a2 2 0 0 0 0 2.83l1.17 1.17a2 2 0 0 0 2.83 0L16 12V2"/><path d="M8 2h8"/><path d="M16 6H8"/></svg>';
         }
 
-        if (str_contains($normalized, 'dây') || str_contains($normalized, 'day') || str_contains($normalized, 'móc') || str_contains($normalized, 'moc') || str_contains($normalized, 'carabiner')) {
-            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a1 1 0 0 1-1-1v-1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1"/><path d="M9 3H7a2 2 0 0 0-2 2v1a1 1 0 0 1-1 1 1 1 0 0 1-1-1V5a4 4 0 0 1 4-4h2"/><path d="M9 3h6l3 7-4 1-2-4-2 4-4-1Z"/><path d="M14 11c.3 1.4.5 3 .5 4.5 0 3-1.2 5.5-3.5 5.5s-3-2.5-3-5.5c0-1.5.2-3.1.5-4.5"/></svg>';
+        // Backpack / Bag
+        if (str_contains($normalized, 'ba lô') || str_contains($normalized, 'ba lo') || str_contains($normalized, 'balo') || str_contains($normalized, 'túi xách') || str_contains($normalized, 'tui xach') || str_contains($normalized, 'túi đeo') || str_contains($normalized, 'tui deo')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V8a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v12"/><path d="M4 20h16"/><path d="M10 6V4a2 2 0 0 1 2-2 2 2 0 0 1 2 2v2"/><path d="M8 20v-5h8v5"/><line x1="12" y1="11" x2="12" y2="15"/></svg>';
         }
 
+        // Rope / Hook / Carabiner / Harness
+        if (str_contains($normalized, 'dây') || str_contains($normalized, 'day') || str_contains($normalized, 'móc') || str_contains($normalized, 'moc') || str_contains($normalized, 'carabiner') || str_contains($normalized, 'đai') || str_contains($normalized, 'belay')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 5 5 5 9c0 2.5 1.5 4.7 3.5 5.8L12 22l3.5-7.2C17.5 13.7 19 11.5 19 9c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>';
+        }
+
+        // Tent / Camp
         if (str_contains($normalized, 'lều') || str_contains($normalized, 'leu') || str_contains($normalized, 'trại') || str_contains($normalized, 'trai') || str_contains($normalized, 'cắm trại')) {
-            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/></svg>';
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M5 20V9l7-7 7 7v11"/><path d="M9 20v-6h6v6"/></svg>';
         }
 
-        if (str_contains($normalized, 'áo') || str_contains($normalized, 'ao') || str_contains($normalized, 'khoác') || str_contains($normalized, 'khoac')) {
+        // Sleeping Bag / Mat
+        if (str_contains($normalized, 'túi ngủ') || str_contains($normalized, 'tui ngu') || str_contains($normalized, 'thảm') || str_contains($normalized, 'tham') || str_contains($normalized, 'đệm')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>';
+        }
+
+        // Camp Stove / Cooking
+        if (str_contains($normalized, 'bếp') || str_contains($normalized, 'bep') || str_contains($normalized, 'nấu')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 0-5 5v3H5a1 1 0 0 0-1 1v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a1 1 0 0 0-1-1h-2V7a5 5 0 0 0-5-5z"/><path d="M9 7h6"/></svg>';
+        }
+
+        // Jacket / Windbreaker / Down
+        if (str_contains($normalized, 'áo khoác') || str_contains($normalized, 'ao khoac') || str_contains($normalized, 'áo gió') || str_contains($normalized, 'áo lông') || str_contains($normalized, 'softshell') || str_contains($normalized, 'jacket')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2 12 6 8 2 3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"/><path d="M12 10v4"/><path d="M10 12h4"/></svg>';
+        }
+
+        // General Clothing
+        if (str_contains($normalized, 'áo') || str_contains($normalized, 'ao') || str_contains($normalized, 'khoác') || str_contains($normalized, 'khoac') || str_contains($normalized, 'trang phục') || str_contains($normalized, 'quần')) {
             return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2 12 6 8 2 3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"/></svg>';
         }
 
-        if (str_contains($normalized, 'đèn') || str_contains($normalized, 'den') || str_contains($normalized, 'pin')) {
-            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6-6 6 6"/><path d="M9 9h6v11a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V9Z"/><path d="M12 3v6"/><path d="M10 14h4"/></svg>';
+        // Headlamp / Light
+        if (str_contains($normalized, 'đèn') || str_contains($normalized, 'den') || str_contains($normalized, 'headlamp') || str_contains($normalized, 'pin')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
         }
 
-        if (str_contains($normalized, 'phụ kiện') || str_contains($normalized, 'phu kien')) {
+        // Compass / GPS
+        if (str_contains($normalized, 'la bàn') || str_contains($normalized, 'la ban') || str_contains($normalized, 'gps') || str_contains($normalized, 'định vị')) {
             return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>';
+        }
+
+        // Water Bottle
+        if (str_contains($normalized, 'bình nước') || str_contains($normalized, 'binh nuoc') || str_contains($normalized, 'túi nước') || str_contains($normalized, 'hydration')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6l3 3-3 3v8"/><path d="M9 8H5v13h14V8h-4"/><path d="M9 2h6"/></svg>';
+        }
+
+        // Trekking Pole
+        if (str_contains($normalized, 'gậy') || str_contains($normalized, 'gay') || str_contains($normalized, 'pole')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M6 6l6-4 6 4"/><path d="M10 20l2 2 2-2"/></svg>';
+        }
+
+        // Sunglasses
+        if (str_contains($normalized, 'kính') || str_contains($normalized, 'kinh') || str_contains($normalized, 'glasses')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M14 15a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/><path d="M2.5 13 5 7c.7-1.3 1.4-2 3-2"/><path d="M21.5 13 19 7c-.7-1.3-1.5-2-3-2"/></svg>';
+        }
+
+        // Helmet / Hat
+        if (str_contains($normalized, 'nón') || str_contains($normalized, 'non') || str_contains($normalized, 'mũ') || str_contains($normalized, 'mu') || str_contains($normalized, 'helmet') || str_contains($normalized, 'bảo hiểm')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9v1H3v-1a9 9 0 0 1 9-9z"/><path d="M3 12h18"/><path d="M5 16v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3"/></svg>';
+        }
+
+        // Electronics
+        if (str_contains($normalized, 'điện tử') || str_contains($normalized, 'dien tu') || str_contains($normalized, 'electronics') || str_contains($normalized, 'digital')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M7 9H4"/><path d="M7 12H4"/><path d="M7 15H4"/><path d="M17 9h3"/><path d="M17 12h3"/><path d="M17 15h3"/><path d="M9 7V4"/><path d="M12 7V4"/><path d="M15 7V4"/><path d="M9 17v3"/><path d="M12 17v3"/><path d="M15 17v3"/></svg>';
+        }
+
+        // Survival / Rescue
+        if (str_contains($normalized, 'cứu sinh') || str_contains($normalized, 'cuu sinh') || str_contains($normalized, 'cứu hộ') || str_contains($normalized, 'survival') || str_contains($normalized, 'rescue')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/></svg>';
+        }
+
+        // Accessories
+        if (str_contains($normalized, 'phụ kiện') || str_contains($normalized, 'phu kien')) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
         }
 
         return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>';
