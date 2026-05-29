@@ -152,7 +152,7 @@ class CreateDefaultCategories implements DataPatchInterface
                 'name_en' => 'Climbing Shoes',
                 'url_key' => 'giay-leo-nui',
                 'description' => 'Giày chuyên dụng cho mọi địa hình',
-                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 2.97 9.5 3.76 8c.71-1.37 2.2-2.54 3.53-3.46C8.69 3.56 11.05 3 13 3c1.36 0 2.68.19 3.88.55"/><path d="M20 8v8"/><path d="M20 16l-4-2-4 4-4-2-4 4"/><path d="M20 20h.01"/><path d="M4 20h.01"/></svg>',
+                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-3l2-5h9l2 4v4H3z"/><path d="M5 18v2"/><path d="M14 18v2"/><path d="M5 15h9"/><path d="M12 10V7a3 3 0 0 1 3-3h1a3 3 0 0 1 3 3v2"/><path d="M16 18h3a1 1 0 0 0 1-1v-3l-2-4h-2"/></svg>',
                 'subcategories' => [
                     ['name' => 'Giày Trekking', 'url_key' => 'giay-trekking', 'name_en' => 'Trekking Shoes', 'description' => 'Giày trekking chuyên dụng'],
                     ['name' => 'Giày Leo Vách', 'url_key' => 'giay-leo-vach', 'name_en' => 'Rock Climbing Shoes', 'description' => 'Giày leo vách đá'],
@@ -165,7 +165,7 @@ class CreateDefaultCategories implements DataPatchInterface
                 'name_en' => 'Backpacks',
                 'url_key' => 'ba-lo',
                 'description' => 'Ba lô chống nước, siêu bền',
-                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><path d="M20 10a8 8 0 0 0-16 0"/></svg>',
+                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V8a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v12"/><path d="M4 20h16"/><path d="M10 6V4a2 2 0 0 1 2-2 2 2 0 0 1 2 2v2"/><path d="M8 20v-5h8v5"/><line x1="12" y1="11" x2="12" y2="15"/></svg>',
                 'subcategories' => [
                     ['name' => 'Ba Lô Day Trip (20-35L)', 'url_key' => 'ba-lo-day-trip', 'name_en' => 'Day Trip (20-35L)', 'description' => 'Ba lô du lịch trong ngày'],
                     ['name' => 'Ba Lô Trekking (40-60L)', 'url_key' => 'ba-lo-trekking', 'name_en' => 'Trekking (40-60L)', 'description' => 'Ba lô trekking dài ngày'],
@@ -178,7 +178,7 @@ class CreateDefaultCategories implements DataPatchInterface
                 'name_en' => 'Ropes & Carabiners',
                 'url_key' => 'day-moc',
                 'description' => 'Dây leo và móc an toàn',
-                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a1 1 0 0 1-1-1v-1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1"/><path d="M9 3H7a2 2 0 0 0-2 2v1a1 1 0 0 1-1 1 1 1 0 0 1-1-1V5a4 4 0 0 1 4-4h2"/><path d="M9 3h6l3 7-4 1-2-4-2 4-4-1Z"/><path d="M14 11c.3 1.4.5 3 .5 4.5 0 3-1.2 5.5-3.5 5.5s-3-2.5-3-5.5c0-1.5.2-3.1.5-4.5"/></svg>',
+                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 5 5 5 9c0 2.5 1.5 4.7 3.5 5.8L12 22l3.5-7.2C17.5 13.7 19 11.5 19 9c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
                 'subcategories' => [
                     ['name' => 'Dây Dynamic', 'url_key' => 'day-dynamic', 'name_en' => 'Dynamic Ropes', 'description' => 'Dây dynamic cho leo núi'],
                     ['name' => 'Dây Static', 'url_key' => 'day-static', 'name_en' => 'Static Ropes', 'description' => 'Dây static cho rappel'],
@@ -192,7 +192,7 @@ class CreateDefaultCategories implements DataPatchInterface
                 'name_en' => 'Tents & Camping',
                 'url_key' => 'leu-trai',
                 'description' => 'Lều cắm trại cao cấp',
-                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/></svg>',
+                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M5 20V9l7-7 7 7v11"/><path d="M9 20v-6h6v6"/></svg>',
                 'subcategories' => [
                     ['name' => 'Lều 1-2 Người', 'url_key' => 'leu-1-2-nguoi', 'name_en' => '1-2 Person Tents', 'description' => 'Lều cho 1-2 người'],
                     ['name' => 'Lều 3-4 Người', 'url_key' => 'leu-3-4-nguoi', 'name_en' => '3-4 Person Tents', 'description' => 'Lều cho 3-4 người'],
@@ -206,7 +206,7 @@ class CreateDefaultCategories implements DataPatchInterface
                 'name_en' => 'Jackets',
                 'url_key' => 'ao-khoac',
                 'description' => 'Áo khoác chống gió, chống nước',
-                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2 12 6 8 2 3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"/></svg>',
+                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2 12 6 8 2 3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"/><path d="M12 10v4"/><path d="M10 12h4"/></svg>',
                 'subcategories' => [
                     ['name' => 'Áo Gió Chống Nước', 'url_key' => 'ao-gio-chong-nuoc', 'name_en' => 'Waterproof Jackets', 'description' => 'Áo gió chống nước'],
                     ['name' => 'Áo Giữ Nhiệt', 'url_key' => 'ao-giu-nhiet', 'name_en' => 'Insulated Jackets', 'description' => 'Áo giữ nhiệt'],
@@ -219,7 +219,7 @@ class CreateDefaultCategories implements DataPatchInterface
                 'name_en' => 'Accessories',
                 'url_key' => 'phu-kien',
                 'description' => 'Đèn pin, la bàn, bình nước...',
-                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+                'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
                 'subcategories' => [
                     ['name' => 'Đèn Pin & Đèn Đội Đầu', 'url_key' => 'den-pin', 'name_en' => 'Flashlights & Headlamps', 'description' => 'Đèn pin và đèn đội đầu'],
                     ['name' => 'La Bàn & GPS', 'url_key' => 'la-ban-gps', 'name_en' => 'Compass & GPS', 'description' => 'La bàn và GPS'],
