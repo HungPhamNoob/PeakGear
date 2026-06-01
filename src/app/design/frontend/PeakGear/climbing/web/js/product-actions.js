@@ -265,6 +265,12 @@ define([
         $(document)
             .off('ajax:addToCart.peakgearProductActions')
             .on('ajax:addToCart.peakgearProductActions', function (event, data) {
+                var form = data && data.form ? $(data.form) : $();
+
+                if (form.length && form.is('#product_addtocart_form')) {
+                    return;
+                }
+
                 if (data && data.response && !data.response.error) {
                     showTopMessage($t('Đã thêm sản phẩm vào giỏ hàng.'), 'success');
                     customerData.invalidate(['cart']);

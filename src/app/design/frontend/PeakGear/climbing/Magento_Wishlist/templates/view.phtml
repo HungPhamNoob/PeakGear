@@ -137,7 +137,7 @@ $wishlistHelper = $this->helper(\Magento\Wishlist\Helper\Data::class);
             }
 
             $button.addClass('disabled').css('opacity', '0.6');
-            $button.find('span').text($t('Adding...'));
+            $button.find('span').text($t('Adding'));
 
             $.ajax({
                 url: url,
@@ -166,7 +166,7 @@ $wishlistHelper = $this->helper(\Magento\Wishlist\Helper\Data::class);
 
                     setTimeout(function () {
                         $button.removeClass('disabled').removeAttr('style');
-                        $button.find('span').text($t('Add to Cart'));
+                        $button.find('span').text($t('Add to cart'));
                     }, 3000);
 
                     return;
@@ -177,11 +177,11 @@ $wishlistHelper = $this->helper(\Magento\Wishlist\Helper\Data::class);
                     'error'
                 );
                 $button.removeClass('disabled').css('opacity', '1');
-                $button.find('span').text($t('Add to Cart'));
+                $button.find('span').text($t('Add to cart'));
             }).fail(function () {
                 showTopMessage($t('Không thể thêm sản phẩm vào giỏ hàng lúc này.'), 'error');
                 $button.removeClass('disabled').css('opacity', '1');
-                $button.find('span').text($t('Add to Cart'));
+                $button.find('span').text($t('Add to cart'));
             });
 
             return false;
