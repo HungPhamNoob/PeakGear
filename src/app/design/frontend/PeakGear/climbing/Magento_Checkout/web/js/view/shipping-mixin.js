@@ -494,7 +494,7 @@ define([
                     return;
                 }
 
-                window.fetch('/news/weathers', {
+                window.fetch('/weather/index/data', {
                     credentials: 'same-origin',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
