@@ -33,11 +33,7 @@ $isInWishlist = false;
     <div class="pdp-actions">
         <button type="button"
                 class="pdp-buynow-btn"
-                id="pdp-buynow-btn"
-                data-auth-required="1"
-                data-auth-action="buy-now"
-                data-auth-title="Đăng nhập để sử dụng tính năng này"
-                data-auth-message="Bạn cần đăng nhập để sử dụng tính năng này.">MUA NGAY</button>
+                id="pdp-buynow-btn">MUA NGAY</button>
         <button type="submit" class="pdp-addtocart-btn">THÊM VÀO GIỎ</button>
     </div>
 
@@ -102,33 +98,22 @@ require(['jquery', 'Magento_Customer/js/customer-data'], function($, customerDat
 
     // ── Buy Now ───────────────────────────────────────────────────────────────
     $('#pdp-buynow-btn').on('click', function() {
-        var form = $('#product_addtocart_form');
-        if (form.length) {
-            form.find('input[name="return_url"]').remove();
-            form.append('<input type="hidden" name="return_url" value="' + window.BASE_URL + 'checkout/"/>');
-            form.trigger('submit');
+        var $form = $('#product_addtocart_form');
+        var formElement = $form.get(0);
+
+        if (formElement) {
+            formElement.action = '<?= $block->escapeJs($block->getUrl('cart/buynow/apply')) ?>';
+            formElement.submit();
         }
     });
 
     // ── Add To Cart Notification ──────────────────────────────────────────────
-    var isAdding = false;
-    $('.pdp-addtocart-btn').on('click', function() {
-        isAdding = true;
-    });
-
     $(document).on('ajax:addToCart', function(event, data) {
-        if (data.response && !data.response.error) {
-            var productName = '<?= $block->escapeJs($product->getName()) ?>';
-            showTopMessage('Đã thêm ' + productName + ' vào giỏ hàng.');
-            isAdding = false;
-        }
-    });
+        var form = data && data.form ? $(data.form) : $();
 
-    customerData.get('cart').subscribe(function (cartInfo) {
-        if (isAdding) {
+        if (form.length && form.is('#product_addtocart_form') && data.response && !data.response.error) {
             var productName = '<?= $block->escapeJs($product->getName()) ?>';
             showTopMessage('Đã thêm ' + productName + ' vào giỏ hàng.');
-            isAdding = false;
         }
     });
 

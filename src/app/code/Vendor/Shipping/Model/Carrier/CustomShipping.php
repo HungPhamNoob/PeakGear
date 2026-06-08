@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Vendor\Shipping\Model\Carrier;
 
+use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
@@ -18,12 +21,18 @@ use Vendor\Shipping\Service\WeightResolver;
 
 class CustomShipping extends AbstractCarrier implements CarrierInterface
 {
+    private const DISABLED_AREAS = [
+        Area::AREA_FRONTEND,
+        Area::AREA_WEBAPI_REST,
+    ];
+
     protected $_code = 'vendor_shipping';
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         ErrorFactory $rateErrorFactory,
         LoggerInterface $logger,
+        private readonly State $appState,
         private readonly ResultFactory $rateResultFactory,
         private readonly MethodFactory $rateMethodFactory,
         private readonly \Vendor\Shipping\Service\GhtkApi $ghtkApi,
@@ -43,6 +52,10 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
     public function collectRates(RateRequest $request): bool|Result
     {
         if (!$this->getConfigFlag('active')) {
+            return false;
+        }
+
+        if ($this->isDisabledInCurrentArea()) {
             return false;
         }
 
@@ -115,5 +128,14 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         $result->append($method);
 
         return $result;
+    }
+
+    private function isDisabledInCurrentArea(): bool
+    {
+        try {
+            return in_array($this->appState->getAreaCode(), self::DISABLED_AREAS, true);
+        } catch (LocalizedException) {
+            return false;
+        }
     }
 }
