@@ -43,6 +43,7 @@ div.mage-error {
 
 // Magento form elements that might appear
 .field .control {
+
     input[type="text"],
     input[type="email"],
     input[type="password"],
@@ -71,6 +72,7 @@ div.mage-error {
 
 .customer-account-login,
 .customer-account-create {
+
     .field .label,
     label {
         color: fade(@peakgear-text, 85%) !important;
@@ -168,5 +170,77 @@ div.mage-error {
         &:hover {
             color: @peakgear-primary;
         }
+    }
+}
+
+// Forgot password page: keep these overrides late in the bundle so Magento's
+// default account form layout cannot pull the form back to inline widths.
+.customer-account-forgotpassword {
+    .form.password.forget,
+    .forgot-password-form,
+    .forgot-password-fieldset,
+    .forgot-password-email,
+    .forgot-password-email-control,
+    .forgot-password-additional-info,
+    .forgot-password-actions {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .forgot-password-form {
+        margin: 0 !important;
+    }
+
+    .forgot-password-form .field,
+    .forgot-password-form .field > .label,
+    .forgot-password-form .field > .control,
+    .forgot-password-form .field.captcha,
+    .forgot-password-form .field.captcha > .control.captcha,
+    .forgot-password-form .field.captcha .nested,
+    .forgot-password-form .field.captcha .captcha-image {
+        float: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .forgot-password-form .field:before,
+    .forgot-password-form .field:after,
+    .forgot-password-form .field.choice:before,
+    .forgot-password-form .field.no-label:before {
+        display: none !important;
+        content: none !important;
+    }
+
+    .forgot-password-form .field.captcha .captcha-image {
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+    }
+
+    .forgot-password-form .field.captcha .captcha-img {
+        margin: 0 !important;
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .forgot-password-form .field.captcha .captcha-reload {
+        margin: 0 !important;
+        flex: 0 0 auto;
+    }
+
+    .forgot-password-form input[type="email"],
+    .forgot-password-form input[type="text"],
+    .forgot-password-form .forgot-password-input {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
     }
 }

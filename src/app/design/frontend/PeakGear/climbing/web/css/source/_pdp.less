@@ -710,21 +710,29 @@ body.pdp-review-modal-open { overflow: hidden; }
         max-width: 100% !important;
 
         .pdp-tabs-nav {
-            display: flex; gap: 1rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
             position: relative; top: auto; z-index: 3;
             border-bottom: 1px solid fade(@peakgear-text, 15%);
-            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            overflow-x: visible;
             padding-bottom: 0.125rem;
             width: 100% !important;
         }
 
         .pdp-tab-btn {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             background: transparent; border: none;
             padding: 0.75rem 0.85rem !important;
             font-size: 0.9rem !important;
             font-weight: 600;
             color: fade(@peakgear-text, 60%); cursor: pointer;
-            position: relative; white-space: nowrap;
+            position: relative;
+            white-space: normal;
+            text-align: center;
             font-family: @font-sans;
             transition: color @transition-fast;
 

@@ -76,9 +76,6 @@
                 <block class="Magento\Catalog\Block\Product\View\Description"
                        name="peakgear.tab.description"
                        template="Magento_Catalog::product/view/tabs/description.phtml"/>
-                <block class="Magento\Catalog\Block\Product\View\Attributes"
-                       name="peakgear.tab.attributes"
-                       template="Magento_Catalog::product/view/tabs/attributes.phtml"/>
             </block>
         </referenceContainer>
 
