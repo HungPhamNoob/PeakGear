@@ -9,22 +9,37 @@ $hasPaidAmount = $order && (
 );
 ?>
 <div id="cancel-order-modal-<?= /* @noEscape */ $order->getId() ?>">
-    <div class="modal-body-content">
-        <h3>
-            Gửi yêu cầu hủy đơn
-            <span class="cancel-order-id"><?= /* @noEscape */ $order->getRealOrderId() ?></span>
-        </h3>
-        <p>Chọn lý do hủy. Yêu cầu sẽ được gửi đến quản trị viên để kiểm tra và duyệt.</p>
+    <div class="pg-cancellation-form">
+        <div class="pg-cancellation-form__order">
+            <span class="pg-cancellation-form__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 2h9l3 3v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/>
+                    <path d="M14 2v4h4M8 11h6M8 15h4"/>
+                </svg>
+            </span>
+            <div>
+                <span class="pg-cancellation-form__eyebrow">Đơn hàng</span>
+                <strong>#<?= $escaper->escapeHtml($order->getRealOrderId()) ?></strong>
+            </div>
+        </div>
+
+        <p class="pg-cancellation-form__intro">
+            Chọn lý do hủy. Yêu cầu sẽ được gửi đến quản trị viên để kiểm tra và duyệt.
+        </p>
+
         <?php if ($hasPaidAmount): ?>
             <p class="pg-cancellation-note">
-                Đơn đã ghi nhận thanh toán. Vui lòng chờ duyệt; cửa hàng sẽ xử lý hoàn tiền sau khi chấp thuận.
+                <strong>Đơn đã ghi nhận thanh toán.</strong>
+                Cửa hàng sẽ xử lý hoàn tiền sau khi yêu cầu được chấp thuận.
             </p>
         <?php else: ?>
             <p class="pg-cancellation-note">
-                Đơn chưa bị hủy ngay. Vui lòng chờ quản trị viên phản hồi yêu cầu.
+                <strong>Đơn chưa bị hủy ngay.</strong>
+                Vui lòng chờ quản trị viên phản hồi yêu cầu.
             </p>
         <?php endif; ?>
-        <form>
+
+        <form class="pg-cancellation-form__fields">
             <label for="cancel-order-reason-<?= /* @noEscape */ $order->getId() ?>">Lý do yêu cầu hủy</label>
             <select id="cancel-order-reason-<?= /* @noEscape */ $order->getId() ?>"
                     class="cancel-order-reason"
@@ -35,6 +50,7 @@ $hasPaidAmount = $order && (
                     </option>
                 <?php endforeach; ?>
             </select>
+            <span class="pg-cancellation-form__help">Bạn chỉ có thể gửi một yêu cầu cho đơn hàng này.</span>
         </form>
     </div>
 </div>

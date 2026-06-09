@@ -11,15 +11,17 @@ define([
         var options = {
             type: 'popup',
             responsive: true,
+            innerScroll: true,
+            modalClass: 'pg-cancellation-modal',
             title: $.mage.__('Yêu cầu hủy đơn'),
             buttons: [{
-                text: $.mage.__('Đóng'),
+                text: $.mage.__('Để sau'),
                 class: 'action-secondary action-dismiss close-modal-button',
                 click: function () {
                     this.closeModal();
                 }
             }, {
-                text: $.mage.__('Gửi yêu cầu'),
+                text: $.mage.__('Gửi yêu cầu hủy'),
                 class: 'action-primary action-accept cancel-order-button',
                 click: function () {
                     var thisModal = this;
@@ -77,11 +79,12 @@ define([
             }]
         };
 
+        modal(options, modalElement);
+        modalElement.closest('.modal-popup').addClass('pg-cancellation-modal');
+
         $(element).on('click', function (event) {
             event.preventDefault();
             modalElement.modal('openModal');
         });
-
-        modal(options, modalElement);
     };
 });
