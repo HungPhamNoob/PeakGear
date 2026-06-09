@@ -5,6 +5,9 @@
  * @var \Magento\Sales\Block\Order\Info\Buttons $block
  */
 $_order = $block->getOrder();
+$viewModel = $block->getViewModel();
+$isCancellationRequested = $_order->getStatus() === 'cancellation_requested';
+$isCancellationApproved = $_order->getStatus() === 'cancellation_approved';
 ?>
 <div class="pg-order-toolbar__actions">
     <?php if ($this->helper(\Magento\Sales\Helper\Reorder::class)->canReorder($_order->getEntityId())) : ?>
@@ -20,5 +23,23 @@ $_order = $block->getOrder();
        rel="noopener">
         <span>In đơn hàng</span>
     </a>
+    <?php if ($viewModel && $viewModel->canCancel((int)$_order->getEntityId())): ?>
+        <a href="#"
+           class="pg-action-btn pg-action-btn--danger cancel-order"
+           id="cancel-order-<?= /* @noEscape */ $_order->getId() ?>"
+           data-mage-init='{"cancelOrderModal":{"url":"<?= /* @noEscape */ $block->getBaseUrl() ?>","order_id":"<?= $block->escapeHtmlAttr($_order->getId()) ?>"}}'>
+            <span>Yêu cầu hủy</span>
+        </a>
+        <?= $this->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setOrder($_order)
+            ->setReasons($viewModel->getCancellationReasons((int)$_order->getEntityId()))
+            ->setTemplate('Magento_OrderCancellationUi::cancel-order-modal.phtml')
+            ->toHtml()
+        ?>
+    <?php elseif ($isCancellationRequested): ?>
+        <span class="pg-cancellation-request-hint">Yêu cầu hủy đang chờ duyệt/hoàn tiền</span>
+    <?php elseif ($isCancellationApproved): ?>
+        <span class="pg-cancellation-request-hint">Yêu cầu đã duyệt, đang chờ hoàn tiền</span>
+    <?php endif; ?>
     <?= $block->getChildHtml() ?>
 </div>

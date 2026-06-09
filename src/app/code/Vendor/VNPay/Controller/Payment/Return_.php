@@ -60,7 +60,7 @@ class Return_ implements HttpGetActionInterface
             $this->checkoutSession->restoreQuote();
 
             $this->messageManager->addErrorMessage(
-                __('Thanh toán VNPay không thành công (mã: %1). Đơn hàng đã được cập nhật.', $responseCode)
+                __('Thanh toán VNPay chưa hoàn tất (mã: %1). Sản phẩm vẫn được giữ trong giỏ để bạn thử lại.', $responseCode)
             );
 
             return $resultRedirect->setPath('checkout', ['_fragment' => 'payment']);

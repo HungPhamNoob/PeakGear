@@ -46,6 +46,8 @@ $count     = count($_orders);
                     <tbody>
                         <?php foreach ($_orders as $_order):
                             $status = strtolower(str_replace([' ', '/'], '_', $_order->getStatus()));
+                            $isCancellationRequested = $_order->getStatus() === 'cancellation_requested';
+                            $isCancellationApproved = $_order->getStatus() === 'cancellation_approved';
                         ?>
                         <tr>
                             <td class="pg-table__id">#<?= $block->escapeHtml($_order->getRealOrderId()) ?></td>
@@ -55,6 +57,11 @@ $count     = count($_orders);
                             <td>
                                 <span class="pg-badge pg-badge--<?= $block->escapeHtmlAttr($status) ?>">
                                     <?= $block->escapeHtml($_order->getStatusLabel()) ?>
+                                    <?php if ($isCancellationRequested): ?>
+                                        <small class="pg-cancellation-request-hint">Chờ duyệt/hoàn tiền</small>
+                                    <?php elseif ($isCancellationApproved): ?>
+                                        <small class="pg-cancellation-request-hint">Đang xử lý hoàn tiền</small>
+                                    <?php endif; ?>
                                 </span>
                             </td>
                             <td class="pg-table__actions">
@@ -71,7 +78,7 @@ $count     = count($_orders);
                                         <a href="#" class="pg-action-btn pg-action-btn--danger cancel-order"
                                            id="cancel-order-<?= /* @noEscape */ $_order->getId() ?>"
                                            data-mage-init='{"cancelOrderModal":{"url":"<?= /* @noEscape */ $block->getBaseUrl(); ?>","order_id":"<?= $block->escapeHtml($_order->getId()); ?>"}}'>
-                                            Hủy
+                                            Yêu cầu hủy
                                         </a>
                                         <?= $this->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
                                             ->setOrder($_order)

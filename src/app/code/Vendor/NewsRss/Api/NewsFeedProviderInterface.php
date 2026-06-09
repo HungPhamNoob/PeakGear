@@ -11,5 +11,5 @@ interface NewsFeedProviderInterface
     /**
      * @return list<array{item_guid:string, title:string, description:string, link:string, pub_date:string, image_url:string}>
      */
-    public function fetch(int $maxItems): array;
+    public function fetch(string $url, int $maxItems): array;
 }

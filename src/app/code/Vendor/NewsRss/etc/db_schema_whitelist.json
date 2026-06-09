@@ -1,0 +1,24 @@
+{
+    "vendor_news_rss_cache": {
+        "column": {
+            "id": true,
+            "feed_code": true,
+            "item_guid": true,
+            "title": true,
+            "description": true,
+            "link": true,
+            "pub_date": true,
+            "image_url": true,
+            "cached_at": true
+        },
+        "index": {
+            "VENDOR_NEWS_RSS_CACHE_FEED_CODE": true,
+            "VENDOR_NEWS_RSS_CACHE_CACHED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "VENDOR_NEWS_RSS_CACHE_ITEM_GUID": true,
+            "VENDOR_NEWS_RSS_CACHE_FEED_CODE_ITEM_GUID": true
+        }
+    }
+}

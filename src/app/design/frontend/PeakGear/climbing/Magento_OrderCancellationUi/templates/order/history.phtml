@@ -38,6 +38,8 @@ $postHelper = $this->helper(\Magento\Framework\Data\Helper\PostHelper::class);
                     <?php foreach ($_orders as $_order): ?>
                         <?php
                         $status = strtolower(str_replace([' ', '/'], '_', (string)$_order->getStatus()));
+                        $isCancellationRequested = $_order->getStatus() === 'cancellation_requested';
+                        $isCancellationApproved = $_order->getStatus() === 'cancellation_approved';
                         $extra = $block->getChildBlock('extra.container');
                         $extraHtml = '';
 
@@ -74,6 +76,17 @@ $postHelper = $this->helper(\Magento\Framework\Data\Helper\PostHelper::class);
                                 <?php endif; ?>
                             </div>
 
+                            <?php if ($isCancellationRequested): ?>
+                                <div class="pg-cancellation-request-notice">
+                                    Yêu cầu hủy đang chờ quản trị viên duyệt.
+                                    Nếu đơn đã thanh toán, cửa hàng sẽ hoàn tiền sau khi chấp thuận.
+                                </div>
+                            <?php elseif ($isCancellationApproved): ?>
+                                <div class="pg-cancellation-request-notice">
+                                    Yêu cầu hủy đã được duyệt. Cửa hàng đang xử lý hoàn tiền cho đơn đã thanh toán.
+                                </div>
+                            <?php endif; ?>
+
                             <?php if ($_order->getStatus() !== 'received'): ?>
                                 <div class="pg-order-history-card__foot">
                                     <a href="<?= $block->escapeUrl($block->getViewUrl($_order)) ?>" class="pg-action-btn">
@@ -91,7 +104,7 @@ $postHelper = $this->helper(\Magento\Framework\Data\Helper\PostHelper::class);
                                            class="pg-action-btn pg-action-btn--danger cancel-order"
                                            id="cancel-order-<?= /* @noEscape */ $_order->getId() ?>"
                                            data-mage-init='{"cancelOrderModal":{"url":"<?= /* @noEscape */ $block->getBaseUrl(); ?>","order_id":"<?= $block->escapeHtml($_order->getId()); ?>"}}'>
-                                            Hủy
+                                            Yêu cầu hủy
                                         </a>
                                         <?= $this->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
                                             ->setOrder($_order)

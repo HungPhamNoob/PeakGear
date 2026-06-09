@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <sales>
+            <cancellation>
+                <enabled>1</enabled>
+                <reasons>
+                    <reason1>
+                        <description>Không còn nhu cầu mua sản phẩm</description>
+                    </reason1>
+                    <reason2>
+                        <description>Đặt nhầm sản phẩm hoặc số lượng</description>
+                    </reason2>
+                    <reason3>
+                        <description>Thời gian giao hàng không phù hợp</description>
+                    </reason3>
+                    <reason4>
+                        <description>Muốn thay đổi phương thức thanh toán hoặc địa chỉ</description>
+                    </reason4>
+                    <reason5>
+                        <description>Lý do khác</description>
+                    </reason5>
+                </reasons>
+            </cancellation>
+        </sales>
+    </default>
+</config>
