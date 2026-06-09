@@ -1,81 +1,33 @@
 define([
+    'jquery',
     'mage/url',
     'Magento_Checkout/js/model/full-screen-loader',
-    'Magento_Checkout/js/model/quote'
-], function (url, fullScreenLoader, quote) {
+    'Magento_Checkout/js/model/quote',
+    'Magento_Checkout/js/action/set-shipping-information',
+    'Magento_Checkout/js/model/vietnam-region-normalizer'
+], function ($, url, fullScreenLoader, quote, setShippingInformationAction, vietnamRegionNormalizer) {
     'use strict';
 
-    function pickFallbackRegion() {
-        var checkoutConfig = window.checkoutConfig || {},
-            directoryData = checkoutConfig.directoryData || {},
-            countryData = directoryData.VN || {},
-            rawRegions = countryData.regions || {},
-            firstKey,
-            firstRegion,
-            id;
-
-        if (Array.isArray(rawRegions) && rawRegions.length) {
-            firstRegion = rawRegions[0] || {};
-            id = parseInt(firstRegion.id || firstRegion.region_id || firstRegion.value, 10);
-
-            return {
-                id: !isNaN(id) && id > 0 ? id : 1,
-                name: firstRegion.name || firstRegion.label || 'Hà Nội'
-            };
-        }
-
-        firstKey = Object.keys(rawRegions)[0];
-        if (firstKey) {
-            firstRegion = rawRegions[firstKey] || {};
-            id = parseInt(firstRegion.id || firstRegion.region_id || firstKey, 10);
-
-            return {
-                id: !isNaN(id) && id > 0 ? id : 1,
-                name: firstRegion.name || firstRegion.label || 'Hà Nội'
-            };
-        }
-
-        return {
-            id: 1,
-            name: 'Hà Nội'
-        };
+    function ensureCheckoutRegions() {
+        vietnamRegionNormalizer.ensureAddressRegion(quote.shippingAddress());
+        vietnamRegionNormalizer.ensureAddressRegion(quote.billingAddress());
     }
 
-    function ensureShippingRegion() {
+    function placeOrderAfterShippingSync(originalPlaceOrder, paymentData, messageContainer) {
         var shippingAddress = quote.shippingAddress(),
-            regionId,
-            fallbackRegion;
+            shippingMethod = quote.shippingMethod();
 
-        if (!shippingAddress) {
-            return;
+        ensureCheckoutRegions();
+
+        if (!shippingAddress || !shippingMethod) {
+            return originalPlaceOrder(paymentData, messageContainer);
         }
 
-        regionId = parseInt(
-            shippingAddress.regionId ||
-            shippingAddress.region_id ||
-            (shippingAddress.region && shippingAddress.region.region_id ? shippingAddress.region.region_id : 0),
-            10
-        );
+        return $.when(setShippingInformationAction()).then(function () {
+            ensureCheckoutRegions();
 
-        shippingAddress.countryId = 'VN';
-        shippingAddress.country_id = 'VN';
-
-        if (!isNaN(regionId) && regionId > 0) {
-            shippingAddress.regionId = regionId;
-            shippingAddress.region_id = regionId;
-            return;
-        }
-
-        fallbackRegion = pickFallbackRegion();
-        shippingAddress.regionId = fallbackRegion.id;
-        shippingAddress.region_id = fallbackRegion.id;
-
-        if (shippingAddress.region && typeof shippingAddress.region === 'object') {
-            shippingAddress.region.region = shippingAddress.region.region || fallbackRegion.name;
-            shippingAddress.region.region_id = fallbackRegion.id;
-        } else {
-            shippingAddress.region = shippingAddress.region || fallbackRegion.name;
-        }
+            return originalPlaceOrder(paymentData, messageContainer);
+        });
     }
 
     return function (originalPlaceOrder) {
@@ -85,23 +37,18 @@ define([
 
             console.log('%c[PLACE ORDER DEBUG] Method: ' + method + ' | Offline: ' + isOffline, 'color:#e91e63;font-weight:bold');
 
-            ensureShippingRegion();
-
             if (isOffline) {
                 console.log('%c[FORCE OFFLINE] Bypassing remaining actions -> redirect straight to successful-payment', 'color:green;font-weight:bold');
                 fullScreenLoader.startLoader();
 
-                var deferred = originalPlaceOrder(paymentData, messageContainer);
+                var deferred = placeOrderAfterShippingSync(originalPlaceOrder, paymentData, messageContainer);
 
-                if (deferred && typeof deferred.always === 'function') {
-                    deferred.always(function () {
+                if (deferred && typeof deferred.done === 'function') {
+                    deferred.done(function () {
                         fullScreenLoader.stopLoader();
                         window.location.replace(url.build('checkout/successful-payment'));
-                    });
-                } else if (deferred && typeof deferred.finally === 'function') {
-                    deferred.finally(function () {
+                    }).fail(function () {
                         fullScreenLoader.stopLoader();
-                        window.location.replace(url.build('checkout/successful-payment'));
                     });
                 } else {
                     fullScreenLoader.stopLoader();
@@ -112,7 +59,7 @@ define([
             }
 
             // Wallet methods (VNPay/ZaloPay) keep their original flow
-            return originalPlaceOrder(paymentData, messageContainer);
+            return placeOrderAfterShippingSync(originalPlaceOrder, paymentData, messageContainer);
         };
     };
 });

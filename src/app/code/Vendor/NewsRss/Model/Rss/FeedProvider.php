@@ -6,7 +6,6 @@ namespace Vendor\NewsRss\Model\Rss;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\Client\Curl;
 use Vendor\NewsRss\Api\NewsFeedProviderInterface;
-use Vendor\NewsRss\Model\Config;
 
 /**
  * Fetches and normalizes RSS content with Magento's HTTP client.
@@ -16,18 +15,15 @@ class FeedProvider implements NewsFeedProviderInterface
     private const DEFAULT_ORIGIN = 'https://vnexpress.net';
 
     public function __construct(
-        private readonly Curl $curl,
-        private readonly Config $config
+        private readonly Curl $curl
     ) {
     }
 
     /**
      * @inheritDoc
      */
-    public function fetch(int $maxItems): array
+    public function fetch(string $url, int $maxItems): array
     {
-        $url = $this->config->getRssUrl();
-
         $this->curl->setTimeout(10);
         $this->curl->setOption(CURLOPT_CONNECTTIMEOUT, 5);
         $this->curl->setOption(CURLOPT_FOLLOWLOCATION, true);

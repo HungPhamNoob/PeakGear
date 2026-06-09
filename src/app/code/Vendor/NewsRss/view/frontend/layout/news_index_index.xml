@@ -14,6 +14,26 @@
             <block class="Vendor\NewsRss\Block\News"
                    name="vendor.news.main"
                    template="Vendor_NewsRss::news.phtml">
+                <block class="Vendor\NewsRss\Block\News"
+                       name="vendor.news.travel"
+                       as="travel_news"
+                       template="Vendor_NewsRss::partials/news-grid.phtml">
+                    <arguments>
+                        <argument name="feed_code" xsi:type="string">travel</argument>
+                        <argument name="title" xsi:type="string">Tin tức Điểm đến</argument>
+                        <argument name="subtitle" xsi:type="string">Cập nhật tự động từ VNExpress Du lịch - Điểm đến.</argument>
+                    </arguments>
+                </block>
+                <block class="Vendor\NewsRss\Block\News"
+                       name="vendor.news.business"
+                       as="business_news"
+                       template="Vendor_NewsRss::partials/news-grid.phtml">
+                    <arguments>
+                        <argument name="feed_code" xsi:type="string">business</argument>
+                        <argument name="title" xsi:type="string">Bản tin Kinh doanh</argument>
+                        <argument name="subtitle" xsi:type="string">Cập nhật tự động từ RSS VNExpress Kinh doanh.</argument>
+                    </arguments>
+                </block>
                 <block class="Vendor\Weather\Block\Weather"
                        name="vendor.news.weather.widget"
                        as="weather_widget"

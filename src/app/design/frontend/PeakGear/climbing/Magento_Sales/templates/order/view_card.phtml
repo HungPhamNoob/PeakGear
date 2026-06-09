@@ -51,6 +51,17 @@ $layout = $block->getLayout();
                 </div>
             </div>
 
+            <?php if ($_order->getStatus() === 'cancellation_requested'): ?>
+                <div class="pg-cancellation-request-notice">
+                    Yêu cầu hủy đang chờ quản trị viên duyệt.
+                    Nếu đơn đã thanh toán, cửa hàng sẽ xử lý hoàn tiền sau khi chấp thuận.
+                </div>
+            <?php elseif ($_order->getStatus() === 'cancellation_approved'): ?>
+                <div class="pg-cancellation-request-notice">
+                    Yêu cầu hủy đã được duyệt. Cửa hàng đang xử lý hoàn tiền cho đơn đã thanh toán.
+                </div>
+            <?php endif; ?>
+
             <?php $buttonsHtml = trim((string)$layout->renderElement('sales.order.info.buttons.inline')); ?>
             <?php if ($buttonsHtml !== ''): ?>
                 <div class="pg-order-toolbar">

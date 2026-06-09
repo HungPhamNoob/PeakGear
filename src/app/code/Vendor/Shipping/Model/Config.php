@@ -65,6 +65,16 @@ class Config
         return $this->getValue('pick_ward', $storeId);
     }
 
+    public function getFallbackDestinationDistrict(?int $storeId = null): string
+    {
+        return $this->getValue('fallback_destination_district', $storeId);
+    }
+
+    public function getFallbackDestinationWard(?int $storeId = null): string
+    {
+        return $this->getValue('fallback_destination_ward', $storeId);
+    }
+
     public function getTransport(?int $storeId = null): string
     {
         return $this->getValue('transport', $storeId, 'road');
@@ -86,12 +96,30 @@ class Config
 
     public function isFallbackEnabled(?int $storeId = null): bool
     {
-        return $this->scopeConfig->isSetFlag(self::XML_BASE . 'fallback_enabled', ScopeInterface::SCOPE_STORE, $storeId);
+        return $this->scopeConfig->isSetFlag(
+            self::XML_BASE . 'fallback_enabled',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     public function getFallbackPrice(?int $storeId = null): float
     {
         return (float)$this->getValue('fallback_price', $storeId, '500000');
+    }
+
+    public function isFreeShippingEnabled(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_BASE . 'free_shipping_enabled',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    public function getFreeShippingSubtotal(?int $storeId = null): float
+    {
+        return max(0.0, (float)$this->getValue('free_shipping_subtotal', $storeId, '1000000'));
     }
 
     public function getCacheTtl(?int $storeId = null): int

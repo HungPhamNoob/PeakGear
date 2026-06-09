@@ -71,7 +71,13 @@ class Result implements HttpGetActionInterface
                 $this->checkoutSession->unsetData(self::REDIRECT_CACHE_KEY);
                 $this->checkoutSession->setData('peakgear_successful_payment_order', null);
                 $this->checkoutSession->restoreQuote();
-                $this->messageManager->addWarningMessage(__('Thanh toán ZaloPay không thành công, đã hết thời gian hoặc đã bị hủy. Vui lòng thử lại.'));
+                $this->paymentStateApplier->markFailed(
+                    (string)$order->getIncrementId(),
+                    'cancelled_or_expired'
+                );
+                $this->messageManager->addWarningMessage(
+                    __('Thanh toán ZaloPay chưa hoàn tất, đã hết thời gian hoặc đã bị hủy. Sản phẩm vẫn được giữ trong giỏ để bạn thử lại.')
+                );
                 return $resultRedirect->setPath('checkout', ['_fragment' => 'payment']);
             }
         } catch (\Exception $e) {

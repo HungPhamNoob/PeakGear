@@ -8,4 +8,16 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Checkout\Controller\Index\Index">
+        <plugin name="vendor_zalopay_restore_quote_on_checkout_return"
+                type="Vendor\ZaloPay\Plugin\Checkout\RestoreQuoteOnReturnPlugin"
+                sortOrder="10"/>
+    </type>
+
+    <type name="Magento\Checkout\Controller\Cart\Index">
+        <plugin name="vendor_zalopay_restore_quote_on_cart_return"
+                type="Vendor\ZaloPay\Plugin\Checkout\RestoreQuoteOnReturnPlugin"
+                sortOrder="10"/>
+    </type>
 </config>

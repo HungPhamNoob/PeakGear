@@ -1,22 +1,16 @@
 define([
+    'jquery',
     'ko',
     'uiRegistry',
     'Magento_Checkout/js/model/quote',
-    'mage/translate'
-], function (ko, registry, quote, $t) {
+    'Magento_Checkout/js/model/vietnam-region-normalizer',
+    'mage/translate',
+    'mage/validation'
+], function ($, ko, registry, quote, vietnamRegionNormalizer, $t) {
     'use strict';
 
     var STORE_MODE_CLASS = 'pg-delivery-store',
-        STORE_PICKUP_PAYMENT_CLASS = 'pg-store-pickup-payment',
-        CITY_ALIASES = {
-            'tp hcm': 'ho chi minh',
-            'hcm': 'ho chi minh',
-            'sai gon': 'ho chi minh',
-            'tphcm': 'ho chi minh',
-            'hanoi': 'ha noi',
-            'thua thien hue': 'hue',
-            'ba ria vung tau': 'vung tau'
-        };
+        STORE_PICKUP_PAYMENT_CLASS = 'pg-store-pickup-payment';
 
     function bodyClassList() {
         return document.body && document.body.classList ? document.body.classList : null;
@@ -26,25 +20,37 @@ define([
         return window.location.hash === '#payment';
     }
 
+    function normalizeVietnamPhone(value) {
+        var raw = (value || '').toString().trim(),
+            digits = raw.replace(/\D+/g, '');
+
+        if ((raw.indexOf('+') === 0 && digits.indexOf('84') === 0) || digits.indexOf('84') === 0) {
+            digits = '0' + digits.slice(2);
+        }
+
+        return digits;
+    }
+
+    function isValidVietnamPhone(value) {
+        return /^0[0-9]{9,10}$/.test(normalizeVietnamPhone(value));
+    }
+
+    function registerVietnamPhoneValidator() {
+        if (!$.validator || $.validator.methods['validate-vietnam-phone']) {
+            return;
+        }
+
+        $.validator.addMethod(
+            'validate-vietnam-phone',
+            function (value) {
+                return $.mage.isEmptyNoTrim(value) || isValidVietnamPhone(value);
+            },
+            $t('Vui lòng nhập số điện thoại hợp lệ (VD: 0912345678).')
+        );
+    }
+
     function normalizeVietnamName(value) {
-        var normalized = (value || '').toString().trim().toLowerCase();
-
-        if (typeof normalized.normalize === 'function') {
-            normalized = normalized.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
-
-        normalized = normalized
-            .replace(/đ/g, 'd')
-            .replace(/^(thanh\s*pho|tp\.?|tinh)\s+/g, '')
-            .replace(/[^a-z0-9\s]/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-
-        if (CITY_ALIASES[normalized]) {
-            return CITY_ALIASES[normalized];
-        }
-
-        return normalized;
+        return vietnamRegionNormalizer.normalizeVietnamName(value);
     }
 
     function toUniqueCityOptions(cities) {
@@ -75,63 +81,37 @@ define([
 
     function fallbackVietnamCities() {
         return [
-            'Hà Nội', 'TP. Hồ Chí Minh', 'Hải Phòng', 'Đà Nẵng', 'Cần Thơ',
-            'An Giang', 'Bắc Ninh', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk',
-            'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Tĩnh',
-            'Huế', 'Hưng Yên', 'Khánh Hòa', 'Lai Châu', 'Lâm Đồng',
-            'Lạng Sơn', 'Lào Cai', 'Nghệ An', 'Ninh Bình', 'Phú Thọ',
-            'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sơn La', 'Tây Ninh',
-            'Thái Nguyên', 'Thanh Hóa', 'Tuyên Quang', 'Vĩnh Long'
+            'An Giang', 'Bà Rịa - Vũng Tàu', 'Bắc Giang', 'Bắc Kạn', 'Bạc Liêu',
+            'Bắc Ninh', 'Bến Tre', 'Bình Định', 'Bình Dương', 'Bình Phước',
+            'Bình Thuận', 'Cà Mau', 'Cần Thơ', 'Cao Bằng', 'Đà Nẵng',
+            'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp',
+            'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Nội', 'Hà Tĩnh',
+            'Hải Dương', 'Hải Phòng', 'Hậu Giang', 'Hòa Bình', 'Hưng Yên',
+            'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng',
+            'Lạng Sơn', 'Lào Cai', 'Long An', 'Nam Định', 'Nghệ An',
+            'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên', 'Quảng Bình',
+            'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng',
+            'Sơn La', 'Tây Ninh', 'Thái Bình', 'Thái Nguyên', 'Thanh Hóa',
+            'Thừa Thiên Huế', 'Tiền Giang', 'TP. Hồ Chí Minh', 'Trà Vinh',
+            'Tuyên Quang', 'Vĩnh Long', 'Vĩnh Phúc', 'Yên Bái'
         ];
     }
 
     function extractVietnamRegions() {
-        var checkoutConfig = window.checkoutConfig || {},
-            directoryData = checkoutConfig.directoryData || {},
-            countryData = directoryData.VN || {},
-            rawRegions = countryData.regions || {},
-            regions = [];
-
-        if (Array.isArray(rawRegions)) {
-            rawRegions.forEach(function (region) {
-                if (!region) {
-                    return;
-                }
-
-                regions.push({
-                    id: region.id || region.region_id || region.value,
-                    name: region.name || region.label || '',
-                    code: region.code || region.region_code || ''
-                });
-            });
-
-            return regions;
-        }
-
-        Object.keys(rawRegions).forEach(function (key) {
-            var region = rawRegions[key] || {};
-
-            regions.push({
-                id: region.id || region.region_id || key,
-                name: region.name || region.label || '',
-                code: region.code || region.region_code || ''
-            });
-        });
-
-        return regions;
+        return vietnamRegionNormalizer.extractVietnamRegions();
     }
 
-    function toRegionId(value) {
-        var parsed = parseInt(value, 10);
+    function toCityOptionsFromRegions(regions) {
+        var cities = (regions || []).map(function (region) {
+            return region && region.name ? region.name : '';
+        });
 
-        if (!isNaN(parsed) && parsed > 0) {
-            return parsed;
-        }
-
-        return null;
+        return toUniqueCityOptions(cities.length ? cities : fallbackVietnamCities());
     }
 
     return function (Shipping) {
+        registerVietnamPhoneValidator();
+
         return Shipping.extend({
             initialize: function () {
                 this._super();
@@ -140,9 +120,10 @@ define([
                 this.cityField = null;
                 this.regionField = null;
                 this.regionIdField = null;
+                this.vietnamRegions = extractVietnamRegions();
                 this.vietnamRegionsByName = {};
                 this.vietnamFallbackRegion = null;
-                this.indexVietnamRegions(extractVietnamRegions());
+                this.indexVietnamRegions(this.vietnamRegions);
                 this.showShippingMethodList = ko.pureComputed(function () {
                     return this.deliveryMode() !== 'store';
                 }, this);
@@ -243,7 +224,7 @@ define([
                 });
 
                 registry.async(cityPath)(function (cityField) {
-                    var fallback = toUniqueCityOptions(fallbackVietnamCities());
+                    var cityOptions = toCityOptionsFromRegions(self.vietnamRegions);
 
                     self.cityField = cityField;
 
@@ -253,8 +234,7 @@ define([
                         });
                     }
 
-                    self.applyCityOptions(cityField, fallback);
-                    self.loadCitiesFromWeather(cityField, fallback);
+                    self.applyCityOptions(cityField, cityOptions);
                     self.syncRegionByCity(cityField && typeof cityField.value === 'function' ? cityField.value() : '');
                 });
 
@@ -274,7 +254,7 @@ define([
                     }
 
                     telephoneField.value.subscribe(function (rawValue) {
-                        var sanitized = (rawValue || '').toString().replace(/\D+/g, '');
+                        var sanitized = normalizeVietnamPhone(rawValue);
 
                         if (sanitized !== rawValue) {
                             telephoneField.value(sanitized);
@@ -409,31 +389,7 @@ define([
             },
 
             resolveRegionFromAddress: function (address) {
-                var regionId,
-                    regionName,
-                    normalizedRegionName;
-
-                if (!address) {
-                    return null;
-                }
-
-                regionId = toRegionId(address.regionId || address.region_id ||
-                    (address.region && address.region.region_id ? address.region.region_id : null));
-                if (regionId) {
-                    return {
-                        id: regionId,
-                        name: (address.region && address.region.region) || address.region || this.vietnamFallbackRegion && this.vietnamFallbackRegion.name || 'Hà Nội'
-                    };
-                }
-
-                regionName = (address.region && address.region.region) || address.region || '';
-                normalizedRegionName = normalizeVietnamName(regionName);
-
-                if (normalizedRegionName && this.vietnamRegionsByName[normalizedRegionName]) {
-                    return this.vietnamRegionsByName[normalizedRegionName];
-                }
-
-                return null;
+                return vietnamRegionNormalizer.resolveAddressRegion(address);
             },
 
             ensureQuoteRegionConsistency: function () {
@@ -446,11 +402,7 @@ define([
 
                 region = this.resolveRegionFromAddress(address) ||
                     this.resolveRegionByCity(address.city || '') ||
-                    this.vietnamFallbackRegion ||
-                    {
-                        id: 1,
-                        name: 'Hà Nội'
-                    };
+                    this.vietnamFallbackRegion;
 
                 this.applyRegionSelection(region);
             },
@@ -465,11 +417,7 @@ define([
 
                 resolvedRegion = this.resolveRegionByCity(currentCity) ||
                     this.resolveRegionFromAddress(quote.shippingAddress()) ||
-                    this.vietnamFallbackRegion ||
-                    {
-                        id: 1,
-                        name: 'Hà Nội'
-                    };
+                    this.vietnamFallbackRegion;
                 this.applyRegionSelection(resolvedRegion);
             },
 
@@ -494,7 +442,7 @@ define([
                     return;
                 }
 
-                window.fetch('/news/weathers', {
+                window.fetch('/weather/index/data', {
                     credentials: 'same-origin',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
@@ -519,7 +467,7 @@ define([
                         });
                     }
 
-                    options = toUniqueCityOptions(cities);
+                    options = toUniqueCityOptions(fallbackVietnamCities().concat(cities));
                     if (options.length <= 1) {
                         options = fallback;
                     }

@@ -20,7 +20,11 @@
             <block class="Magento\Sales\Block\Order\Info\Buttons"
                    name="sales.order.info.buttons.inline"
                    template="Magento_Sales::order/info/buttons_inline.phtml"
-                   before="order_items"/>
+                   before="order_items">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Magento\OrderCancellationUi\ViewModel\Config</argument>
+                </arguments>
+            </block>
         </referenceBlock>
 
         <referenceBlock name="order_items">

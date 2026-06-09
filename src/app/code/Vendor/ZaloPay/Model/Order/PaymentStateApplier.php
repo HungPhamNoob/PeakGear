@@ -10,10 +10,12 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
 /**
- * Applies idempotent state transitions for successful ZaloPay callbacks.
+ * Applies idempotent payment result transitions for ZaloPay callbacks.
  */
 class PaymentStateApplier
 {
+    private const CANCELLATION_STATUSES = ['cancellation_requested', 'cancellation_approved'];
+
     public function __construct(
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory
@@ -36,10 +38,50 @@ class PaymentStateApplier
             $payment->setAdditionalInformation('peakgear_zalopay_app_trans_id', $appTransId);
         }
 
+        $status = in_array((string)$order->getStatus(), self::CANCELLATION_STATUSES, true)
+            ? (string)$order->getStatus()
+            : Order::STATE_PROCESSING;
         $order->setState(Order::STATE_PROCESSING)
-            ->setStatus(Order::STATE_PROCESSING)
+            ->setStatus($status)
             ->addCommentToStatusHistory(
-                __('ZaloPay payment confirmed. AppTransId: %1', $appTransId)->render()
+                __('ZaloPay payment confirmed. AppTransId: %1', $appTransId)->render(),
+                $status
+            );
+
+        $this->orderRepository->save($order);
+    }
+
+    /**
+     * @throws LocalizedException
+     */
+    public function markFailed(string $incrementId, string $reason): void
+    {
+        $order = $this->getByIncrementId($incrementId);
+        if (in_array(
+            $order->getState(),
+            [Order::STATE_PROCESSING, Order::STATE_COMPLETE, Order::STATE_CANCELED, Order::STATE_CLOSED],
+            true
+        )) {
+            return;
+        }
+
+        $payment = $order->getPayment();
+        if ($payment) {
+            $lastReason = (string)$payment->getAdditionalInformation('peakgear_zalopay_last_incomplete_reason');
+            if ($lastReason === $reason) {
+                return;
+            }
+            $payment->setAdditionalInformation('peakgear_zalopay_last_incomplete_reason', $reason);
+        }
+
+        $status = in_array((string)$order->getStatus(), self::CANCELLATION_STATUSES, true)
+            ? (string)$order->getStatus()
+            : Order::STATE_PENDING_PAYMENT;
+        $order->setState(Order::STATE_PENDING_PAYMENT)
+            ->setStatus($status)
+            ->addCommentToStatusHistory(
+                __('ZaloPay payment was not completed. Reason: %1. The cart was restored.', $reason)->render(),
+                $status
             );
 
         $this->orderRepository->save($order);

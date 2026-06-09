@@ -5,29 +5,39 @@
  * @var \Vendor\NewsRss\Block\News $block
  */
 $items = array_slice($block->getNewsItems(), 0, 8);
+$badge = (string)$block->getData('badge');
+$title = (string)$block->getData('title');
+$sourceUrl = (string)$block->getData('source_url');
+$feedAnchor = 'news-' . $block->getFeedCode();
 ?>
 
-<section class="home-news-section">
+<section class="home-news-section" data-mage-init='{"js/news-carousel": {}}'>
     <div class="home-news-container">
         <div class="home-news-header">
             <div>
-                <span class="home-news-badge">VNExpress Du lịch</span>
-                <h3 class="home-news-title">Tin Tức Điểm Đến Mới Nhất</h3>
-                <p class="home-news-subtitle">Nguồn dữ liệu: https://vnexpress.net/du-lich/diem-den</p>
+                <span class="home-news-badge"><?= $block->escapeHtml($badge) ?></span>
+                <h3 class="home-news-title"><?= $block->escapeHtml($title) ?></h3>
+                <p class="home-news-subtitle">
+                    Nguồn dữ liệu:
+                    <a href="<?= $block->escapeUrl($sourceUrl) ?>" target="_blank" rel="noopener noreferrer">
+                        <?= $block->escapeHtml($sourceUrl) ?>
+                    </a>
+                </p>
             </div>
-            <a href="<?= $block->escapeUrl($block->getUrl('news')) ?>" class="home-news-view-all">Xem thêm</a>
+            <a href="<?= $block->escapeUrl($block->getUrl('news', ['_fragment' => $feedAnchor])) ?>"
+               class="home-news-view-all">Xem thêm</a>
         </div>
 
         <?php if (!empty($items)): ?>
-        <div class="home-news-carousel" id="homeNewsCarousel">
-            <button type="button" class="home-news-nav home-news-nav-prev" id="homeNewsPrev" aria-label="Tin trước">
+        <div class="home-news-carousel">
+            <button type="button" class="home-news-nav home-news-nav-prev" aria-label="Tin trước">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
             </button>
 
             <div class="home-news-track-wrap">
-                <div class="home-news-track" id="homeNewsTrack">
+                <div class="home-news-track">
                     <?php foreach ($items as $item): ?>
                     <article class="home-news-card">
                         <a href="<?= $block->escapeUrl($item['link'] ?? '#') ?>" target="_blank" rel="noopener noreferrer" class="home-news-card-image-link">
@@ -57,7 +67,7 @@ $items = array_slice($block->getNewsItems(), 0, 8);
                 </div>
             </div>
 
-            <button type="button" class="home-news-nav home-news-nav-next" id="homeNewsNext" aria-label="Tin sau">
+            <button type="button" class="home-news-nav home-news-nav-next" aria-label="Tin sau">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
@@ -68,69 +78,3 @@ $items = array_slice($block->getNewsItems(), 0, 8);
         <?php endif; ?>
     </div>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var track = document.getElementById('homeNewsTrack');
-    var prev = document.getElementById('homeNewsPrev');
-    var next = document.getElementById('homeNewsNext');
-    if (!track || !prev || !next) {
-        return;
-    }
-
-    var cards = Array.prototype.slice.call(track.querySelectorAll('.home-news-card'));
-    if (!cards.length) {
-        return;
-    }
-    var currentIndex = 0;
-
-    function normalizeIndex(index) {
-        var length = cards.length;
-        return ((index % length) + length) % length;
-    }
-
-    function scrollToIndex(index, behavior) {
-        currentIndex = normalizeIndex(index);
-        var target = cards[currentIndex];
-        if (!target) {
-            return;
-        }
-
-        track.scrollTo({
-            left: target.offsetLeft,
-            behavior: behavior || 'smooth'
-        });
-    }
-
-    function detectCurrentIndex() {
-        var scrollLeft = track.scrollLeft;
-        var closest = 0;
-        var minDiff = Number.POSITIVE_INFINITY;
-
-        cards.forEach(function (card, idx) {
-            var diff = Math.abs(card.offsetLeft - scrollLeft);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closest = idx;
-            }
-        });
-
-        currentIndex = closest;
-    }
-
-    prev.addEventListener('click', function () {
-        scrollToIndex(currentIndex - 1, 'smooth');
-    });
-
-    next.addEventListener('click', function () {
-        scrollToIndex(currentIndex + 1, 'smooth');
-    });
-
-    track.addEventListener('scroll', function () {
-        window.requestAnimationFrame(detectCurrentIndex);
-    });
-    window.addEventListener('resize', function () {
-        scrollToIndex(currentIndex, 'auto');
-    });
-});
-</script>

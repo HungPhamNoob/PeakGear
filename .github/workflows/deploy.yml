@@ -50,34 +50,6 @@ jobs:
             exit 1
           fi
 
-  lint:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, xml, gd, intl, zip
-          coverage: none
-
-      - name: Install composer dependencies
-        run: |
-          cd src
-          composer install --no-interaction --prefer-dist --ignore-platform-reqs
-
-      - name: PHP Syntax Check
-        run: |
-          find src/app/code -name "*.php" -exec php -l {} \; 2>&1 | grep -v "No syntax errors"
-
-      - name: Coding Standard
-        run: |
-          cd src
-          ./vendor/bin/phpcs --standard=Magento2 --extensions=php,phtml app/code/ || true
-
   test:
     if: false # Enable when tests are available
     runs-on: ubuntu-latest

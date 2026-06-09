@@ -1,0 +1,56 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$order = $block->getOrder();
+$payment = $order ? $order->getPayment() : null;
+$hasPaidAmount = $order && (
+    ($payment && (float)$payment->getAmountPaid() > 0)
+    || $order->getState() === \Magento\Sales\Model\Order::STATE_PROCESSING
+);
+?>
+<div id="cancel-order-modal-<?= /* @noEscape */ $order->getId() ?>">
+    <div class="pg-cancellation-form">
+        <div class="pg-cancellation-form__order">
+            <span class="pg-cancellation-form__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 2h9l3 3v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/>
+                    <path d="M14 2v4h4M8 11h6M8 15h4"/>
+                </svg>
+            </span>
+            <div>
+                <span class="pg-cancellation-form__eyebrow">Đơn hàng</span>
+                <strong>#<?= $escaper->escapeHtml($order->getRealOrderId()) ?></strong>
+            </div>
+        </div>
+
+        <p class="pg-cancellation-form__intro">
+            Chọn lý do hủy. Yêu cầu sẽ được gửi đến quản trị viên để kiểm tra và duyệt.
+        </p>
+
+        <?php if ($hasPaidAmount): ?>
+            <p class="pg-cancellation-note">
+                <strong>Đơn đã ghi nhận thanh toán.</strong>
+                Cửa hàng sẽ xử lý hoàn tiền sau khi yêu cầu được chấp thuận.
+            </p>
+        <?php else: ?>
+            <p class="pg-cancellation-note">
+                <strong>Đơn chưa bị hủy ngay.</strong>
+                Vui lòng chờ quản trị viên phản hồi yêu cầu.
+            </p>
+        <?php endif; ?>
+
+        <form class="pg-cancellation-form__fields">
+            <label for="cancel-order-reason-<?= /* @noEscape */ $order->getId() ?>">Lý do yêu cầu hủy</label>
+            <select id="cancel-order-reason-<?= /* @noEscape */ $order->getId() ?>"
+                    class="cancel-order-reason"
+                    name="reason">
+                <?php foreach ($block->getReasons() as $description): ?>
+                    <option value="<?= $escaper->escapeHtmlAttr(__($description)) ?>">
+                        <?= $escaper->escapeHtml(__($description)) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <span class="pg-cancellation-form__help">Bạn chỉ có thể gửi một yêu cầu cho đơn hàng này.</span>
+        </form>
+    </div>
+</div>
