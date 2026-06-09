@@ -1103,7 +1103,6 @@
                         align-self: center;
                         width: 104px;
                         height: 104px;
-                        transform: translateY(-4px);
                         border-radius: 0.85rem;
                         overflow: hidden;
                         position: relative; // needed to clip Magento's abs-positioned img
@@ -1116,6 +1115,8 @@
                             inset: 0 !important;
                             width: 100% !important;
                             height: 100% !important;
+                            aspect-ratio: auto !important;
+                            background: transparent !important;
                         }
 
                         .product-image-wrapper {
@@ -1127,6 +1128,8 @@
                             width: 100% !important;
                             height: 100% !important;
                             padding-bottom: 0 !important;
+                            aspect-ratio: auto !important;
+                            background: transparent !important;
                         }
 
                         .product-image-photo,
@@ -1497,9 +1500,9 @@
 
     .cart-summary .checkout.methods.items {
         list-style: none;
-        margin: 1rem 0 0;
-        padding: 1rem 0 0;
-        border-top: 1px solid fade(@peakgear-text, 10%);
+        margin: 0.75rem 0 0;
+        padding: 0;
+        border-top: none;
 
         .item {
             margin: 0;
@@ -1510,15 +1513,22 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: 3.25rem;
-            border-radius: 0.9rem;
+            min-height: 2.75rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 0.75rem;
             background: @peakgear-primary;
             color: #111827;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
             border: none;
-            box-shadow: 0 10px 20px fade(@peakgear-primary, 20%);
+            box-shadow: 0 6px 14px fade(@peakgear-primary, 18%);
+            transition: all @transition-fast;
 
             &:hover {
                 background: @peakgear-primary-hover;
+                box-shadow: 0 8px 18px fade(@peakgear-primary, 26%);
+                transform: translateY(-1px);
             }
         }
     }
@@ -1634,15 +1644,29 @@
                     align-self: center;
                     width: 84px;
                     height: 84px;
-                    transform: translateY(-3px);
                     border-radius: 0.8rem;
+                    overflow: hidden;
+                    position: relative;
+
+                    .product-image-container,
+                    .product-image-wrapper {
+                        position: absolute !important;
+                        inset: 0 !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        aspect-ratio: auto !important;
+                        background: transparent !important;
+                        padding-bottom: 0 !important;
+                    }
 
                     img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: contain;
-                        object-position: center center;
-                        transform: none;
+                        position: absolute !important;
+                        inset: 0 !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        object-fit: contain !important;
+                        object-position: center center !important;
+                        transform: none !important;
                     }
                 }
 

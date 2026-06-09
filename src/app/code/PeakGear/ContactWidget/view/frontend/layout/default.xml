@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="PeakGear_ContactWidget::css/contact-widget.css"/>
+    </head>
+    <body>
+        <referenceContainer name="before.body.end">
+            <block class="PeakGear\ContactWidget\Block\FloatingWidget"
+                   name="peakgear.contact.widget"
+                   template="PeakGear_ContactWidget::widget.phtml"
+                   after="peakgear.auth.guard.init"/>
+        </referenceContainer>
+    </body>
+</page>

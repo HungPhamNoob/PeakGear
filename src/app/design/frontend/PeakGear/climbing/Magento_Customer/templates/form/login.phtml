@@ -5,6 +5,30 @@
  *
  * @var \Magento\Customer\Block\Form\Login $block
  */
+
+$username = trim((string) $block->getUsername());
+$serverErrors = [];
+
+try {
+    /** @var \Magento\Framework\Message\ManagerInterface $messageManager */
+    $messageManager = \Magento\Framework\App\ObjectManager::getInstance()
+        ->get(\Magento\Framework\Message\ManagerInterface::class);
+
+    foreach ($messageManager->getMessages(true)->getItemsByType(\Magento\Framework\Message\MessageInterface::TYPE_ERROR) as $message) {
+        $text = trim((string) $message->getText());
+        if ($text === '') {
+            continue;
+        }
+
+        if (stripos($text, 'captcha') !== false) {
+            continue;
+        }
+
+        $serverErrors[] = $block->escapeHtml($text);
+    }
+} catch (\Throwable $e) {
+    // Keep the login form usable even if message extraction fails.
+}
 ?>
 
 <section class="login-section">
@@ -24,21 +48,11 @@
             <h1 class="login-card-title">Đăng Nhập</h1>
             <p class="login-card-subtitle">Chào mừng bạn quay trở lại</p>
 
-            <!-- Error Message (shown by JS/Magento when validation fails) -->
-            <div class="login-error-alert" id="login-error-alert" style="display: none;">
-                <svg class="login-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <p class="login-error-text" id="login-error-text"></p>
-            </div>
-
             <form class="login-form"
                   action="<?= $block->escapeUrl($block->getPostActionUrl()) ?>"
                   method="post"
                   id="login-form"
-                  data-mage-init='{"validation":{}}'>
+                  novalidate="novalidate">
                 <?= $block->getBlockHtml('formkey') ?>
 
                 <!-- Email/Phone Field -->
@@ -53,14 +67,17 @@
                                name="login[username]"
                                id="email"
                                class="login-input"
+                               value="<?= $block->escapeHtmlAttr($username) ?>"
                                placeholder="your@email.com hoặc 0123 456 789"
                                autocomplete="username"
-                               data-validate="{required:true}"/>
+                               aria-describedby="login-username-errors"
+                               data-validate="{required:true, 'validate-login-identifier':true}"/>
                     </div>
+                    <div class="login-field-errors" id="login-username-errors" aria-live="polite"></div>
                 </div>
 
                 <!-- Password Field -->
-                <div class="login-field">
+                <div class="login-field<?= !empty($serverErrors) ? ' has-server-error' : '' ?>">
                     <label for="pass" class="login-label">Mật khẩu</label>
                     <div class="login-input-wrapper">
                         <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -73,6 +90,7 @@
                                class="login-input login-input-password"
                                placeholder="Nhập mật khẩu"
                                autocomplete="current-password"
+                               aria-describedby="login-password-errors"
                                data-validate="{required:true}"/>
                         <button type="button" class="login-password-toggle" onclick="toggleLoginPassword(this)">
                             <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -85,6 +103,11 @@
                                 <line x1="1" y1="1" x2="23" y2="23"/>
                             </svg>
                         </button>
+                    </div>
+                    <div class="login-field-errors" id="login-password-errors" aria-live="polite">
+                        <?php foreach ($serverErrors as $error): ?>
+                            <div class="login-inline-error login-inline-error--server"><?= /* @noEscape */ $error ?></div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
@@ -143,5 +166,145 @@ function toggleLoginPassword(btn) {
         eyeClosed.style.display = 'none';
     }
 }
+
+require([
+    'jquery',
+    'mage/mage',
+    'mage/storage',
+    'Magento_Customer/js/customer-data',
+    'mage/validation',
+    'mage/translate'
+], function ($, mage, storage, customerData) {
+    'use strict';
+
+    function normalizePhone(phone) {
+        var trimmed = $.trim(phone);
+        var digits = trimmed.replace(/\D+/g, '');
+
+        if (trimmed.charAt(0) === '+' && digits.indexOf('84') === 0) {
+            return '0' + digits.substring(2);
+        }
+
+        if (digits.indexOf('84') === 0 && digits.length >= 11) {
+            return '0' + digits.substring(2);
+        }
+
+        return digits;
+    }
+
+    function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    $.validator.addMethod(
+        'validate-login-identifier',
+        function (value) {
+            var trimmed = $.trim(value);
+
+            if (!trimmed.length) {
+                return true;
+            }
+
+            return isValidEmail(trimmed) || /^0[0-9]{9,10}$/.test(normalizePhone(trimmed));
+        },
+        $.mage.__('Vui lòng nhập email hợp lệ hoặc số điện thoại hợp lệ.')
+    );
+
+    var form = $('#login-form');
+    var usernameField = $('#email');
+    var passwordField = $('#pass');
+    var passwordErrorContainer = $('#login-password-errors');
+    var submitButton = form.find('.login-submit-btn');
+
+    function escapeHtml(text) {
+        return $('<div>').text(text).html();
+    }
+
+    function setPasswordServerError(message) {
+        passwordErrorContainer.html(
+            '<div class="login-inline-error login-inline-error--server">' + escapeHtml(message) + '</div>'
+        );
+        passwordField.closest('.login-field').addClass('has-server-error');
+    }
+
+    function normalizeServerMessage(message) {
+        var normalized = (message || '').toLowerCase();
+
+        if (
+            normalized.indexOf('invalid login or password') !== -1
+            || normalized.indexOf('invalid login or password.') !== -1
+            || normalized.indexOf('account sign-in was incorrect') !== -1
+            || normalized.indexOf('login and a password are required') !== -1
+        ) {
+            return 'Sai tên đăng nhập hoặc mật khẩu.';
+        }
+
+        return message || 'Không thể đăng nhập. Vui lòng thử lại.';
+    }
+
+    form.mage('validation', {
+        errorClass: 'mage-error',
+        errorElement: 'div',
+        errorPlacement: function (error, element) {
+            var field = element.closest('.login-field');
+            var errorContainer = field.find('.login-field-errors').first();
+
+            if (errorContainer.length) {
+                errorContainer.empty().append(error);
+                return;
+            }
+
+            error.insertAfter(element);
+        }
+    });
+
+    form.find('.login-input').on('input', function () {
+        passwordErrorContainer.find('.login-inline-error--server').remove();
+        $(this).closest('.login-field').removeClass('has-server-error');
+    });
+
+    form.on('submit', function (event) {
+        var payload;
+
+        if (!form.validation('isValid')) {
+            return;
+        }
+
+        event.preventDefault();
+
+        passwordErrorContainer.find('.login-inline-error--server').remove();
+        passwordField.closest('.login-field').removeClass('has-server-error');
+        submitButton.prop('disabled', true);
+
+        payload = {
+            username: $.trim(usernameField.val()),
+            password: passwordField.val()
+        };
+
+        storage.post(
+            'customer/ajax/login',
+            JSON.stringify(payload),
+            true
+        ).done(function (response) {
+            if (response && response.errors) {
+                setPasswordServerError(normalizeServerMessage(response.message));
+                return;
+            }
+
+            customerData.invalidate(['customer']);
+
+            if (response && response.redirectUrl) {
+                window.location.href = response.redirectUrl;
+                return;
+            }
+
+            window.location.reload();
+        }).fail(function () {
+            setPasswordServerError('Không thể đăng nhập. Vui lòng thử lại.');
+        }).always(function () {
+            submitButton.prop('disabled', false);
+        });
+    });
+});
 
 </script>
