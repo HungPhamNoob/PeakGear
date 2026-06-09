@@ -927,9 +927,7 @@
             flex-grow: 0;
 
             &::before {
-                content: '<';
-                margin-right: 0.5rem;
-                font-weight: 700;
+                content: none;
             }
 
             &:hover {
@@ -1693,10 +1691,6 @@
                 width: 100%;
             }
 
-            .col.price {
-                display: none !important;
-            }
-
             .col.qty::before,
             .col.subtotal::before {
                 display: block;
@@ -1737,9 +1731,14 @@
             max-height: calc(100vh - 14rem);
             overflow-y: auto;
             overflow-x: hidden;
+            padding-left: 2rem;
             padding-right: 0.75rem;
             scrollbar-gutter: stable;
             overscroll-behavior-y: auto;
+        }
+
+        .cart.main.actions {
+            padding-left: 2rem;
         }
 
         .cart-container > .cart-summary {
@@ -1747,6 +1746,75 @@
             top: auto;
             align-self: flex-start;
             z-index: 3;
+        }
+    }
+
+    .pg-flash-sale-cart-note {
+        width: fit-content;
+        max-width: 100%;
+        margin: 0.45rem 0 0 !important;
+        padding: 0.45rem 0.65rem !important;
+        border: 1px solid fade(@peakgear-primary, 32%) !important;
+        border-radius: 0.55rem;
+        background: fade(@peakgear-primary, 9%) !important;
+        color: fade(@peakgear-text, 68%) !important;
+        font-size: 0.72rem !important;
+        line-height: 1.25;
+
+        &::before {
+            display: none !important;
+        }
+
+        &__content {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.25rem 0.45rem;
+
+            &::before {
+                display: none !important;
+                content: none !important;
+            }
+        }
+
+        &__status {
+            color: @peakgear-primary-light;
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+        &__badge {
+            padding: 0.12rem 0.32rem;
+            border-radius: 0.3rem;
+            background: @peakgear-primary;
+            color: @peakgear-dark;
+            font-size: 0.62rem;
+            font-weight: 800;
+        }
+
+        &__meta {
+            color: fade(@peakgear-text, 52%);
+            font-size: 0.68rem;
+        }
+    }
+
+    .pg-cart-subtotal-price {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.2rem;
+        white-space: nowrap;
+
+        &__old {
+            color: fade(@peakgear-text, 38%);
+            font-size: 0.7rem;
+            line-height: 1.2;
+
+            .price {
+                color: inherit !important;
+                font-size: inherit !important;
+                font-weight: 500 !important;
+            }
         }
     }
 

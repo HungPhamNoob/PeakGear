@@ -26,11 +26,22 @@ class CartItemFlashSale implements ArgumentInterface
             return null;
         }
 
+        $regularPrice = (float)$product->getPrice();
+        $requestedQty = (int)ceil((float)$quoteItem->getQty());
+        $discountedQty = $this->flashSaleService->getMarkedDiscountQty(
+            $quoteItem->getAdditionalData(),
+            $requestedQty
+        );
+
         return [
             'remaining_qty' => $item->getRemainingQty(),
             'discount_percent' => (float)$item->getData('discount_percent'),
+            'regular_price' => $regularPrice,
             'max_per_customer' => (int)$item->getData('max_per_customer'),
             'max_per_order' => (int)$item->getData('max_per_order'),
+            'discounted_qty' => $discountedQty,
+            'regular_qty' => max(0, $requestedQty - $discountedQty),
+            'uses_regular_price' => $discountedQty <= 0,
         ];
     }
 }

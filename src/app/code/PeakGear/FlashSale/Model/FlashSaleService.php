@@ -10,6 +10,9 @@ use PeakGear\FlashSale\Model\ResourceModel\Item\CollectionFactory as ItemCollect
 
 class FlashSaleService
 {
+    public const DISCOUNT_MARKER_PREFIX = 'peakgear_flash_sale_item_id:';
+    public const REGULAR_PRICE_MARKER = 'peakgear_flash_sale_regular_price';
+
     private array $activeItemCache = [];
 
     public function __construct(
@@ -53,34 +56,105 @@ class FlashSaleService
         return round($price * (100.0 - $discountPercent) / 100.0, 4);
     }
 
-    public function validateQty(int $productId, float $requestedQty, ?int $customerId = null, ?string $customerEmail = null): ?string
-    {
-        $item = $this->getActiveItemForProduct($productId);
-        if (!$item) {
-            return null;
+    public function hasReachedCustomerLimit(
+        int $productId,
+        Item $item,
+        ?int $customerId = null,
+        ?string $customerEmail = null
+    ): bool {
+        $maxPerCustomer = (int)$item->getData('max_per_customer');
+        if ($maxPerCustomer <= 0) {
+            return false;
         }
 
-        $requestedQty = (int)ceil($requestedQty);
-        $remainingQty = $item->getRemainingQty();
-        if ($requestedQty > $remainingQty) {
-            return (string)__('Flash sale chỉ còn %1 sản phẩm.', $remainingQty);
-        }
+        return $this->getCustomerOrderedQty(
+            $productId,
+            (int)$item->getData('sale_id'),
+            (int)$item->getId(),
+            $customerId,
+            $customerEmail
+        ) >= $maxPerCustomer;
+    }
 
+    public function getEligibleDiscountQty(
+        int $productId,
+        Item $item,
+        float $requestedQty,
+        ?int $customerId = null,
+        ?string $customerEmail = null
+    ): int {
+        $eligibleQty = min((int)ceil($requestedQty), $item->getRemainingQty());
         $maxPerOrder = (int)$item->getData('max_per_order');
-        if ($maxPerOrder > 0 && $requestedQty > $maxPerOrder) {
-            return (string)__('Mỗi đơn hàng chỉ được mua tối đa %1 sản phẩm flash sale này.', $maxPerOrder);
+        if ($maxPerOrder > 0) {
+            $eligibleQty = min($eligibleQty, $maxPerOrder);
         }
 
         $maxPerCustomer = (int)$item->getData('max_per_customer');
         if ($maxPerCustomer > 0) {
-            $orderedQty = $this->getCustomerOrderedQty($productId, (int)$item->getData('sale_id'), $customerId, $customerEmail);
-            if ($orderedQty + $requestedQty > $maxPerCustomer) {
-                $left = max(0, $maxPerCustomer - $orderedQty);
-                return (string)__('Bạn chỉ còn được mua %1 sản phẩm trong flash sale này.', $left);
-            }
+            $orderedQty = $this->getCustomerOrderedQty(
+                $productId,
+                (int)$item->getData('sale_id'),
+                (int)$item->getId(),
+                $customerId,
+                $customerEmail
+            );
+            $eligibleQty = min($eligibleQty, max(0, $maxPerCustomer - $orderedQty));
         }
 
+        return max(0, $eligibleQty);
+    }
+
+    public function getBlendedUnitPrice(
+        ProductInterface $product,
+        Item $item,
+        float $requestedQty,
+        int $discountedQty
+    ): float {
+        $requestedQty = max(1, (int)ceil($requestedQty));
+        $discountedQty = min($requestedQty, max(0, $discountedQty));
+        $regularPrice = (float)$product->getPrice();
+        $discountedPrice = $this->getDiscountedPrice($product, $item, $regularPrice);
+        $rowTotal = ($discountedQty * $discountedPrice)
+            + (($requestedQty - $discountedQty) * $regularPrice);
+
+        return round($rowTotal / $requestedQty, 4);
+    }
+
+    public function validateQty(int $productId, float $requestedQty, ?int $customerId = null, ?string $customerEmail = null): ?string
+    {
         return null;
+    }
+
+    public function getDiscountMarker(int $itemId, int $discountedQty): string
+    {
+        return self::DISCOUNT_MARKER_PREFIX . $itemId . ':' . max(0, $discountedQty);
+    }
+
+    public function getMarkedItemId(?string $additionalData): ?int
+    {
+        if (!$additionalData || !str_starts_with($additionalData, self::DISCOUNT_MARKER_PREFIX)) {
+            return null;
+        }
+
+        $marker = substr($additionalData, strlen(self::DISCOUNT_MARKER_PREFIX));
+        $itemId = (int)explode(':', $marker, 2)[0];
+        return $itemId > 0 ? $itemId : null;
+    }
+
+    public function getMarkedDiscountQty(?string $additionalData, int $fallbackQty = 0): int
+    {
+        if ($this->getMarkedItemId($additionalData) === null) {
+            return 0;
+        }
+
+        $marker = substr((string)$additionalData, strlen(self::DISCOUNT_MARKER_PREFIX));
+        $parts = explode(':', $marker, 2);
+        return isset($parts[1]) ? max(0, (int)$parts[1]) : max(0, $fallbackQty);
+    }
+
+    public function isRegularPriceMarker(?string $additionalData): bool
+    {
+        return $additionalData === self::REGULAR_PRICE_MARKER;
     }
 
     public function incrementSoldQty(int $itemId, int $qty): void
@@ -98,7 +172,13 @@ class FlashSaleService
         );
     }
 
-    private function getCustomerOrderedQty(int $productId, int $saleId, ?int $customerId, ?string $customerEmail): int
+    private function getCustomerOrderedQty(
+        int $productId,
+        int $saleId,
+        int $itemId,
+        ?int $customerId,
+        ?string $customerEmail
+    ): int
     {
         if (!$customerId && !$customerEmail) {
             return 0;
@@ -110,7 +190,7 @@ class FlashSaleService
         $saleTable = $this->resourceConnection->getTableName('peakgear_flash_sale');
 
         $select = $connection->select()
-            ->from(['oi' => $orderItemTable], ['qty' => 'SUM(oi.qty_ordered)'])
+            ->from(['oi' => $orderItemTable], ['qty_ordered', 'additional_data'])
             ->join(['o' => $orderTable], 'oi.order_id = o.entity_id', [])
             ->join(['s' => $saleTable], 's.sale_id = ' . (int)$saleId, [])
             ->where('oi.product_id = ?', $productId)
@@ -124,6 +204,17 @@ class FlashSaleService
             $select->where('o.customer_email = ?', $customerEmail);
         }
 
-        return (int)$connection->fetchOne($select);
+        $discountedQty = 0;
+        foreach ($connection->fetchAll($select) as $row) {
+            if ($this->getMarkedItemId($row['additional_data'] ?? null) !== $itemId) {
+                continue;
+            }
+            $discountedQty += $this->getMarkedDiscountQty(
+                $row['additional_data'] ?? null,
+                (int)ceil((float)($row['qty_ordered'] ?? 0))
+            );
+        }
+
+        return $discountedQty;
     }
 }
