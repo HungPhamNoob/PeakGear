@@ -2,22 +2,29 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <carriers>
+            <flatrate>
+                <active>0</active>
+            </flatrate>
             <vendor_shipping>
                 <active>1</active>
                 <sallowspecific>0</sallowspecific>
                 <model>Vendor\Shipping\Model\Carrier\CustomShipping</model>
-                <title>Giao Hàng (Vendor API)</title>
-                <name>Giao Tiêu Chuẩn</name>
+                <title>GHTK</title>
+                <name>GHTK - Tiêu chuẩn</name>
                 <sandbox_mode>1</sandbox_mode>
                 <client_source></client_source>
                 <pick_address_id></pick_address_id>
-                <pick_address></pick_address>
-                <pick_ward></pick_ward>
+                <pick_address>PeakGear Demo Store</pick_address>
+                <pick_province>Hà Nội</pick_province>
+                <pick_district>Quận Cầu Giấy</pick_district>
+                <pick_ward>Dịch Vọng</pick_ward>
+                <fallback_destination_district>Quận Cầu Giấy</fallback_destination_district>
+                <fallback_destination_ward>Dịch Vọng</fallback_destination_ward>
                 <transport>road</transport>
                 <weight_unit>kg</weight_unit>
                 <default_weight_gram>500</default_weight_gram>
                 <fallback_enabled>1</fallback_enabled>
-                <fallback_price>500000</fallback_price>
+                <fallback_price>30000</fallback_price>
                 <cache_ttl>300</cache_ttl>
                 <timeout>10</timeout>
                 <debug>0</debug>

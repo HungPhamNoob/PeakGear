@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace Vendor\Shipping\Model\Carrier;
 
-use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\State;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
@@ -21,18 +18,12 @@ use Vendor\Shipping\Service\WeightResolver;
 
 class CustomShipping extends AbstractCarrier implements CarrierInterface
 {
-    private const DISABLED_AREAS = [
-        Area::AREA_FRONTEND,
-        Area::AREA_WEBAPI_REST,
-    ];
-
     protected $_code = 'vendor_shipping';
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         ErrorFactory $rateErrorFactory,
         LoggerInterface $logger,
-        private readonly State $appState,
         private readonly ResultFactory $rateResultFactory,
         private readonly MethodFactory $rateMethodFactory,
         private readonly \Vendor\Shipping\Service\GhtkApi $ghtkApi,
@@ -52,10 +43,6 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
     public function collectRates(RateRequest $request): bool|Result
     {
         if (!$this->getConfigFlag('active')) {
-            return false;
-        }
-
-        if ($this->isDisabledInCurrentArea()) {
             return false;
         }
 
@@ -86,16 +73,11 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
             $this->config->isDebug($storeId)
         );
 
-        if (!$feeData || !isset($feeData['fee']) || (($feeData['delivery'] ?? true) === false)) {
+        if (!$feeData || !isset($feeData['fee'])) {
             return $this->buildFallbackResult($storeId, 'GHTK returned no valid delivery fee.');
         }
 
-        $methodTitle = $this->config->getMethodName($storeId);
-        if (!empty($feeData['name'])) {
-            $methodTitle .= ' - ' . (string)$feeData['name'];
-        }
-
-        return $this->buildResult((float)$feeData['fee'], $storeId, $methodTitle);
+        return $this->buildResult((float)$feeData['fee'], $storeId, $this->config->getMethodName($storeId));
     }
 
     private function buildFallbackResult(?int $storeId, string $reason): bool|Result
@@ -111,7 +93,7 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         return $this->buildResult(
             $this->config->getFallbackPrice($storeId),
             $storeId,
-            $this->config->getMethodName($storeId) . ' (fallback)'
+            $this->config->getMethodName($storeId)
         );
     }
 
@@ -130,12 +112,4 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         return $result;
     }
 
-    private function isDisabledInCurrentArea(): bool
-    {
-        try {
-            return in_array($this->appState->getAreaCode(), self::DISABLED_AREAS, true);
-        } catch (LocalizedException) {
-            return false;
-        }
-    }
 }

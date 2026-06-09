@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Vendor\ZaloPay\Plugin\Checkout;
 
+use Magento\Checkout\Controller\Index\Index as CheckoutIndex;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 use Vendor\ZaloPay\Model\Order\PaymentStateApplier;
@@ -16,14 +18,15 @@ class RestoreQuoteOnReturnPlugin
     public function __construct(
         private readonly CheckoutSession $checkoutSession,
         private readonly PaymentStateApplier $paymentStateApplier,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly RedirectFactory $redirectFactory
     ) {
     }
 
-    public function beforeExecute($subject): void
+    public function aroundExecute($subject, callable $proceed)
     {
         if (!$this->shouldAttemptRestore()) {
-            return;
+            return $proceed();
         }
 
         $order = $this->checkoutSession->getLastRealOrder();
@@ -37,10 +40,16 @@ class RestoreQuoteOnReturnPlugin
             ]);
         }
 
-        $this->checkoutSession->restoreQuote();
+        $quoteRestored = $this->checkoutSession->restoreQuote();
         $this->checkoutSession->setData(self::GATEWAY_STARTED_KEY, false);
         $this->checkoutSession->unsetData(self::REDIRECT_CACHE_KEY);
         $this->checkoutSession->setData('peakgear_successful_payment_order', null);
+
+        if ($quoteRestored && $subject instanceof CheckoutIndex) {
+            return $this->redirectFactory->create()->setPath('checkout', ['_fragment' => 'payment']);
+        }
+
+        return $proceed();
     }
 
     private function shouldAttemptRestore(): bool
