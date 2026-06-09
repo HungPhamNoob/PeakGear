@@ -90,6 +90,9 @@ class Apply implements HttpPostActionInterface
             $buyRequest = new DataObject($this->buildBuyRequestData());
             $this->cart->addProduct($product, $buyRequest);
             $this->cart->save();
+            $this->resetQuoteCheckoutState($quote);
+            $quote->collectTotals();
+            $quote->save();
 
             $temporaryQuoteId = (int) $quote->getId();
             if ($temporaryQuoteId > 0) {
@@ -120,6 +123,73 @@ class Apply implements HttpPostActionInterface
         );
 
         return $params;
+    }
+
+    /**
+     * Buy now should always restart checkout from shipping instead of reusing
+     * any previous shipping/payment state left on the active quote.
+     */
+    private function resetQuoteCheckoutState(\Magento\Quote\Model\Quote $quote): void
+    {
+        $shippingAddress = $quote->getShippingAddress();
+        $billingAddress = $quote->getBillingAddress();
+        $payment = $quote->getPayment();
+
+        if ($shippingAddress) {
+            $shippingAddress->setCustomerAddressId(null);
+            $shippingAddress->setSameAsBilling(0);
+            $shippingAddress->setCollectShippingRates(true);
+            $shippingAddress->removeAllShippingRates();
+            $shippingAddress->setShippingMethod(null);
+            $shippingAddress->setShippingDescription(null);
+            $shippingAddress->setCountryId(null);
+            $shippingAddress->setRegionId(null);
+            $shippingAddress->setRegion(null);
+            $shippingAddress->setRegionCode(null);
+            $shippingAddress->setCity(null);
+            $shippingAddress->setPostcode(null);
+            $shippingAddress->setStreet([]);
+            $shippingAddress->setTelephone(null);
+            $shippingAddress->setCompany(null);
+            $shippingAddress->setFirstname(null);
+            $shippingAddress->setLastname(null);
+            $shippingAddress->setMiddlename(null);
+            $shippingAddress->setPrefix(null);
+            $shippingAddress->setSuffix(null);
+            $shippingAddress->setVatId(null);
+            $shippingAddress->setShouldIgnoreValidation(false);
+        }
+
+        if ($billingAddress) {
+            $billingAddress->setCustomerAddressId(null);
+            $billingAddress->setSameAsBilling(0);
+            $billingAddress->setCountryId(null);
+            $billingAddress->setRegionId(null);
+            $billingAddress->setRegion(null);
+            $billingAddress->setRegionCode(null);
+            $billingAddress->setCity(null);
+            $billingAddress->setPostcode(null);
+            $billingAddress->setStreet([]);
+            $billingAddress->setTelephone(null);
+            $billingAddress->setCompany(null);
+            $billingAddress->setFirstname(null);
+            $billingAddress->setLastname(null);
+            $billingAddress->setMiddlename(null);
+            $billingAddress->setPrefix(null);
+            $billingAddress->setSuffix(null);
+            $billingAddress->setVatId(null);
+            $billingAddress->setShouldIgnoreValidation(false);
+        }
+
+        if ($payment) {
+            $payment->setMethod(null);
+            $payment->setAdditionalInformation([]);
+        }
+
+        $quote->setTotalsCollectedFlag(false);
+        $quote->setReservedOrderId(null);
+        $this->checkoutSession->setStepData('shipping', 'complete', false);
+        $this->checkoutSession->setStepData('billing', 'complete', false);
     }
 
     private function snapshotQuoteItems(\Magento\Quote\Model\Quote $quote): array
