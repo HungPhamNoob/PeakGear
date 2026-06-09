@@ -22,11 +22,16 @@ class DecrementSaleQuantity implements ObserverInterface
         }
 
         foreach ($order->getAllVisibleItems() as $orderItem) {
-            $item = $this->flashSaleService->getActiveItemForProduct((int)$orderItem->getProductId());
-            if (!$item) {
+            $itemId = $this->flashSaleService->getMarkedItemId($orderItem->getAdditionalData());
+            if ($itemId === null) {
                 continue;
             }
-            $this->flashSaleService->incrementSoldQty((int)$item->getId(), (int)ceil((float)$orderItem->getQtyOrdered()));
+
+            $discountedQty = $this->flashSaleService->getMarkedDiscountQty(
+                $orderItem->getAdditionalData(),
+                (int)ceil((float)$orderItem->getQtyOrdered())
+            );
+            $this->flashSaleService->incrementSoldQty($itemId, $discountedQty);
         }
     }
 }
