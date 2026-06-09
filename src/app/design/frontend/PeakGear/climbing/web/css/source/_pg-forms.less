@@ -20,7 +20,13 @@ div.mage-error {
 }
 
 // Keep validation errors from affecting icon position in login/register forms
-.login-input-wrapper div.mage-error,
+.login-input-wrapper div.mage-error {
+    width: 100%;
+    position: static;
+    margin-top: 0.4rem;
+    z-index: auto;
+}
+
 .register-input-wrapper div.mage-error {
     width: 100%;
     position: absolute;
@@ -164,4 +170,3 @@ div.mage-error {
         }
     }
 }
-

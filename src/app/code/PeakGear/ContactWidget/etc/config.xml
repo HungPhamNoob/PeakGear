@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <peakgear_contact_widget>
+            <general>
+                <enabled>1</enabled>
+                <phone_enabled>1</phone_enabled>
+                <phone_number>024.37547.461</phone_number>
+                <zalo_enabled>1</zalo_enabled>
+                <zalo_url></zalo_url>
+                <contact_enabled>1</contact_enabled>
+                <collapsed_by_default>1</collapsed_by_default>
+                <show_on_mobile>1</show_on_mobile>
+                <show_on_desktop>1</show_on_desktop>
+                <bottom_offset>24</bottom_offset>
+                <right_offset>16</right_offset>
+            </general>
+        </peakgear_contact_widget>
+    </default>
+</config>

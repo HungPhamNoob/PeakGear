@@ -1,0 +1,85 @@
+<?php
+/**
+ * @var \PeakGear\ContactWidget\Block\FloatingWidget $block
+ */
+if (!$block->canRender()) {
+    return;
+}
+?>
+<div class="<?= $block->escapeHtmlAttr($block->getWidgetClasses()) ?>"
+     data-role="pg-contact-widget"
+     data-default-open="<?= $block->isCollapsedByDefault() ? '0' : '1' ?>"
+     style="<?= $block->escapeHtmlAttr($block->getInlineStyle()) ?>">
+    <div class="pg-contact-widget__actions"
+         data-role="pg-contact-widget-actions"
+         aria-hidden="<?= $block->isCollapsedByDefault() ? 'true' : 'false' ?>">
+        <?php if ($block->hasPhoneAction()): ?>
+            <a class="pg-contact-widget__action pg-contact-widget__action--phone"
+               href="<?= $block->escapeUrl($block->getPhoneHref()) ?>"
+               title="<?= $block->escapeHtmlAttr(__('Gọi điện')) ?>"
+               aria-label="<?= $block->escapeHtmlAttr(__('Gọi điện')) ?>"
+               data-label="<?= $block->escapeHtmlAttr(__('Gọi điện')) ?>">
+                <span class="pg-contact-widget__sr-only"><?= $block->escapeHtml(__('Gọi điện')) ?></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 11.2 18.9a19.5 19.5 0 0 1-6.1-6.1A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3.1a2 2 0 0 1 1.95 1.63c.12.66.35 1.61.75 2.8a2 2 0 0 1-.45 2.05L8.06 9.84a16 16 0 0 0 6.1 6.1l1.36-1.35a2 2 0 0 1 2.05-.45c1.18.39 2.13.62 2.8.74A2 2 0 0 1 22 16.92Z"/>
+                </svg>
+            </a>
+        <?php endif; ?>
+        <?php if ($block->hasZaloAction()): ?>
+            <a class="pg-contact-widget__action pg-contact-widget__action--zalo"
+               href="<?= $block->escapeUrl($block->getZaloUrl()) ?>"
+               target="_blank"
+               rel="noopener"
+               title="<?= $block->escapeHtmlAttr(__('Zalo')) ?>"
+               aria-label="<?= $block->escapeHtmlAttr(__('Zalo')) ?>"
+               data-label="<?= $block->escapeHtmlAttr(__('Zalo')) ?>">
+                <span class="pg-contact-widget__sr-only"><?= $block->escapeHtml(__('Zalo')) ?></span>
+                <svg class="pg-contact-widget__brandmark pg-contact-widget__brandmark--zalo"
+                     viewBox="0 0 28 28"
+                     aria-hidden="true"
+                     focusable="false">
+                    <path class="bubble" d="M14 3.25c5.94 0 10.75 4.41 10.75 9.84 0 5.44-4.81 9.85-10.75 9.85-1.12 0-2.21-.16-3.23-.47l-4.44 2.17.97-4.09C4.67 18.77 3.25 16.04 3.25 13.09 3.25 7.66 8.06 3.25 14 3.25Z"/>
+                    <path class="tail" d="m9.36 20.54-1.06 4.1 3.6-2.51Z"/>
+                    <text x="14" y="15.5" text-anchor="middle">Zalo</text>
+                </svg>
+            </a>
+        <?php endif; ?>
+        <?php if ($block->hasContactAction()): ?>
+            <a class="pg-contact-widget__action pg-contact-widget__action--contact"
+               href="<?= $block->escapeUrl($block->getContactUrl()) ?>"
+               title="<?= $block->escapeHtmlAttr(__('Liên hệ')) ?>"
+               aria-label="<?= $block->escapeHtmlAttr(__('Liên hệ')) ?>"
+               data-label="<?= $block->escapeHtmlAttr(__('Liên hệ')) ?>">
+                <span class="pg-contact-widget__sr-only"><?= $block->escapeHtml(__('Liên hệ')) ?></span>
+                <img class="pg-contact-widget__brandmark pg-contact-widget__brandmark--gmail"
+                     src="<?= $block->escapeUrl($block->getViewFileUrl('images/gmail-icon.svg')) ?>"
+                     alt=""
+                     aria-hidden="true"
+                     width="26"
+                     height="26"/>
+            </a>
+        <?php endif; ?>
+    </div>
+
+    <button type="button"
+            class="pg-contact-widget__toggle"
+            data-role="pg-contact-widget-toggle"
+            aria-expanded="<?= $block->isCollapsedByDefault() ? 'false' : 'true' ?>"
+            aria-label="<?= $block->escapeHtmlAttr(__('Mở công cụ liên hệ')) ?>">
+        <svg class="pg-contact-widget__toggle-icon pg-contact-widget__toggle-icon--open" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M7 10.5a1.5 1.5 0 1 0 0 .01M12 10.5a1.5 1.5 0 1 0 0 .01M17 10.5a1.5 1.5 0 1 0 0 .01"/>
+            <path d="M5 5h14a3 3 0 0 1 3 3v6.5a3 3 0 0 1-3 3H12l-4.5 3v-3H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3Z"/>
+        </svg>
+        <svg class="pg-contact-widget__toggle-icon pg-contact-widget__toggle-icon--close" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m6 6 12 12M18 6 6 18"/>
+        </svg>
+    </button>
+</div>
+
+<script type="text/x-magento-init">
+{
+    "[data-role='pg-contact-widget']": {
+        "PeakGear_ContactWidget/js/contact-widget": {}
+    }
+}
+</script>
