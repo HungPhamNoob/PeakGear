@@ -11,13 +11,14 @@ use Psr\Log\LoggerInterface;
  */
 class NewsService
 {
-    // Fallback demo news
     private array $demoNews = [
-        ['title' => 'Xu hướng du lịch trekking bùng nổ tại Việt Nam 2025', 'link' => 'https://vnexpress.net', 'description' => 'Ngày càng nhiều người trẻ lựa chọn trekking thay vì du lịch truyền thống...', 'pub_date' => '', 'image_url' => ''],
-        ['title' => 'Thị trường đồ leo núi Việt Nam tăng trưởng 40% năm 2024', 'link' => 'https://vnexpress.net', 'description' => 'Nhu cầu sắm đồ leo núi, trekking và dã ngoại tại Việt Nam tăng mạnh...', 'pub_date' => '', 'image_url' => ''],
-        ['title' => 'Fansipan - hành trình chinh phục nóc nhà Đông Dương', 'link' => 'https://vnexpress.net', 'description' => 'Chia sẻ kinh nghiệm và những điều cần chuẩn bị trước khi chinh phục Fansipan...', 'pub_date' => '', 'image_url' => ''],
-        ['title' => 'Top 10 địa điểm trekking đẹp nhất miền Bắc Việt Nam', 'link' => 'https://vnexpress.net', 'description' => 'Từ Mù Cang Chải đến Tà Xùa, những cung đường trekking không thể bỏ qua...', 'pub_date' => '', 'image_url' => ''],
-        ['title' => 'Hướng dẫn chọn ba lô trekking cho người mới bắt đầu', 'link' => 'https://vnexpress.net', 'description' => 'Những tiêu chí quan trọng khi chọn ba lô đi cắm trại và leo núi...', 'pub_date' => '', 'image_url' => ''],
+        'travel' => [
+            ['item_guid' => 'travel-demo-1', 'title' => 'Xu hướng du lịch trekking tại Việt Nam', 'link' => 'https://vnexpress.net/du-lich', 'description' => 'Ngày càng nhiều người trẻ lựa chọn trekking thay vì du lịch truyền thống.', 'pub_date' => '', 'image_url' => ''],
+            ['item_guid' => 'travel-demo-2', 'title' => 'Fansipan - hành trình chinh phục nóc nhà Đông Dương', 'link' => 'https://vnexpress.net/du-lich', 'description' => 'Kinh nghiệm và những điều cần chuẩn bị trước khi chinh phục Fansipan.', 'pub_date' => '', 'image_url' => ''],
+        ],
+        'business' => [
+            ['item_guid' => 'business-demo-1', 'title' => 'Tin kinh doanh mới nhất', 'link' => 'https://vnexpress.net/kinh-doanh', 'description' => 'Cập nhật thị trường, tài chính, kinh tế và doanh nghiệp.', 'pub_date' => '', 'image_url' => ''],
+        ],
     ];
 
     public function __construct(
@@ -31,27 +32,32 @@ class NewsService
     /**
      * @return list<array<string, mixed>>
      */
-    public function getNews(): array
+    public function getNews(string $feedCode = 'travel'): array
     {
         if (!$this->config->isEnabled()) {
             return [];
         }
 
+        $feedCode = $feedCode === 'business' ? 'business' : 'travel';
         $maxItems = $this->config->getMaxItems();
-        $cachedItems = $this->cacheRepository->getFreshItems($this->config->getCacheTtl(), $maxItems);
+        $cachedItems = $this->cacheRepository->getFreshItems(
+            $feedCode,
+            $this->config->getCacheTtl(),
+            $maxItems
+        );
         if ($cachedItems !== []) {
             return $cachedItems;
         }
 
         try {
-            $items = $this->feedProvider->fetch($maxItems);
-            $this->cacheRepository->save($items);
+            $items = $this->feedProvider->fetch($this->config->getFeedUrl($feedCode), $maxItems);
+            $this->cacheRepository->save($feedCode, $items);
         } catch (\Exception $e) {
             $this->logger->warning(
                 'NewsRSS remote refresh failed; using fallback stories.',
-                ['exception' => $e]
+                ['feed_code' => $feedCode, 'exception' => $e]
             );
-            $items = $this->demoNews;
+            $items = $this->demoNews[$feedCode];
         }
 
         return array_slice($items, 0, $maxItems);

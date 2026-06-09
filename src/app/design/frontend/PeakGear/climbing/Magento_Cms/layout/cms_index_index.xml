@@ -42,17 +42,36 @@
                    template="Magento_Cms::homepage/featured-products.phtml"
                    after="peakgear.categories"/>
 
-            <!-- Home News Carousel (VNExpress Du lich / Diem den) -->
+            <!-- Home News Carousels -->
             <block class="Vendor\NewsRss\Block\News"
-                   name="peakgear.home.news.carousel"
+                   name="peakgear.home.news.travel"
                    template="Magento_Cms::homepage/news-carousel.phtml"
-                   after="peakgear.featured.products"/>
+                   after="peakgear.featured.products">
+                <arguments>
+                    <argument name="feed_code" xsi:type="string">travel</argument>
+                    <argument name="badge" xsi:type="string">VNExpress Du lịch</argument>
+                    <argument name="title" xsi:type="string">Tin Tức Điểm Đến Mới Nhất</argument>
+                    <argument name="source_url" xsi:type="string">https://vnexpress.net/du-lich/diem-den</argument>
+                </arguments>
+            </block>
+
+            <block class="Vendor\NewsRss\Block\News"
+                   name="peakgear.home.news.business"
+                   template="Magento_Cms::homepage/news-carousel.phtml"
+                   after="peakgear.home.news.travel">
+                <arguments>
+                    <argument name="feed_code" xsi:type="string">business</argument>
+                    <argument name="badge" xsi:type="string">VNExpress Kinh doanh</argument>
+                    <argument name="title" xsi:type="string">Bản Tin Kinh Doanh Mới Nhất</argument>
+                    <argument name="source_url" xsi:type="string">https://vnexpress.net/rss/kinh-doanh.rss</argument>
+                </arguments>
+            </block>
 
             <!-- Brand logos strip -->
             <block class="Magento\Framework\View\Element\Template"
                    name="peakgear.home.brand.strip"
                    template="Magento_Cms::homepage/brand-strip.phtml"
-                   after="peakgear.home.news.carousel"/>
+                   after="peakgear.home.news.business"/>
         </referenceContainer>
         
         <!-- Remove default page title + CMS content block for homepage -->

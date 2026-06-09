@@ -19,12 +19,17 @@ class News extends Template
 
     public function getNewsItems(int $limit = 0): array
     {
-        $items = $this->newsService->getNews();
+        $items = $this->newsService->getNews($this->getFeedCode());
         if ($limit > 0) {
             return array_slice($items, 0, $limit);
         }
 
         return $items;
+    }
+
+    public function getFeedCode(): string
+    {
+        return $this->getData('feed_code') === 'business' ? 'business' : 'travel';
     }
 
     public function formatPubDate(string $dateStr): string

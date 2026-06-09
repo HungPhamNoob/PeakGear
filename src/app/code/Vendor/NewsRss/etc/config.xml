@@ -6,6 +6,7 @@
             <general>
                 <enabled>1</enabled>
                 <rss_url>https://vnexpress.net/du-lich/diem-den</rss_url>
+                <business_rss_url>https://vnexpress.net/rss/kinh-doanh.rss</business_rss_url>
                 <cache_ttl>600</cache_ttl>
                 <max_items>20</max_items>
             </general>

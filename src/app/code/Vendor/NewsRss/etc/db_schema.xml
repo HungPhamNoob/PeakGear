@@ -3,6 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="vendor_news_rss_cache" resource="default" engine="innodb" comment="Vendor News RSS Cache Table">
         <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="feed_code" nullable="false" length="32" default="travel" comment="Feed Code"/>
         <column xsi:type="varchar" name="item_guid" nullable="false" length="255" comment="RSS Item GUID"/>
         <column xsi:type="varchar" name="title" nullable="false" length="500" comment="News Title"/>
         <column xsi:type="mediumtext" name="description" nullable="true" comment="News Description"/>
@@ -13,9 +14,13 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="VENDOR_NEWS_RSS_CACHE_ITEM_GUID">
+        <constraint xsi:type="unique" referenceId="VENDOR_NEWS_RSS_CACHE_FEED_GUID">
+            <column name="feed_code"/>
             <column name="item_guid"/>
         </constraint>
+        <index referenceId="VENDOR_NEWS_RSS_CACHE_FEED_CODE" indexType="btree">
+            <column name="feed_code"/>
+        </index>
         <index referenceId="VENDOR_NEWS_RSS_CACHE_CACHED_AT" indexType="btree">
             <column name="cached_at"/>
         </index>

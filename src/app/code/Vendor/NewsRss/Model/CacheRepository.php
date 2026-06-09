@@ -23,11 +23,12 @@ class CacheRepository
     /**
      * @return list<array<string, mixed>>
      */
-    public function getFreshItems(int $ttl, int $maxItems): array
+    public function getFreshItems(string $feedCode, int $ttl, int $maxItems): array
     {
         return $this->getConnection()->fetchAll(
             $this->getConnection()->select()
                 ->from($this->getTableName())
+                ->where('feed_code = ?', $feedCode)
                 ->where('cached_at >= ?', $this->dateTime->gmtDate('Y-m-d H:i:s', time() - $ttl))
                 ->order('pub_date DESC')
                 ->limit($maxItems)
@@ -37,16 +38,17 @@ class CacheRepository
     /**
      * @param list<array{item_guid:string, title:string, description:string, link:string, pub_date:string, image_url:string}> $items
      */
-    public function save(array $items): void
+    public function save(string $feedCode, array $items): void
     {
         $connection = $this->getConnection();
         $timestamp = $this->dateTime->gmtDate('Y-m-d H:i:s');
 
-        $connection->delete($this->getTableName());
+        $connection->delete($this->getTableName(), ['feed_code = ?' => $feedCode]);
         foreach ($items as $item) {
             $connection->insertOnDuplicate(
                 $this->getTableName(),
                 [
+                    'feed_code' => $feedCode,
                     'item_guid' => $item['item_guid'],
                     'title' => mb_substr($item['title'], 0, 500),
                     'description' => $item['description'],
