@@ -687,7 +687,7 @@
         transition: opacity @transition-fast;
     }
 
-    input:checked + .terms-check-icon {
+    input:checked+.terms-check-icon {
         opacity: 1;
     }
 }
@@ -749,6 +749,473 @@
         &:hover {
             color: @peakgear-primary !important;
         }
+    }
+}
+
+// ==================================================
+// FORGOT PASSWORD PAGE
+// ==================================================
+
+.forgot-password-section {
+    background: @peakgear-dark;
+    display: flex;
+    justify-content: center;
+    padding: 4.25rem 1.5rem 3rem;
+}
+
+.forgot-password-center {
+    width: 100%;
+    max-width: 32rem;
+}
+
+.forgot-password-logo-section {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password-logo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: @peakgear-text !important;
+    text-decoration: none !important;
+}
+
+.forgot-password-logo-icon {
+    width: 3rem;
+    height: 3rem;
+    color: @peakgear-primary-light;
+    stroke: @peakgear-primary-light;
+}
+
+.forgot-password-logo-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.forgot-password-card {
+    width: 100%;
+    background: linear-gradient(to bottom, fade(#334155, 50%), fade(#1e293b, 50%));
+    border-radius: 0.875rem;
+    padding: 2rem 1.75rem 1.5rem;
+    border: 1px solid @peakgear-border;
+    box-shadow: 0 16px 48px fade(#000, 18%);
+}
+
+.forgot-password-card,
+.forgot-password-card * {
+    box-sizing: border-box;
+}
+
+.forgot-password-card-title {
+    font-size: 1.75rem;
+    font-family: @font-serif;
+    color: @peakgear-text;
+    text-align: center;
+    line-height: 1.2;
+    margin: 0 0 0.6rem;
+}
+
+.forgot-password-card-subtitle {
+    color: fade(@peakgear-text, 60%);
+    text-align: center;
+    margin: 0 0 1.4rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    text-wrap: balance;
+}
+
+.forgot-password-form {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+.forgot-password-fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.forgot-password-helper {
+    margin: 0 0 1.15rem;
+    color: fade(@peakgear-text, 68%);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.forgot-password-email {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-bottom: 1.15rem;
+}
+
+.forgot-password-email-label {
+    display: block;
+    color: fade(@peakgear-text, 85%);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.forgot-password-email-control {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.forgot-password-input-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.1rem;
+    height: 1.1rem;
+    color: #9ca3af;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.forgot-password-input {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 3.15rem;
+    padding: 0.9rem 1rem 0.9rem 2.6rem !important;
+    background: #374151 !important;
+    border: 1px solid fade(@peakgear-text, 18%);
+    border-radius: 0.625rem;
+    color: #ffffff !important;
+    font-family: @font-sans;
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box !important;
+    transition: border-color @transition-fast, background @transition-fast, box-shadow @transition-fast;
+
+    &::placeholder {
+        color: #9ca3af;
+    }
+
+    &:focus {
+        border-color: @peakgear-primary;
+        box-shadow: 0 0 0 3px fade(@peakgear-primary, 12%);
+    }
+}
+
+.forgot-password-input:-webkit-autofill,
+.forgot-password-input:-webkit-autofill:hover,
+.forgot-password-input:-webkit-autofill:focus,
+.forgot-password-input:focus,
+.forgot-password-input:focus-visible {
+    -webkit-text-fill-color: #ffffff;
+    -webkit-box-shadow: 0 0 0 1000px #374151 inset !important;
+    box-shadow: 0 0 0 1000px #374151 inset !important;
+    background: #374151 !important;
+}
+
+.forgot-password-input.mage-error {
+    border-color: fade(@peakgear-red, 70%) !important;
+}
+
+.forgot-password-additional-info {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-bottom: 1.4rem;
+
+    &:empty {
+        display: none;
+    }
+}
+
+.customer-account-forgotpassword {
+    .forgot-password-form {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .forgot-password-form .field {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin: 0 0 1rem;
+        clear: both;
+        box-sizing: border-box;
+    }
+
+    .forgot-password-form .field:before,
+    .forgot-password-form .field:after,
+    .forgot-password-form .field.choice:before,
+    .forgot-password-form .field.no-label:before {
+        display: none !important;
+        content: none !important;
+    }
+
+    .forgot-password-form .field > .label,
+    .forgot-password-form .field > .control {
+        float: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        box-sizing: border-box !important;
+    }
+
+    .forgot-password-form .field > .label {
+        display: block !important;
+    }
+
+    .forgot-password-form .control {
+        overflow: visible;
+    }
+
+    .forgot-password-form .mage-error {
+        display: block;
+        margin-top: 0.45rem;
+    }
+
+    .field.captcha {
+        margin: 0 0 1rem;
+    }
+
+    .field.captcha>.label,
+    .field-recaptcha+.mage-error {
+        display: block;
+        color: fade(@peakgear-text, 85%) !important;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .field.captcha > .label span {
+        display: inline-block;
+        overflow-wrap: anywhere;
+    }
+
+    .field.captcha>.control.captcha {
+        display: block;
+    }
+
+    .field.captcha input.input-text {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        height: auto;
+        min-height: 3rem;
+        padding: 0.875rem 1rem !important;
+        background: #374151 !important;
+        border: 1px solid fade(@peakgear-text, 18%);
+        border-radius: 0.625rem;
+        color: #ffffff !important;
+        box-shadow: none;
+        box-sizing: border-box !important;
+    }
+
+    .field.captcha .nested {
+        margin-top: 0.75rem;
+    }
+
+    .field.captcha .captcha-image {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .field.captcha .captcha-img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        flex: 0 1 auto;
+        border-radius: 0.4rem;
+        border: 1px solid fade(@peakgear-text, 8%);
+        background: #ffffff;
+    }
+
+    .field.captcha .captcha-reload {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.75rem;
+        min-width: 10.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid fade(@peakgear-primary, 45%);
+        background: fade(@peakgear-primary, 14%);
+        color: @peakgear-primary-light;
+        font-weight: 600;
+        text-decoration: none;
+        box-sizing: border-box !important;
+        white-space: nowrap;
+        transition: background @transition-fast, border-color @transition-fast, color @transition-fast;
+
+        &:hover {
+            border-color: @peakgear-primary;
+            background: fade(@peakgear-primary, 20%);
+            color: @peakgear-primary-light;
+        }
+    }
+
+    .field.captcha .captcha-note {
+        margin-top: 0.75rem;
+        color: fade(@peakgear-text, 58%);
+        font-size: 0.8125rem;
+        line-height: 1.5;
+    }
+
+    .field-recaptcha {
+        margin: 0 0 1.25rem;
+    }
+
+    .field-recaptcha>div {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        max-width: 100%;
+        padding: 0.75rem;
+        background: fade(@peakgear-text, 4%);
+        border: 1px solid fade(@peakgear-text, 10%);
+        border-radius: 0.75rem;
+        box-sizing: border-box;
+        overflow-x: auto;
+    }
+}
+
+.forgot-password-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.forgot-password-submit-btn {
+    width: 100%;
+    max-width: 100%;
+    min-height: 3.25rem;
+    padding: 0.95rem 1rem;
+    background: @peakgear-primary;
+    color: #111827;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    font-family: @font-sans;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    transition: background @transition-fast, opacity @transition-fast;
+
+    &:hover {
+        background: @peakgear-primary-hover;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+}
+
+.forgot-password-submit-arrow {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.forgot-password-back-link {
+    color: @peakgear-primary-light !important;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    line-height: 1.5;
+
+    &:hover {
+        color: @peakgear-primary !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .forgot-password-section {
+        padding: 3.5rem 1rem 2.5rem;
+    }
+
+    .forgot-password-card {
+        padding: 1.5rem 1.25rem 1.35rem;
+    }
+
+    .forgot-password-card-title {
+        font-size: 1.5rem;
+    }
+
+    .forgot-password-card-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .customer-account-forgotpassword .field.captcha .captcha-image {
+        align-items: stretch;
+    }
+
+    .customer-account-forgotpassword .field.captcha .captcha-reload {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .forgot-password-section {
+        padding: 3rem 0.875rem 2rem;
+    }
+
+    .forgot-password-logo-icon {
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .forgot-password-logo-text {
+        font-size: 1.35rem;
+    }
+
+    .forgot-password-card {
+        border-radius: 0.75rem;
+        padding: 1.25rem 1rem 1.15rem;
+    }
+
+    .forgot-password-card-title {
+        font-size: 1.35rem;
+    }
+
+    .forgot-password-card-subtitle,
+    .forgot-password-helper {
+        font-size: 0.875rem;
+    }
+
+    .customer-account-forgotpassword .field.captcha .captcha-image {
+        padding: 0;
+    }
+
+    .customer-account-forgotpassword .field-recaptcha>div {
+        padding: 0.5rem;
     }
 }
 

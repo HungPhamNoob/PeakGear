@@ -6,8 +6,6 @@
  */
 $product = $block->getProduct();
 $description = $product->getDescription();
-$attributesBlock = $block->getChildBlock('peakgear.tab.attributes');
-$additionalData = $attributesBlock ? $attributesBlock->getAdditionalData() : [];
 $reviewViewModel = $block->getData('review_view_model');
 
 $reviewSummary = $reviewViewModel ? $reviewViewModel->getSummary($product) : [
@@ -29,10 +27,7 @@ $reviewStateUrl = $reviewViewModel ? $reviewViewModel->getStateUrl((int)$product
      data-review-login-url="<?= $block->escapeUrl($loginUrl) ?>"
      data-review-state-url="<?= $block->escapeUrl($reviewStateUrl) ?>">
     <div class="pdp-tabs-nav">
-        <button class="pdp-tab-btn active" data-tab="specs" type="button">
-            Thông số kỹ thuật
-        </button>
-        <button class="pdp-tab-btn" data-tab="description" type="button">
+        <button class="pdp-tab-btn active" data-tab="description" type="button">
             Mô tả chi tiết
         </button>
         <button class="pdp-tab-btn" data-tab="reviews" type="button">
@@ -41,22 +36,7 @@ $reviewStateUrl = $reviewViewModel ? $reviewViewModel->getStateUrl((int)$product
     </div>
 
     <div class="pdp-tabs-content">
-        <div class="pdp-tab-panel active" id="tab-specs">
-            <?php if ($additionalData): ?>
-                <div class="pdp-specs-list">
-                    <?php foreach ($additionalData as $data): ?>
-                        <div class="pdp-spec-row">
-                            <span class="pdp-spec-label"><?= $block->escapeHtml($data['label']) ?></span>
-                            <span class="pdp-spec-value"><?= /* @noEscape */ $data['value'] ?></span>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <p class="pdp-tab-empty">Thông số kỹ thuật sẽ được cập nhật sớm.</p>
-            <?php endif; ?>
-        </div>
-
-        <div class="pdp-tab-panel" id="tab-description">
+        <div class="pdp-tab-panel active" id="tab-description">
             <div class="pdp-description-content">
                 <?php if ($description): ?>
                     <?= /* @noEscape */ $description ?>
