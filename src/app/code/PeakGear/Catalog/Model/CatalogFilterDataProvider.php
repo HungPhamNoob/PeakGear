@@ -23,7 +23,12 @@ class CatalogFilterDataProvider
     public function getFilterableAttributes(): array
     {
         $attributes = [];
-        $filterableCodes = ['color'];
+        // PeakGear custom filter UI:
+        // `color` used to be forced into the filter list even when the attribute
+        // was disabled in admin. Keep the note here for easy rollback, but stop
+        // injecting it so the sidebar only shows attributes allowed by config.
+        // $filterableCodes = ['color'];
+        $filterableCodes = [];
 
         $connection = $this->resourceConnection->getConnection();
         $select = $connection->select()
