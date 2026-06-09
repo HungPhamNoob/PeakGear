@@ -1,4 +1,6 @@
-define([], function () {
+define([
+    'uiRegistry'
+], function (registry) {
     'use strict';
 
     var CITY_ALIASES = {
@@ -34,12 +36,45 @@ define([], function () {
         return !isNaN(parsed) && parsed > 0 ? parsed : null;
     }
 
+    function getCheckoutProviderRegionOptions() {
+        var checkoutProvider = registry.get('checkoutProvider');
+
+        if (!checkoutProvider || typeof checkoutProvider.get !== 'function') {
+            return [];
+        }
+
+        return checkoutProvider.get('dictionaries.region_id') || [];
+    }
+
     function extractVietnamRegions() {
         var checkoutConfig = window.checkoutConfig || {},
             directoryData = checkoutConfig.directoryData || {},
             countryData = directoryData.VN || {},
             rawRegions = countryData.regions || {},
+            providerRegions = getCheckoutProviderRegionOptions(),
             regions = [];
+
+        if (Array.isArray(providerRegions) && providerRegions.length) {
+            providerRegions.forEach(function (region) {
+                if (!region || region.country_id !== 'VN') {
+                    return;
+                }
+
+                regions.push({
+                    id: toRegionId(region.value || region.id || region.region_id),
+                    name: region.label || region.title || region.name || '',
+                    code: region.code || region.region_code || ''
+                });
+            });
+
+            regions = regions.filter(function (region) {
+                return region.id && region.name;
+            });
+
+            if (regions.length) {
+                return regions;
+            }
+        }
 
         if (Array.isArray(rawRegions)) {
             rawRegions.forEach(function (region) {
