@@ -8,6 +8,7 @@ $items = array_slice($block->getNewsItems(), 0, 8);
 $badge = (string)$block->getData('badge');
 $title = (string)$block->getData('title');
 $sourceUrl = (string)$block->getData('source_url');
+$feedAnchor = 'news-' . $block->getFeedCode();
 ?>
 
 <section class="home-news-section" data-mage-init='{"js/news-carousel": {}}'>
@@ -23,7 +24,8 @@ $sourceUrl = (string)$block->getData('source_url');
                     </a>
                 </p>
             </div>
-            <a href="<?= $block->escapeUrl($block->getUrl('news')) ?>" class="home-news-view-all">Xem thêm</a>
+            <a href="<?= $block->escapeUrl($block->getUrl('news', ['_fragment' => $feedAnchor])) ?>"
+               class="home-news-view-all">Xem thêm</a>
         </div>
 
         <?php if (!empty($items)): ?>

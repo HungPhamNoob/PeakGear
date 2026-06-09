@@ -1,0 +1,40 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$order = $block->getOrder();
+$payment = $order ? $order->getPayment() : null;
+$hasPaidAmount = $order && (
+    ($payment && (float)$payment->getAmountPaid() > 0)
+    || $order->getState() === \Magento\Sales\Model\Order::STATE_PROCESSING
+);
+?>
+<div id="cancel-order-modal-<?= /* @noEscape */ $order->getId() ?>">
+    <div class="modal-body-content">
+        <h3>
+            Gửi yêu cầu hủy đơn
+            <span class="cancel-order-id"><?= /* @noEscape */ $order->getRealOrderId() ?></span>
+        </h3>
+        <p>Chọn lý do hủy. Yêu cầu sẽ được gửi đến quản trị viên để kiểm tra và duyệt.</p>
+        <?php if ($hasPaidAmount): ?>
+            <p class="pg-cancellation-note">
+                Đơn đã ghi nhận thanh toán. Vui lòng chờ duyệt; cửa hàng sẽ xử lý hoàn tiền sau khi chấp thuận.
+            </p>
+        <?php else: ?>
+            <p class="pg-cancellation-note">
+                Đơn chưa bị hủy ngay. Vui lòng chờ quản trị viên phản hồi yêu cầu.
+            </p>
+        <?php endif; ?>
+        <form>
+            <label for="cancel-order-reason-<?= /* @noEscape */ $order->getId() ?>">Lý do yêu cầu hủy</label>
+            <select id="cancel-order-reason-<?= /* @noEscape */ $order->getId() ?>"
+                    class="cancel-order-reason"
+                    name="reason">
+                <?php foreach ($block->getReasons() as $description): ?>
+                    <option value="<?= $escaper->escapeHtmlAttr(__($description)) ?>">
+                        <?= $escaper->escapeHtml(__($description)) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+    </div>
+</div>

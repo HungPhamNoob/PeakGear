@@ -2,9 +2,10 @@
 /** @var \Vendor\NewsRss\Block\News $block */
 $items = $block->getNewsItems(16);
 usort($items, static fn(array $a, array $b): int => strtotime((string)($b['pub_date'] ?? '')) <=> strtotime((string)($a['pub_date'] ?? '')));
+$feedAnchor = 'news-' . $block->getFeedCode();
 ?>
 
-<section class="news-feed-group">
+<section class="news-feed-group" id="<?= $block->escapeHtmlAttr($feedAnchor) ?>">
     <header class="news-page-header">
         <?php if ($block->getFeedCode() === 'travel'): ?>
         <h1 class="news-page-title"><?= $block->escapeHtml((string)$block->getData('title')) ?></h1>

@@ -13,6 +13,7 @@ use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
 use Psr\Log\LoggerInterface;
 use Vendor\Shipping\Model\Config;
+use Vendor\Shipping\Service\FreeShippingPolicy;
 use Vendor\Shipping\Service\RequestPayloadBuilder;
 use Vendor\Shipping\Service\WeightResolver;
 
@@ -30,6 +31,7 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         private readonly Config $config,
         private readonly RequestPayloadBuilder $requestPayloadBuilder,
         private readonly WeightResolver $weightResolver,
+        private readonly FreeShippingPolicy $freeShippingPolicy,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
@@ -47,6 +49,11 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         }
 
         $storeId = $request->getStoreId() !== null ? (int)$request->getStoreId() : null;
+
+        if ($this->freeShippingPolicy->isEligible($request, $storeId)) {
+            return $this->buildResult(0.0, $storeId, $this->config->getMethodName($storeId));
+        }
+
         $apiToken = trim($this->config->getApiToken($storeId));
         $clientSource = trim($this->config->getClientSource($storeId));
         $pickProvince = trim($this->config->getPickProvince($storeId));
@@ -111,5 +118,4 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
 
         return $result;
     }
-
 }

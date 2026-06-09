@@ -10,10 +10,12 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
 /**
- * Applies idempotent success/failure transitions for VNPay returns.
+ * Applies idempotent payment result transitions for VNPay returns.
  */
 class PaymentStateApplier
 {
+    private const CANCELLATION_STATUSES = ['cancellation_requested', 'cancellation_approved'];
+
     public function __construct(
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory
@@ -36,10 +38,14 @@ class PaymentStateApplier
             $payment->setAdditionalInformation('peakgear_vnpay_transaction_no', $transactionNo);
         }
 
+        $status = in_array((string)$order->getStatus(), self::CANCELLATION_STATUSES, true)
+            ? (string)$order->getStatus()
+            : Order::STATE_PROCESSING;
         $order->setState(Order::STATE_PROCESSING)
-            ->setStatus(Order::STATE_PROCESSING)
+            ->setStatus($status)
             ->addCommentToStatusHistory(
-                __('VNPay payment confirmed. TransactionNo: %1', $transactionNo)->render()
+                __('VNPay payment confirmed. TransactionNo: %1', $transactionNo)->render(),
+                $status
             );
 
         $this->orderRepository->save($order);
@@ -51,19 +57,34 @@ class PaymentStateApplier
     public function markFailed(string $incrementId, string $responseCode): void
     {
         $order = $this->getByIncrementId($incrementId);
-        if (in_array($order->getState(), [Order::STATE_PROCESSING, Order::STATE_COMPLETE], true)) {
+        if (in_array(
+            $order->getState(),
+            [Order::STATE_PROCESSING, Order::STATE_COMPLETE, Order::STATE_CANCELED, Order::STATE_CLOSED],
+            true
+        )) {
             return;
         }
 
-        if ($order->getState() !== Order::STATE_CANCELED) {
-            $order->setState(Order::STATE_CANCELED)
-                ->setStatus(Order::STATE_CANCELED)
-                ->addCommentToStatusHistory(
-                    __('VNPay payment failed. Response code: %1', $responseCode)->render()
-                );
-
-            $this->orderRepository->save($order);
+        $payment = $order->getPayment();
+        if ($payment) {
+            $lastCode = (string)$payment->getAdditionalInformation('peakgear_vnpay_last_incomplete_code');
+            if ($lastCode === $responseCode) {
+                return;
+            }
+            $payment->setAdditionalInformation('peakgear_vnpay_last_incomplete_code', $responseCode);
         }
+
+        $status = in_array((string)$order->getStatus(), self::CANCELLATION_STATUSES, true)
+            ? (string)$order->getStatus()
+            : Order::STATE_PENDING_PAYMENT;
+        $order->setState(Order::STATE_PENDING_PAYMENT)
+            ->setStatus($status)
+            ->addCommentToStatusHistory(
+                __('VNPay payment was not completed. Response code: %1. The cart was restored.', $responseCode)->render(),
+                $status
+            );
+
+        $this->orderRepository->save($order);
     }
 
     /**

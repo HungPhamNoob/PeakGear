@@ -1062,7 +1062,9 @@ div.mage-error {
 
     // Status variants
     &--pending,
-    &--pending_payment {
+    &--pending_payment,
+    &--cancellation_requested,
+    &--cancellation_approved {
         background: fade(@peakgear-primary, 15%);
         color: @peakgear-primary;
         border-color: fade(@peakgear-primary, 30%);
@@ -1092,6 +1094,32 @@ div.mage-error {
         color: #aaa;
         border-color: rgba(150, 150, 150, 0.2);
     }
+}
+
+.pg-cancellation-request-notice,
+.pg-cancellation-note,
+.pg-cancellation-request-hint {
+    color: #f7c66a;
+}
+
+.pg-cancellation-request-notice,
+.pg-cancellation-note {
+    padding: 0.8rem 0.95rem;
+    border: 1px solid rgba(245, 166, 35, 0.3);
+    border-radius: 0.65rem;
+    background: rgba(245, 166, 35, 0.08);
+    line-height: 1.55;
+}
+
+.pg-cancellation-request-notice {
+    margin-bottom: 1rem;
+}
+
+.pg-cancellation-request-hint {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.72rem;
+    white-space: normal;
 }
 
 // Star rating row
