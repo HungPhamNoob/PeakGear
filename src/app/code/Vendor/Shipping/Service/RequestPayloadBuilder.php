@@ -22,7 +22,7 @@ class RequestPayloadBuilder
             'pick_province' => $this->config->getPickProvince($storeId),
             'pick_district' => $this->config->getPickDistrict($storeId),
             'province' => $this->resolveProvince($request),
-            'district' => $this->resolveDistrict($request),
+            'district' => $this->resolveDistrict($request, $storeId),
             'address' => $this->resolveAddress($request),
             'weight' => $weightGram,
             'value' => max(0, (int)round((float)($request->getPackageValueWithDiscount() ?: $request->getPackageValue()))),
@@ -44,7 +44,7 @@ class RequestPayloadBuilder
             $payload['pick_ward'] = $pickWard;
         }
 
-        $ward = $this->resolveWard();
+        $ward = $this->resolveWard($storeId);
         if ($ward !== '') {
             $payload['ward'] = $ward;
         }
@@ -54,6 +54,16 @@ class RequestPayloadBuilder
 
     private function resolveProvince(RateRequest $request): string
     {
+        $province = trim((string)$request->getDestRegion());
+        if ($province !== '') {
+            return $province;
+        }
+
+        $province = trim((string)$request->getDestCity());
+        if ($province !== '') {
+            return $province;
+        }
+
         $province = trim((string)$request->getDestRegionCode());
         if ($province !== '') {
             return $province;
@@ -64,16 +74,15 @@ class RequestPayloadBuilder
         return $quoteAddress ? trim((string)$quoteAddress->getRegion()) : '';
     }
 
-    private function resolveDistrict(RateRequest $request): string
+    private function resolveDistrict(RateRequest $request, ?int $storeId = null): string
     {
-        $district = trim((string)$request->getDestCity());
+        $quoteAddress = $this->getQuoteShippingAddress();
+        $district = $quoteAddress ? trim((string)$quoteAddress->getData('district')) : '';
         if ($district !== '') {
             return $district;
         }
 
-        $quoteAddress = $this->getQuoteShippingAddress();
-
-        return $quoteAddress ? trim((string)$quoteAddress->getCity()) : '';
+        return trim($this->config->getFallbackDestinationDistrict($storeId));
     }
 
     private function resolveAddress(RateRequest $request): string
@@ -88,11 +97,15 @@ class RequestPayloadBuilder
         return $quoteAddress ? trim((string)$quoteAddress->getStreetFull()) : '';
     }
 
-    private function resolveWard(): string
+    private function resolveWard(?int $storeId = null): string
     {
         $quoteAddress = $this->getQuoteShippingAddress();
+        $ward = $quoteAddress ? trim((string)$quoteAddress->getData('ward')) : '';
+        if ($ward !== '') {
+            return $ward;
+        }
 
-        return $quoteAddress ? trim((string)$quoteAddress->getData('ward')) : '';
+        return trim($this->config->getFallbackDestinationWard($storeId));
     }
 
     private function getQuoteShippingAddress(): ?Address

@@ -48,6 +48,27 @@ class PaymentStateApplier
     /**
      * @throws LocalizedException
      */
+    public function markFailed(string $incrementId, string $reason): void
+    {
+        $order = $this->getByIncrementId($incrementId);
+        if (in_array($order->getState(), [Order::STATE_PROCESSING, Order::STATE_COMPLETE], true)) {
+            return;
+        }
+
+        if ($order->getState() !== Order::STATE_CANCELED) {
+            $order->setState(Order::STATE_CANCELED)
+                ->setStatus(Order::STATE_CANCELED)
+                ->addCommentToStatusHistory(
+                    __('ZaloPay payment failed. Reason: %1', $reason)->render()
+                );
+
+            $this->orderRepository->save($order);
+        }
+    }
+
+    /**
+     * @throws LocalizedException
+     */
     private function getByIncrementId(string $incrementId): OrderInterface
     {
         $searchCriteriaBuilder = $this->searchCriteriaBuilderFactory->create();

@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 class GhtkApi
 {
     private const API_URL_PROD = 'https://services.giaohangtietkiem.vn/services/shipment/fee';
-    private const API_URL_SANDBOX = 'https://services-staging.htgiohangtietkiem.vn/services/shipment/fee';
+    private const API_URL_SANDBOX = 'https://services-staging.ghtklab.com/services/shipment/fee';
 
     public function __construct(
         private readonly Curl $curl,

@@ -60,7 +60,8 @@
                                                                     <item name="validation" xsi:type="array">
                                                                         <item name="required-entry" xsi:type="boolean">true</item>
                                                                         <item name="validate-digits" xsi:type="boolean">true</item>
-                                                                        <item name="min_text_length" xsi:type="number">9</item>
+                                                                        <item name="validate-vietnam-phone" xsi:type="boolean">true</item>
+                                                                        <item name="min_text_length" xsi:type="number">10</item>
                                                                         <item name="max_text_length" xsi:type="number">11</item>
                                                                     </item>
                                                                 </item>

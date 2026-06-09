@@ -65,6 +65,16 @@ class Config
         return $this->getValue('pick_ward', $storeId);
     }
 
+    public function getFallbackDestinationDistrict(?int $storeId = null): string
+    {
+        return $this->getValue('fallback_destination_district', $storeId);
+    }
+
+    public function getFallbackDestinationWard(?int $storeId = null): string
+    {
+        return $this->getValue('fallback_destination_ward', $storeId);
+    }
+
     public function getTransport(?int $storeId = null): string
     {
         return $this->getValue('transport', $storeId, 'road');
