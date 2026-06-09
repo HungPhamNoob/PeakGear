@@ -6,18 +6,13 @@ namespace PeakGear\FlashSale\Observer;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Message\ManagerInterface;
-use Magento\Quote\Api\CartRepositoryInterface;
 use PeakGear\FlashSale\Model\FlashSaleService;
 
 class ApplyCartItemFlashSale implements ObserverInterface
 {
     public function __construct(
         private readonly FlashSaleService $flashSaleService,
-        private readonly CheckoutSession $checkoutSession,
-        private readonly CartRepositoryInterface $cartRepository,
-        private readonly ManagerInterface $messageManager
+        private readonly CheckoutSession $checkoutSession
     ) {
     }
 
@@ -36,26 +31,38 @@ class ApplyCartItemFlashSale implements ObserverInterface
         }
 
         $quote = $this->checkoutSession->getQuote();
-        $message = $this->flashSaleService->validateQty(
-            (int)$product->getId(),
-            (float)$quoteItem->getQty(),
-            $quote->getCustomerId() ? (int)$quote->getCustomerId() : null,
-            $quote->getCustomerEmail() ?: null
-        );
-        if ($message !== null) {
-            $quote->removeItem((int)$quoteItem->getId());
-            $this->cartRepository->save($quote);
-            $this->messageManager->addErrorMessage($message);
-            throw new LocalizedException(__($message));
-        }
+        $customerId = $quote->getCustomerId() ? (int)$quote->getCustomerId() : null;
+        $customerEmail = $quote->getCustomerEmail() ?: null;
 
-        $price = $this->flashSaleService->getDiscountedPrice($product, $item);
+        $discountedQty = $this->flashSaleService->getEligibleDiscountQty(
+            (int)$product->getId(),
+            $item,
+            (float)$quoteItem->getQty(),
+            $customerId,
+            $customerEmail
+        );
+        $price = $this->flashSaleService->getBlendedUnitPrice(
+            $product,
+            $item,
+            (float)$quoteItem->getQty(),
+            $discountedQty
+        );
         $quoteItem->setCustomPrice($price);
         $quoteItem->setOriginalCustomPrice($price);
+        $quoteItem->getProduct()->setIsSuperMode(true);
+
+        if ($discountedQty <= 0) {
+            $quoteItem->removeOption('peakgear_flash_sale_item_id');
+            $quoteItem->setAdditionalData(FlashSaleService::REGULAR_PRICE_MARKER);
+            return;
+        }
+
         $quoteItem->addOption([
             'code' => 'peakgear_flash_sale_item_id',
             'value' => (string)$item->getId(),
         ]);
-        $quoteItem->getProduct()->setIsSuperMode(true);
+        $quoteItem->setAdditionalData(
+            $this->flashSaleService->getDiscountMarker((int)$item->getId(), $discountedQty)
+        );
     }
 }

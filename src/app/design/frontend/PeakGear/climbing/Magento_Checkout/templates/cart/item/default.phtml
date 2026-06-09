@@ -115,12 +115,23 @@ if (!empty($quantityConfig['qtyIncrements'])) {
                     <?php endforeach; ?>
                 <?php endif; ?>
                 <?php if ($flashSaleInfo): ?>
-                    <div class="cart item message notice">
-                        <div>
-                            Flash sale -<?= (int)round((float)$flashSaleInfo['discount_percent']) ?>%,
-                            còn <?= (int)$flashSaleInfo['remaining_qty'] ?> sản phẩm.
-                            <?php if ((int)$flashSaleInfo['max_per_order'] > 0): ?>
-                                Tối đa <?= (int)$flashSaleInfo['max_per_order'] ?> sản phẩm/đơn.
+                    <div class="cart item message notice pg-flash-sale-cart-note">
+                        <div class="pg-flash-sale-cart-note__content">
+                            <?php if ($flashSaleInfo['uses_regular_price']): ?>
+                                <span class="pg-flash-sale-cart-note__status">Đã hết hạn mức giảm giá</span>
+                                <span class="pg-flash-sale-cart-note__meta">Sản phẩm đang được tính theo giá thường.</span>
+                            <?php else: ?>
+                                <span class="pg-flash-sale-cart-note__badge">
+                                    -<?= (int)round((float)$flashSaleInfo['discount_percent']) ?>%
+                                </span>
+                                <span class="pg-flash-sale-cart-note__meta">
+                                    <?= (int)$flashSaleInfo['discounted_qty'] ?> SP giá Flash Sale
+                                    <?php if ((int)$flashSaleInfo['regular_qty'] > 0): ?>
+                                        · <?= (int)$flashSaleInfo['regular_qty'] ?> SP giá thường
+                                    <?php else: ?>
+                                        · Còn <?= (int)$flashSaleInfo['remaining_qty'] ?>
+                                    <?php endif; ?>
+                                </span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -153,7 +164,7 @@ if (!empty($quantityConfig['qtyIncrements'])) {
             </td>
         <?php else: ?>
             <td class="col price" data-th="<?= $block->escapeHtml(__('Price')) ?>">
-                <?= $block->getUnitPriceHtml($_item) ?>
+                <?= /* @noEscape */ $block->getUnitPriceHtml($_item) ?>
             </td>
         <?php endif; ?>
         <td class="col qty" data-th="<?= $block->escapeHtml(__('Qty')) ?>">
@@ -200,12 +211,22 @@ if (!empty($quantityConfig['qtyIncrements'])) {
             <?php if ($canApplyMsrp): ?>
                 <span class="cart msrp subtotal">--</span>
             <?php else: ?>
-                <?= $block->getRowTotalHtml($_item) ?>
+                <div class="pg-cart-subtotal-price">
+                    <?= /* @noEscape */ $block->getRowTotalHtml($_item) ?>
+                    <?php if ($flashSaleInfo && !$flashSaleInfo['uses_regular_price']): ?>
+                        <del class="pg-cart-subtotal-price__old">
+                            <?= /* @noEscape */ $block->convertPrice(
+                                (float)$flashSaleInfo['regular_price'] * $currentQty,
+                                true
+                            ) ?>
+                        </del>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
         </td>
     </tr>
     <tr class="item-actions">
-        <td colspan="4">
+        <td colspan="5">
             <div class="actions-toolbar">
                 <?= /* @noEscape */ $block->getActions($_item) ?>
             </div>
