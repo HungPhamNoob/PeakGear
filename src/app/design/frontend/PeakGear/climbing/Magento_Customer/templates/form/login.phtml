@@ -172,25 +172,11 @@ require([
     'mage/mage',
     'mage/storage',
     'Magento_Customer/js/customer-data',
+    'js/validation/vietnam-phone',
     'mage/validation',
     'mage/translate'
-], function ($, mage, storage, customerData) {
+], function ($, mage, storage, customerData, vietnamPhone) {
     'use strict';
-
-    function normalizePhone(phone) {
-        var trimmed = $.trim(phone);
-        var digits = trimmed.replace(/\D+/g, '');
-
-        if (trimmed.charAt(0) === '+' && digits.indexOf('84') === 0) {
-            return '0' + digits.substring(2);
-        }
-
-        if (digits.indexOf('84') === 0 && digits.length >= 11) {
-            return '0' + digits.substring(2);
-        }
-
-        return digits;
-    }
 
     function isValidEmail(value) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -205,7 +191,7 @@ require([
                 return true;
             }
 
-            return isValidEmail(trimmed) || /^0[0-9]{9,10}$/.test(normalizePhone(trimmed));
+            return isValidEmail(trimmed) || vietnamPhone.isValid(trimmed);
         },
         $.mage.__('Vui lòng nhập email hợp lệ hoặc số điện thoại hợp lệ.')
     );

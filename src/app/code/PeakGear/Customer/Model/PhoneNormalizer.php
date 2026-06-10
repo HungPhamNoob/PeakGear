@@ -24,7 +24,7 @@ class PhoneNormalizer
 
     public function isValid(string $phone): bool
     {
-        return (bool) preg_match('/^0[0-9]{9,10}$/', $this->normalize($phone));
+        return (bool) preg_match('/^0[1-9][0-9]{8,9}$/', $this->normalize($phone));
     }
 
     public function isEmail(string $value): bool

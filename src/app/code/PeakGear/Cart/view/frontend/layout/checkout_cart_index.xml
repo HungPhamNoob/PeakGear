@@ -7,6 +7,12 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <referenceBlock name="checkout.cart.methods.onepage.bottom">
+            <arguments>
+                <argument name="checkout_login" xsi:type="object">PeakGear\Customer\ViewModel\CheckoutLogin</argument>
+            </arguments>
+        </referenceBlock>
+
         <!--
           Append a tiny template block that outputs the <script> tag to boot
           our cart-select.js widget. We render it after the cart form so that

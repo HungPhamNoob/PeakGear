@@ -1,0 +1,38 @@
+<?php
+/**
+ * PeakGear checkout button.
+ *
+ * @var \Magento\Checkout\Block\Onepage\Link $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \PeakGear\Customer\ViewModel\CheckoutLogin|null $checkoutLogin
+ */
+$checkoutLogin = $block->getData('checkout_login');
+$isLoggedIn = !$checkoutLogin || $checkoutLogin->isLoggedIn();
+?>
+<?php if ($block->isPossibleOnepageCheckout()): ?>
+    <?php if ($isLoggedIn): ?>
+        <button type="button"
+                data-role="proceed-to-checkout"
+                title="<?= $escaper->escapeHtmlAttr(__('Proceed to Checkout')) ?>"
+                data-mage-init='{
+                    "Magento_Checkout/js/proceed-to-checkout":{
+                        "checkoutUrl":"<?= $escaper->escapeJs($block->getCheckoutUrl()) ?>"
+                    }
+                }'
+                class="action primary checkout<?= $block->isDisabled() ? ' disabled' : '' ?>"
+                <?php if ($block->isDisabled()): ?>
+                    disabled="disabled"
+                <?php endif; ?>>
+            <span><?= $escaper->escapeHtml(__('Proceed to Checkout')) ?></span>
+        </button>
+    <?php else: ?>
+        <a href="<?= $escaper->escapeUrl($checkoutLogin->getLoginUrl()) ?>"
+           class="action primary peakgear-checkout-login<?= $block->isDisabled() ? ' disabled' : '' ?>"
+           title="<?= $escaper->escapeHtmlAttr(__('Proceed to Checkout')) ?>"
+           <?php if ($block->isDisabled()): ?>
+               aria-disabled="true"
+           <?php endif; ?>>
+            <span><?= $escaper->escapeHtml(__('Proceed to Checkout')) ?></span>
+        </a>
+    <?php endif; ?>
+<?php endif; ?>

@@ -20,7 +20,8 @@ $config = [
 <script type="text/x-magento-init">
 {
     "*": {
-        "peakgearAuthGuard": <?= /* @noEscape */ json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>
+        "peakgearAuthGuard": <?= /* @noEscape */ json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>,
+        "js/validation/live-contact": {}
     }
 }
 </script>

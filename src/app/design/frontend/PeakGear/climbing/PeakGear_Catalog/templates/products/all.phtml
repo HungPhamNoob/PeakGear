@@ -465,10 +465,6 @@ $hasActiveFilters = !empty($activeFilters);
                                               data-product-sku="<?= $block->escapeHtmlAttr($product->getSku()) ?>"
                                               action="<?= $block->escapeUrl($addToCartUrl) ?>"
                                               method="post"
-                                              data-auth-required="1"
-                                              data-auth-action="cart"
-                                              data-auth-title="Đăng nhập để sử dụng tính năng này"
-                                              data-auth-message="Bạn cần đăng nhập để sử dụng tính năng này."
                                               data-mage-init='{"catalogAddToCart": {"addToCartButtonSelector": ".action.tocart"}}'
                                               class="action-cart-form" style="display: contents;">
                                             <?= $block->getBlockHtml('formkey') ?>

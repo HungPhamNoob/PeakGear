@@ -80,8 +80,9 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
                         <input type="text" name="telephone" id="telephone"
                                value="<?= $escaper->escapeHtmlAttr($block->getAddress()->getTelephone()) ?>"
                                title="Điện thoại"
-                               class="input-text" data-validate="{required:true, 'validate-digits':true}"
-                               minlength="10" maxlength="11">
+                               class="input-text"
+                               data-validate="{required:true, 'validate-vietnam-phone':true}"
+                               inputmode="tel" maxlength="20">
                     </div>
                 <?php endif ?>
             </div>
@@ -211,7 +212,8 @@ $pageTitle = $block->getTitle() ?: __('Sổ Địa Chỉ');
         "#form-validate": {
             "addressValidation": {
                 "postCodes": <?= /* @noEscape */ $block->getPostCodeConfig()->getSerializedPostCodes() ?>
-            }
+            },
+            "js/validation/vietnam-phone": {}
         }
     }
 </script>

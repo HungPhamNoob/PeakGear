@@ -4,9 +4,10 @@ define([
     'uiRegistry',
     'Magento_Checkout/js/model/quote',
     'Magento_Checkout/js/model/vietnam-region-normalizer',
+    'js/validation/vietnam-phone',
     'mage/translate',
     'mage/validation'
-], function ($, ko, registry, quote, vietnamRegionNormalizer, $t) {
+], function ($, ko, registry, quote, vietnamRegionNormalizer, vietnamPhone, $t) {
     'use strict';
 
     var STORE_MODE_CLASS = 'pg-delivery-store',
@@ -18,35 +19,6 @@ define([
 
     function isPaymentStep() {
         return window.location.hash === '#payment';
-    }
-
-    function normalizeVietnamPhone(value) {
-        var raw = (value || '').toString().trim(),
-            digits = raw.replace(/\D+/g, '');
-
-        if ((raw.indexOf('+') === 0 && digits.indexOf('84') === 0) || digits.indexOf('84') === 0) {
-            digits = '0' + digits.slice(2);
-        }
-
-        return digits;
-    }
-
-    function isValidVietnamPhone(value) {
-        return /^0[0-9]{9,10}$/.test(normalizeVietnamPhone(value));
-    }
-
-    function registerVietnamPhoneValidator() {
-        if (!$.validator || $.validator.methods['validate-vietnam-phone']) {
-            return;
-        }
-
-        $.validator.addMethod(
-            'validate-vietnam-phone',
-            function (value) {
-                return $.mage.isEmptyNoTrim(value) || isValidVietnamPhone(value);
-            },
-            $t('Vui lòng nhập số điện thoại hợp lệ (VD: 0912345678).')
-        );
     }
 
     function normalizeVietnamName(value) {
@@ -110,7 +82,7 @@ define([
     }
 
     return function (Shipping) {
-        registerVietnamPhoneValidator();
+        vietnamPhone.register();
 
         return Shipping.extend({
             initialize: function () {
@@ -254,7 +226,7 @@ define([
                     }
 
                     telephoneField.value.subscribe(function (rawValue) {
-                        var sanitized = normalizeVietnamPhone(rawValue);
+                        var sanitized = vietnamPhone.normalize(rawValue);
 
                         if (sanitized !== rawValue) {
                             telephoneField.value(sanitized);

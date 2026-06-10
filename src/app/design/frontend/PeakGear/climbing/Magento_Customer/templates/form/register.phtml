@@ -122,7 +122,6 @@ try {
                                placeholder="0123 456 789"
                                autocomplete="tel"/>
                     </div>
-                    <p class="register-phone-error" id="phone-error" style="display:none; color:#ef4444; font-size:0.8rem; margin-top:4px;">Vui lòng nhập số điện thoại hợp lệ (VD: 0912345678)</p>
                 </div>
 
                 <!-- Password -->
@@ -278,7 +277,7 @@ function toggleRegPassword(btn) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function initializeRegisterForm() {
     var passwordInput = document.getElementById('password');
     var confirmInput = document.getElementById('password-confirmation');
     var strengthGrid = document.getElementById('password-strength-grid');
@@ -305,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
             emailInput.removeAttribute('data-validate');
             emailInput.disabled = true;
             phoneInput.setAttribute('required', 'required');
-            phoneInput.setAttribute('data-validate', '{required:true}');
+            phoneInput.setAttribute('data-validate', "{required:true, 'validate-vietnam-phone':true}");
             if (phoneRequired) phoneRequired.style.display = '';
         } else {
             emailField.style.display = '';
@@ -313,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
             emailInput.setAttribute('required', 'required');
             emailInput.setAttribute('data-validate', "{required:true, 'validate-email':true}");
             phoneInput.removeAttribute('required');
-            phoneInput.removeAttribute('data-validate');
+            phoneInput.setAttribute('data-validate', "{'validate-vietnam-phone':true}");
             if (phoneRequired) phoneRequired.style.display = 'none';
         }
     }
@@ -346,54 +345,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Split full name into first/last on submit + validate phone
+    // Split full name into first/last on submit.
     var form = document.getElementById('form-validate');
     var fullnameInput = document.getElementById('fullname');
-    var phoneErrorEl = document.getElementById('phone-error');
-
-    function normalizePhone(phone) {
-        phone = phone.trim();
-        var digits = phone.replace(/\D+/g, '');
-        if (phone.startsWith('+') && digits.startsWith('84')) {
-            return '0' + digits.substring(2);
-        }
-        if (digits.startsWith('84') && digits.length >= 11) {
-            return '0' + digits.substring(2);
-        }
-        return digits;
-    }
-
-    function isValidVietnamesePhone(phone) {
-        return /^0[0-9]{9,10}$/.test(normalizePhone(phone));
-    }
 
     if (form && fullnameInput) {
-        form.addEventListener('submit', function(e) {
-            // Validate phone before submit
-            var currentMethod = methodInput ? methodInput.value : 'email';
-            var phoneVal = phoneInput ? phoneInput.value.trim() : '';
-            var phoneValid = true;
-
-            if (currentMethod === 'phone') {
-                if (!phoneVal || !isValidVietnamesePhone(phoneVal)) {
-                    phoneValid = false;
-                }
-            } else if (phoneVal !== '') {
-                if (!isValidVietnamesePhone(phoneVal)) {
-                    phoneValid = false;
-                }
-            }
-
-            if (!phoneValid) {
-                e.preventDefault();
-                e.stopPropagation();
-                if (phoneErrorEl) phoneErrorEl.style.display = 'block';
-                if (phoneInput) phoneInput.focus();
-                return false;
-            } else {
-                if (phoneErrorEl) phoneErrorEl.style.display = 'none';
-            }
-
+        form.addEventListener('submit', function() {
             // Split full name into first/last
             var fullname = fullnameInput.value.trim();
             var parts = fullname.split(/\s+/);
@@ -406,14 +363,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+}
 
-    // Hide phone error when user starts typing
-    if (phoneInput && phoneErrorEl) {
-        phoneInput.addEventListener('input', function() {
-            phoneErrorEl.style.display = 'none';
-        });
-    }
-});
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeRegisterForm);
+} else {
+    initializeRegisterForm();
+}
 
 function toggleCheck(id, passed) {
     var el = document.getElementById(id);
