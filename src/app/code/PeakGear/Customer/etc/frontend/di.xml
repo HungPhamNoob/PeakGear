@@ -11,6 +11,11 @@
                 type="PeakGear\Customer\Plugin\AjaxLoginPlugin"
                 sortOrder="10"/>
     </type>
+    <type name="Magento\Customer\Controller\Account\Logout">
+        <plugin name="peakgear_customer_logout_home_redirect"
+                type="PeakGear\Customer\Plugin\LogoutRedirectPlugin"
+                sortOrder="10"/>
+    </type>
     <type name="Magento\Checkout\Controller\Index\Index">
         <plugin name="peakgear_guest_guard_checkout_index"
                 type="PeakGear\Customer\Plugin\GuestProtectedActionPlugin"
