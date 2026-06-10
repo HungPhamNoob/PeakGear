@@ -16,6 +16,21 @@
                 type="PeakGear\Customer\Plugin\CustomerExtractorPlugin"
                 sortOrder="10"/>
     </type>
+    <type name="Magento\Customer\Api\AddressRepositoryInterface">
+        <plugin name="peakgear_customer_address_phone_validation"
+                type="PeakGear\Customer\Plugin\AddressRepositoryPhoneValidationPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Api\ShippingInformationManagementInterface">
+        <plugin name="peakgear_checkout_shipping_phone_validation"
+                type="PeakGear\Customer\Plugin\CheckoutAddressPhoneValidationPlugin"
+                sortOrder="10"/>
+    </type>
+    <type name="Magento\Checkout\Api\PaymentInformationManagementInterface">
+        <plugin name="peakgear_checkout_billing_phone_validation"
+                type="PeakGear\Customer\Plugin\CheckoutAddressPhoneValidationPlugin"
+                sortOrder="10"/>
+    </type>
     <type name="Mageplaza\SocialLogin\Model\Social">
         <plugin name="PeakGearCustomerSocialLoginProvider"
                 type="PeakGear\Customer\Plugin\SocialLogin\SocialPlugin"
